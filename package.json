@@ -19,9 +19,11 @@
     "koa-router": "^7.1.1",
     "koa-static": "^3.0.0",
     "koa-views": "^5.2.1",
-    "pug": "^2.0.0-rc.1"
+    "pug": "^2.0.0-rc.1",
+    "uglify-js": ">=2.6.0"
   },
   "devDependencies": {
-    "nodemon": "^1.8.1"
+    "nodemon": "^1.8.1",
+    "uglify-js": ">=2.6.0"
   }
 }
