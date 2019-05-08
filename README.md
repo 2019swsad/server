@@ -1,42 +1,12 @@
-node-koajs-rest-skeleton v3.5.3
-===============================
 
-A simple [Koajs 2.7.0 Application REST Skeleton](https://github.com/ria-com/node-koajs-rest-skeleton)
-This version based on [koa 2.7.0](https://github.com/koajs/koa). 
-    
-
-quick start
+Quick start
 ===========
-
-**Checkout node-koajs-rest-skeleton:**
-
-```sh
-$ git clone https://github.com/ria-com/node-koajs-rest-skeleton
-```
-
-**Make your own new project:**
-
-```sh
-$ mv node-koajs-rest-skeleton my_new_project
-$ cd my_new_project
-$ rm -rf .git
-```
-
-**Edit package.json:**
-
-```sh
-$ vi package.json
-```
-
-**Edit config/* files:**
-
-```sh
-$ vi config/default.js
-```
 
 **Install modules**
 ```sh
 $ npm install
+#or
+$ cnpm i
 ```
 
 **Start app:**
@@ -44,22 +14,12 @@ $ npm install
 $ node ./index.js
 ```
 
+Example
+===
+[Example](https://github.com/koajs/examples)
+
 testing
 =======
-
-
-**Make your own Spec-files for testing and start test**
-
-In this skeleton for automatic testing was used [jasmine-nodie](https://jasmine.github.io/2.1/node.html) & [Frisby (REST API testing framework)](http://frisbyjs.com).
-I wrote several tests that you can use as examples.
-
-All tests should be placed in the ./spec folder. The name of each test file must end with *Spec.js
-
-To run the tests, use 
-```sh
-$ cd my_new_project
-$ npm test
-```
 
 **Manual testing your REST service:**
 
@@ -162,12 +122,3 @@ functionality will be available when running the app via **index.kubernetes.js**
 ```sh
 $ node ./index.kubernetes.js
 ```
-
-
-history
-=======
-
-  * v3.5 - Joi validator was added to check PUT & POST input data (thanks to [Roman Yakovenko](https://github.com/b17))
-  * v3.4 - Fix Dockerfile add /version route to kubernetes version
-  * v3.3 - Some kubernetes features added
-  * v3.2 - Updated dependencies for Koa 2.5, fix api tests, remove .babelrc
