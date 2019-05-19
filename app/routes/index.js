@@ -1,6 +1,6 @@
 const Router = require('koa-router'),
-      KoaBody = require('koa-body'),
-     {getId, list, createItem, updateItem, removeItem} = require('../controllers/indexController');
+    KoaBody = require('koa-body'),
+    {getId, list, createItem, updateItem, removeItem} = require('../controllers/indexController');
 
 const router = new Router();
 

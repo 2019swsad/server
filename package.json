@@ -1,5 +1,5 @@
 {
-  "name": "myKoajsRestApp",
+  "name": "server-koa",
   "version": "3.5.3",
   "description": "A simple Koajs 2 REST Application Skeleton in ES6 style",
   "author": {
@@ -14,14 +14,17 @@
     "amqplib": ">=0.5.3",
     "config": ">=3.1.0",
     "debug": ">=4.1.1",
+    "is-generator-function": "^1.0.7",
     "joi": ">=14.3.1",
     "koa": ">=2.7.0",
     "koa-body": ">=4.1.0",
     "koa-router": ">=7.4.0",
+    "monk": "^7.0.0",
     "optimist": ">=0.6.1",
     "prom-client": ">=11.3.0",
     "prometheus-gc-stats": ">=0.6.1",
-    "to-time": "git://github.com/ApelSYN/to-time.git"
+    "mongodb": ">=3.2.5",
+    "to-time": "https://github.com/hafuta/to-time.git"
   },
   "devDependencies": {
     "frisby": "^0.8.5",

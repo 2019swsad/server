@@ -9,8 +9,11 @@ app.use(err);
 app.use(routes());
 app.use(allowedMethods());
 
-const server = http.createServer(app.callback()).listen(config.server.port, function () {
-    console.log('%s listening at port %d', config.app.name, config.server.port);
+const server = http.createServer(
+    app.callback()).listen(config.server.port, function () {
+        console.log(
+            '%s listening at port %d', 
+            config.app.name, config.server.port);
 });
 
 module.exports = {
