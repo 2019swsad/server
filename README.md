@@ -6,7 +6,7 @@ Quick start
 ```sh
 $ npm install
 #or
-$ cnpm i
+$ cnpm i #recommend
 ```
 
 **Start app:**
@@ -18,7 +18,12 @@ Example
 ===
 [Example](https://github.com/koajs/examples)
 
-testing
+Hapi Joi
+===
+[Link](https://github.com/hapijs/joi)
+
+
+Testing
 =======
 
 **Manual testing your REST service:**
