@@ -26,6 +26,17 @@ Doc
 [Link](https://github.com/hapijs/joi)
 [API](https://github.com/hapijs/joi/blob/v15.0.3/API.md)
 
+## Chinese Tutorials
+[This](https://chenshenhai.github.io/koa2-note/)
+
+## Koa session
+[This](https://github.com/koajs/session)
+
+## Koa Passport
+[This](https://github.com/rkusa/koa-passport)
+
+## Auth example
+[This](https://mherman.org/blog/user-authentication-with-passport-and-koa/)
 
 Testing
 =======

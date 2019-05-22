@@ -52,7 +52,7 @@ async function list (ctx, next) {
 }
 
 /**
- * @example curl -XPOST "http://localhost:8081/users" -d '{"name":"New record 1"}' -H 'Content-Type: application/json'
+ * @example curl -XPOST "http://localhost:8081/users/reg" -d '{"name":"New record 1"}' -H 'Content-Type: application/json'
  */
 async function registerUser (ctx, next) {
     let passData = await Joi.validate(ctx.request.body, userRegSchema);
@@ -70,6 +70,50 @@ async function registerUser (ctx, next) {
     //ctx.redirect('/')
     await next();
 }
+
+/**
+ * @example curl -XPOST "http://localhost:8081/users/log" -d '{"name":"New record 1"}' -H 'Content-Type: application/json'
+ */
+async function loginUser (ctx, next) {
+    if (ctx.session.isNew) {
+        console.log('new');
+        
+      } else {
+        console.log('not new');
+      }
+    
+    status=await collection.find({
+        username: ctx.request.body.username,
+        password: ctx.request.body.password})
+        .then((doc) => {
+            console.log(doc);
+            
+            if (doc.length>0) {
+                return doc[0].uid
+            }
+            else{
+                return 'null'
+            }})
+    console.log(status);
+    
+    if(status!=='null')
+    {
+        ctx.cookies.set(
+            ctx.request.body.username,
+            status,
+            {
+                maxAge:24*60*60*1000
+            }
+        )
+        ctx.session.set()
+        console.log(ctx.session.views)
+    }
+    ctx.status = 200;
+    //ctx.redirect('/')
+    await next();
+}
+
+
 
 /**
  * @example curl -XPUT "http://localhost:8081/users/:_id" -d '{"name":"New record 3"}' -H 'Content-Type: application/json'
@@ -92,4 +136,12 @@ async function removeUser (ctx, next) {
     await next();
 }
 
-module.exports = {getId, list, registerUser, updateUser, removeUser,nameIsExist};
+module.exports = {
+    getId, 
+    list, 
+    registerUser, 
+    updateUser, 
+    removeUser,
+    nameIsExist,
+    loginUser
+};

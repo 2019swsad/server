@@ -6,17 +6,22 @@ const Router = require('koa-router'),
         registerUser, 
         updateUser, 
         removeUser,
-        nameIsExist} = require('../controllers/indexController');
+        nameIsExist,
+        loginUser
+    } = require('../controllers/indexController'),
+    {renderIndex}=require('../controllers/indexRender');
 
 const router = new Router();
 
     router
-        .get('/users',        list)
-        .get('/users/:id',    getId)
+        .get('/',               renderIndex)
+        .get('/users',          list)
+        .get('/users/:id',      getId)
         .get('/users/checkname/:name',   nameIsExist)
-        .post('/users/',      KoaBody(), registerUser)
-        .put('/users/:id',    KoaBody(), updateUser)
-        .delete('/users/:id', removeUser);
+        .post('/users/reg/',    KoaBody(), registerUser)
+        .post('/users/log/',    KoaBody(), loginUser)
+        .put('/users/:id',      KoaBody(), updateUser)
+        .delete('/users/:id',   removeUser);
 
 module.exports = {
     routes () { return router.routes() },
