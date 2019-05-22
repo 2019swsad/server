@@ -1,12 +1,19 @@
 const Router = require('koa-router'),
     KoaBody = require('koa-body'),
-    {getId, list, registerUser, updateUser, removeUser} = require('../controllers/indexController');
+    {
+        getId, 
+        list, 
+        registerUser, 
+        updateUser, 
+        removeUser,
+        nameIsExist} = require('../controllers/indexController');
 
 const router = new Router();
 
     router
         .get('/users',        list)
         .get('/users/:id',    getId)
+        .get('/users/checkname/:name',   nameIsExist)
         .post('/users/',      KoaBody(), registerUser)
         .put('/users/:id',    KoaBody(), updateUser)
         .delete('/users/:id', removeUser);

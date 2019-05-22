@@ -19,12 +19,13 @@
     "koa": ">=2.7.0",
     "koa-body": ">=4.1.0",
     "koa-router": ">=7.4.0",
+    "mongodb": ">=3.2.5",
     "monk": "^7.0.0",
     "optimist": ">=0.6.1",
     "prom-client": ">=11.3.0",
     "prometheus-gc-stats": ">=0.6.1",
-    "mongodb": ">=3.2.5",
-    "to-time": "https://github.com/hafuta/to-time.git"
+    "to-time": "https://github.com/hafuta/to-time.git",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "frisby": "^0.8.5",
