@@ -1,8 +1,10 @@
 const url='localhost:27017/data'
 const Joi = require('joi'),
     monk=require('monk'),
+    KoaBody = require('koa-body'),
     ObjectId=require('mongodb').ObjectID,
     uuid=require('uuid/v4'),
+    Router = require('koa-router'),
     passport=require('koa-passport')
 
     // Simple user schema, more info: https://github.com/hapijs/joi
@@ -13,24 +15,61 @@ const userRegSchema = Joi.object().keys({
         phone:Joi.string().min(11).max(11)
     });
 const db=monk(url)
-db.then(()=>{console.log('Correct');})
+db.then(()=>{console.log('Linked to DB');})
 const collection = db.get('Person')
 
-const LocalStrategy = require('passport-local').Strategy
-passport.use(new LocalStrategy(function(username, password, done) {
-    console.log(username+''+password);
+
+const userRouter = new Router({prefix:'/users'});
+userRouter
+    .get('/',               list)
+    .get('/test/:id',       check,getbyId)
+    .get('/checkname/:name',   nameIsExist)
+    .post('/reg',           registerUser)
+    .post('/login',   passport.authenticate('local', {
+        successRedirect: '/test',
+        failureRedirect: '/'
+    }))
+    .get('/logout',         logoutUser)
+    .put('/:id',            KoaBody(), updateUser)
+    .delete('/:id',         check,removeUser);
+
+passport.serializeUser(function(user, done) {
+    console.log(user);
     
-    if (username === user.username && password === user.password) {
-    done(null, user)
-    } else {
-    done(null, false)
+    done(null, user._id.toString())
+  })
+  
+  passport.deserializeUser(async function(id, done) {
+    collection.find({_id:id}, done);
+  })
+
+const LocalStrategy = require('passport-local').Strategy
+passport.use(new LocalStrategy(async function(username, password, done) {
+    user=await collection.find({ username: username, password: password}).then((doc)=>{return doc})
+    console.log(user);
+    
+    if(user.length===1)
+    {
+      done(null,user[0])
+    }
+    else
+    {
+      done(null,false)
     }
 }))
+  
+function check(ctx, next) {
+    if (ctx.isAuthenticated()) {
+      return next()
+    } else {
+      ctx.redirect('/')
+    }
+}
 
 /**
  * @example curl -XGET "http://localhost:8081/users/:_id"
  */
-async function getId (ctx, next) {
+async function getbyId (ctx, next) {
     ctx.body=await collection
         .findOne({_id:ObjectId(ctx.params.id)})
         .then((doc)=>{return doc})
@@ -54,6 +93,7 @@ async function nameIsExist(ctx,next){
     await next()
 }
 
+
 /**
 * @example curl -XGET "http://localhost:8081/users"
 */
@@ -61,6 +101,7 @@ async function list (ctx, next) {
     ctx.body=await collection.find().then((docs)=>{return docs})
     await next();
 }
+
 
 /**
  * @example 
@@ -71,57 +112,22 @@ async function registerUser (ctx, next) {
     passData.uid=uuid()
     console.log(passData)
     ctx.body=await collection.insert(passData)
-    ctx.cookies.set(
-        passData.username,
-        passData.uid,
-        {
-            maxAge:24*60*60*1000
-        }
-    )
     ctx.status = 201;
     //ctx.redirect('/')
     await next();
 }
 
+
 /**
- * @example curl -XPOST "http://localhost:8081/users/login" -d '{"username":"test1","password":"123"}' -H 'Content-Type: application/json'
+ * @example curl -XPOST "http://localhost:8081/users/login" -d '{"username":"test","password":"123"}' -H 'Content-Type: application/json'
  */
 async function loginUser (ctx, next) {
-    passport.authenticate('local', {
-        successRedirect: '/app',
-        failureRedirect: '/'
-      })
+
     
-    status=await collection.find({
-        username: ctx.request.body.username,
-        password: ctx.request.body.password})
-        .then((doc) => {
-            console.log(doc);
-            
-            if (doc.length>0) {
-                return doc[0].uid
-            }
-            else{
-                return 'null'
-            }})
-    console.log(status);
-    
-    if(status!=='null')
-    {
-        ctx.cookies.set(
-            ctx.request.body.username,
-            status,
-            {
-                maxAge:24*60*60*1000
-            }
-        )
-        ctx.session.set()
-        console.log(ctx.session.views)
-    }
-    ctx.status = 200;
-    //ctx.redirect('/')
-    await next();
+    console.log('108')
+    await next()
 }
+
 
 /**
  * @example curl -XGET "http://localhost:8081/users/logout" 
@@ -130,6 +136,7 @@ async function logoutUser (ctx, next) {
     ctx.logout()
     ctx.redirect('/')
 }
+
 
 /**
  * @example curl -XPUT "http://localhost:8081/users/:_id" -d '{"name":"New record 3"}' -H 'Content-Type: application/json'
@@ -143,6 +150,7 @@ async function updateUser (ctx, next) {
     await next();
 }
 
+
 /**
  * @example curl -XDELETE "http://localhost:8081/users/:id"
  */
@@ -152,13 +160,5 @@ async function removeUser (ctx, next) {
     await next();
 }
 
-module.exports = {
-    getId, 
-    list, 
-    registerUser, 
-    updateUser, 
-    removeUser,
-    nameIsExist,
-    loginUser,
-    logoutUser
-};
+
+module.exports = userRouter

@@ -1,11 +1,16 @@
 async function renderIndex(ctx,next)
 {
-    let title='Test console'
+    let title=ctx.isAuthenticated()
     await ctx.render('index',{
         title
     })
 }
+async function renderTest(ctx,next)
+{
+    await ctx.render('test')
+}
 
 module.exports={
-    renderIndex
+    renderIndex,
+    renderTest
 }

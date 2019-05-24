@@ -60,14 +60,14 @@ $ curl -XGET "http://localhost:8081/users"
 
 #### Add new user / Register
 ```sh
-$ curl -XPOST "http://localhost:8081/users/reg" -d '{"username":"test","password":"123","phone":"138000138000","email":"example@mail.com"}' -H 'Content-Type: application/json'
+$ curl -XPOST "http://localhost:8081/users/reg" -d '{"username":"test","password":"123","phone":"13800138000","email":"example@mail.com"}' -H 'Content-Type: application/json'
 
 #return 201
 ```
 
 #### ~~Login~~
 ```sh
-$ curl -XPOST "http://localhost:8081/users/login" -d '{"username":"test","password":"123"}' -H 'Content-Type: application/json'
+$ curl -XPOST "http://localhost:8081/users/login" -d '{"username":"test","password":"123"}' -H 'Content-Type: application/json' -c cookies.txt
 ```
 
 #### ~~Logout~~

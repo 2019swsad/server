@@ -1,31 +1,18 @@
 const Router = require('koa-router'),
-    KoaBody = require('koa-body'),
+    combineRouters =require('koa-combine-routers'),
+    userRouter = require('../controllers/indexController'),
     {
-        getId, 
-        list, 
-        registerUser, 
-        updateUser, 
-        removeUser,
-        nameIsExist,
-        loginUser,
-        logoutUser
-    } = require('../controllers/indexController'),
-    {renderIndex}=require('../controllers/indexRender');
+        renderIndex,
+        renderTest
+    }=require('../controllers/indexRender');
 
-const router = new Router();
-
-    router
-        .get('/',               renderIndex)
-        .get('/users',          list)
-        .get('/users/:id',      getId)
-        .get('/users/checkname/:name',   nameIsExist)
-        .post('/users/reg',     KoaBody(), registerUser)
-        .get('/users/login',    loginUser)
-        .post('/users/logout',  KoaBody(), logoutUser)
-        .put('/users/:id',      KoaBody(), updateUser)
-        .delete('/users/:id',   removeUser);
-
-module.exports = {
-    routes () { return router.routes() },
-    allowedMethods () { return router.allowedMethods() }
-};
+const indexRouter = new Router();
+indexRouter
+    .get('/',renderIndex)
+    .get('/test',renderTest)
+        
+const router=combineRouters (
+    userRouter,
+    indexRouter
+)
+module.exports = router;
