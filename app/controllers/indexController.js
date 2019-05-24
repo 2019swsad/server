@@ -63,7 +63,8 @@ async function list (ctx, next) {
 }
 
 /**
- * @example curl -XPOST "http://localhost:8081/users/reg" -d '{"name":"New record 1"}' -H 'Content-Type: application/json'
+ * @example 
+ * curl -XPOST "http://localhost:8081/users/reg" -d '{"name":"New record 1"}' -H 'Content-Type: application/json'
  */
 async function registerUser (ctx, next) {
     let passData = await Joi.validate(ctx.request.body, userRegSchema);

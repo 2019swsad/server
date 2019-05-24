@@ -48,27 +48,29 @@ False
 $ curl -XGET "http://localhost:8081/users"
 
 #return like
-{
+[{
   "_id":"5ce554fba2229c3a88b1fc15",
   "username":"test1",
   "password":"15ds5ad",
   "email":"asd@mail.com",
   "phone":"13800138000",
   "uid":"676271cb-ca17-4fcb-98de-174a21c6b1f7"
-}
+}]
 ```
 
 #### Add new user / Register
 ```sh
 $ curl -XPOST "http://localhost:8081/users/reg" -d '{"username":"test","password":"123","phone":"138000138000","email":"example@mail.com"}' -H 'Content-Type: application/json'
+
+#return 201
 ```
 
-#### Login
+#### ~~Login~~
 ```sh
 $ curl -XPOST "http://localhost:8081/users/login" -d '{"username":"test","password":"123"}' -H 'Content-Type: application/json'
 ```
 
-#### Logout
+#### ~~Logout~~
 ```sh
 $ curl -XGET "http://localhost:8081/users/logout"
 ```
@@ -81,6 +83,8 @@ $ curl -XPUT "http://localhost:8081/users/3" -d '{"name":"New record 3"}' -H 'Co
 #### ~~Delete user id 3~~
 ```sh
 $ curl -XDELETE "http://localhost:8081/users/3"
+
+#return 204
 ```
 
 
