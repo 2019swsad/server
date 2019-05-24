@@ -2,7 +2,8 @@ const url='localhost:27017/data'
 const Joi = require('joi'),
     monk=require('monk'),
     ObjectId=require('mongodb').ObjectID,
-    uuid=require('uuid/v4')
+    uuid=require('uuid/v4'),
+    passport=require('koa-passport')
 
     // Simple user schema, more info: https://github.com/hapijs/joi
 const userRegSchema = Joi.object().keys({
@@ -15,6 +16,16 @@ const db=monk(url)
 db.then(()=>{console.log('Correct');})
 const collection = db.get('Person')
 
+const LocalStrategy = require('passport-local').Strategy
+passport.use(new LocalStrategy(function(username, password, done) {
+    console.log(username+''+password);
+    
+    if (username === user.username && password === user.password) {
+    done(null, user)
+    } else {
+    done(null, false)
+    }
+}))
 
 /**
  * @example curl -XGET "http://localhost:8081/users/:_id"
@@ -72,15 +83,13 @@ async function registerUser (ctx, next) {
 }
 
 /**
- * @example curl -XPOST "http://localhost:8081/users/log" -d '{"name":"New record 1"}' -H 'Content-Type: application/json'
+ * @example curl -XPOST "http://localhost:8081/users/login" -d '{"username":"test1","password":"123"}' -H 'Content-Type: application/json'
  */
 async function loginUser (ctx, next) {
-    if (ctx.session.isNew) {
-        console.log('new');
-        
-      } else {
-        console.log('not new');
-      }
+    passport.authenticate('local', {
+        successRedirect: '/app',
+        failureRedirect: '/'
+      })
     
     status=await collection.find({
         username: ctx.request.body.username,
@@ -113,7 +122,13 @@ async function loginUser (ctx, next) {
     await next();
 }
 
-
+/**
+ * @example curl -XGET "http://localhost:8081/users/logout" 
+ */
+async function logoutUser (ctx, next) {
+    ctx.logout()
+    ctx.redirect('/')
+}
 
 /**
  * @example curl -XPUT "http://localhost:8081/users/:_id" -d '{"name":"New record 3"}' -H 'Content-Type: application/json'
@@ -143,5 +158,6 @@ module.exports = {
     updateUser, 
     removeUser,
     nameIsExist,
-    loginUser
+    loginUser,
+    logoutUser
 };
