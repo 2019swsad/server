@@ -28,14 +28,14 @@ You can also manual check the serviceability of your service with bash and [curl
 $ curl -XGET 'http://localhost:8081/
 ```
 
-#### ~~get user id 1~~
+#### get user id 1 (Need Auth)
 ```sh
-$ curl -XGET "http://localhost:8081/users/:id"
+$ curl -XGET "http://localhost:8081/users/test/:id"
 ```
 
 #### Check name is avaliable
 ```sh
-$ curl -XGET "http://localhost:8081/chechname/:name"
+$ curl -XGET "http://localhost:8081/checkname/:name"
 
 #return
 True #or
@@ -43,7 +43,7 @@ False
 ```
 
 
-#### get all users
+#### ~~get all users~~
 ```sh
 $ curl -XGET "http://localhost:8081/users"
 
@@ -65,22 +65,22 @@ $ curl -XPOST "http://localhost:8081/users/reg" -d '{"username":"test","password
 #return 201
 ```
 
-#### ~~Login~~
+#### Login
 ```sh
 $ curl -XPOST "http://localhost:8081/users/login" -d '{"username":"test","password":"123"}' -H 'Content-Type: application/json' -c cookies.txt
 ```
 
-#### ~~Logout~~
+#### Logout
 ```sh
 $ curl -XGET "http://localhost:8081/users/logout"
 ```
 
-#### ~~Edit user id 3~~
+#### Edit user id 3 (Need Auth)
 ```sh
 $ curl -XPUT "http://localhost:8081/users/3" -d '{"name":"New record 3"}' -H 'Content-Type: application/json'
 ```
 
-#### ~~Delete user id 3~~
+#### Delete user id 3 (Need Auth)
 ```sh
 $ curl -XDELETE "http://localhost:8081/users/3"
 

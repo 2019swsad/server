@@ -30,7 +30,7 @@ userRouter
         failureRedirect: '/'
     }))
     .get('/logout',         logoutUser)
-    .put('/:id',            KoaBody(), updateUser)
+    .put('/:id',            check,KoaBody(), updateUser)
     .delete('/:id',         check,removeUser);
 
 passport.serializeUser(function(user, done) {
