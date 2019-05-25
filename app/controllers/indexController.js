@@ -1,7 +1,6 @@
 const url='localhost:27017/data'
 const Joi = require('joi'),
     monk=require('monk'),
-    KoaBody = require('koa-body'),
     ObjectId=require('mongodb').ObjectID,
     uuid=require('uuid/v4'),
     Router = require('koa-router'),
@@ -24,12 +23,12 @@ const collection = db.get('Person')
 const userRouter = new Router({prefix:'/users'});
 userRouter
     .get('/',                   check,  list)
-    .get('/test/:id',           check,  isSelfOp,   getbyId)
-    .get('/checkname/:name',    nameIsExist)
+    .get('/self/:id',           check,  isSelfOp,   getbyId)
+    .get('/checkname/:name',    nameCanU)
     .post('/reg',               registerUser)
     .get('/logout',             logoutUser)
-    .put('/:id',                check,  KoaBody(),  updateUser)
-    .delete('/:id',             check,  isSelfOp,   removeUser)
+    .post('/update',            check,  isSelfOp,   updateUser)
+    .get('/delete/:id',         check,  isSelfOp,   removeUser)
     .post('/login',   passport.authenticate('local', {
         successRedirect: '/test',
         failureRedirect: '/'
@@ -74,12 +73,24 @@ function check(ctx, next) {
 
 //Check whether is it oneself
 function isSelfOp(ctx,next) {
-    if(ctx.state.user[0]._id.toString()===ctx.params.id){
-        return next()
+    console.log(ctx.method);
+    if(ctx.method=='GET'){
+        if(ctx.state.user[0].uid===ctx.params.id){
+            return next()
+        }
+        else{
+            ctx.redirect('/')
+        }
     }
     else{
-        ctx.redirect('/')
+        if(ctx.request.body.uid===ctx.state.user[0].uid){
+            return next()
+        }
+        else{
+            ctx.redirect('/')
+        }
     }
+    
 }
 
 
@@ -88,7 +99,7 @@ function isSelfOp(ctx,next) {
  */
 async function getbyId (ctx, next) {
     ctx.body=await collection
-        .findOne({_id:ObjectId(ctx.params.id)})
+        .findOne({uid:ctx.params.id})
         .then((doc)=>{return doc})
     await next();
 }
@@ -98,13 +109,13 @@ async function getbyId (ctx, next) {
  * 
  * @example curl -XGET "localhost:8081/users/check/:name"
  */
-async function nameIsExist(ctx,next){
+async function nameCanU(ctx,next){
     ctx.body=await collection.find({username: ctx.params.name}).then((doc) => {
         if (doc.length>0) {
-            return true
+            return false
         }
         else{
-            return false
+            return true
         }})
     ctx.status = 200;
     await next()
@@ -128,7 +139,7 @@ async function registerUser (ctx, next) {
     let passData = await Joi.validate(ctx.request.body, userRegSchema);
     passData.uid=uuid()
     console.log(passData)
-    ctx.body=await collection.insert(passData)
+    ctx.body=await collection.insert(passData).then((doc)=>{return true})
     ctx.status = 201;
     //ctx.redirect('/')
     await next();
@@ -157,26 +168,25 @@ async function logoutUser (ctx, next) {
 
 
 /**
- * @example curl -XPUT "http://localhost:8081/users/:_id" -d '{"name":"New record 3"}' -H 'Content-Type: application/json'
+ * @example curl -XPOST "http://localhost:8081/users/update" -d '{"name":"New record 3"}' -H 'Content-Type: application/json'
  */
 async function updateUser (ctx, next) {
     // let body = await Joi.validate(ctx.request.body, userSchema, {allowUnknown: true});
-    console.log(ctx.params.id);
-    isSelfOp(ctx,next)
+    
     ctx.body = await collection.findOneAndUpdate(
-        {_id:ObjectId(ctx.params.id)}, 
-        {$set:ctx.request.body}).then((upd)=>{});
+        {uid:ctx.request.body.uid}, 
+        {$set:ctx.request.body}).then((upd)=>{return true});
+    ctx.status=201
     await next();
 }
 
 
 
 /**
- * @example curl -XDELETE "http://localhost:8081/users/:id"
+ * @example curl -XGET "http://localhost:8081/users/delete/:id"
  */
 async function removeUser (ctx, next) {
-    isSelfOp(ctx,next)
-    await collection.remove({_id:ObjectId(ctx.params.id)});
+    await collection.remove({uid:ctx.params.id});
     ctx.status = 204;
     await next();
 }

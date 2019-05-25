@@ -1,7 +1,9 @@
 async function renderIndex(ctx,next)
 {
     let title=ctx.isAuthenticated()
+    let username=ctx.state.user[0].username
     await ctx.render('index',{
+        username,
         title
     })
 }

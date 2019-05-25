@@ -22,20 +22,30 @@ Testing
 You can also manual check the serviceability of your service with bash and [curl](https://curl.haxx.se/)
 
 
-#### Get mainpage
+### Get mainpage
 
 ```sh
 $ curl -XGET 'http://localhost:8081/
 ```
 
-#### get user id 1 (Need Auth)
+### User Part
+#### get user by (Need Auth and self)
 ```sh
-$ curl -XGET "http://localhost:8081/users/test/:id"
+$ curl -XGET "http://localhost:8081/users/self/676271cb-ca17-4fcb-98de-174a21c6b1f7"
+
+#return
+{"_id":"5ce554fba2229c3a88b1fc15",
+"username":"test1",
+"password":"15ds5ad",
+"email":"asd@mail.com",
+"phone":"13800138000",
+"uid":"676271cb-ca17-4fcb-98de-174a21c6b1f7"}
+#or redirect to /
 ```
 
 #### Check name is avaliable
 ```sh
-$ curl -XGET "http://localhost:8081/checkname/:name"
+$ curl -XGET "http://localhost:8081/users/namecanu/:name"
 
 #return
 True #or
@@ -43,7 +53,7 @@ False
 ```
 
 
-#### ~~get all users~~
+#### get all users (deprecated)
 ```sh
 $ curl -XGET "http://localhost:8081/users"
 
@@ -62,7 +72,10 @@ $ curl -XGET "http://localhost:8081/users"
 ```sh
 $ curl -XPOST "http://localhost:8081/users/reg" -d '{"username":"test","password":"123","phone":"13800138000","email":"example@mail.com"}' -H 'Content-Type: application/json'
 
-#return 201
+#return states 201
+#return
+True #or
+False
 ```
 
 #### Login
@@ -73,18 +86,28 @@ $ curl -XPOST "http://localhost:8081/users/login" -d '{"username":"test","passwo
 #### Logout
 ```sh
 $ curl -XGET "http://localhost:8081/users/logout"
+
+#success redirect to /test
+#fail redirect to /
 ```
 
 #### Edit user id 3 (Need Auth)
 ```sh
-$ curl -XPUT "http://localhost:8081/users/3" -d '{"name":"New record 3"}' -H 'Content-Type: application/json'
+$ curl -XPOST "http://localhost:8081/users/" -d '{"uid":"92fb1730-2ec7-4db9-8fcb-7b35d0bd0fe3","password":"123123"}' -H 'Content-Type: application/json'
+
+#return
+True #or
+False
 ```
 
 #### Delete user id 3 (Need Auth)
 ```sh
-$ curl -XDELETE "http://localhost:8081/users/3"
+$ curl -XGET "http://localhost:8081/users/676271cb-ca17-4fcb-98de-174a21c6b1f7"
 
 #return 204
+#return
+True #or
+False
 ```
 
 
