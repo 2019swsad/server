@@ -1,6 +1,7 @@
 const Router = require('koa-router'),
     combineRouters =require('koa-combine-routers'),
     userRouter = require('../controllers/indexController'),
+    walletRouter=require('../controllers/walletController'),
     {
         renderIndex,
         renderTest
@@ -13,6 +14,7 @@ indexRouter
         
 const router=combineRouters (
     userRouter,
-    indexRouter
+    indexRouter,
+    walletRouter
 )
 module.exports = router;

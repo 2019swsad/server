@@ -14,13 +14,8 @@ $ cnpm i #recommend
 $ node ./index.js
 ```
 
-Testing
+API
 =======
-
-**Manual testing your REST service:**
-
-You can also manual check the serviceability of your service with bash and [curl](https://curl.haxx.se/)
-
 
 ### Get mainpage
 
@@ -110,6 +105,12 @@ True #or
 False
 ```
 
+### Wallet Part
+All need to Auth
+#### Create wallet
+```sh
+$ curl -XGET "http://localhost:8081/wallet/create"
+```
 
 Doc
 ===
