@@ -7,13 +7,15 @@ const Joi = require('joi'),
     Router = require('koa-router'),
     passport=require('koa-passport')
 
-    // Simple user schema, more info: https://github.com/hapijs/joi
+// Simple user schema, more info: https://github.com/hapijs/joi
 const userRegSchema = Joi.object().keys({
         username: Joi.string().alphanum().min(4).max(30).trim().required(),
         password:Joi.string().regex(/^[a-zA-Z0-9]{3,30}$/),
         email: Joi.string().email({ minDomainSegments: 2, }),
         phone:Joi.string().min(11).max(11)
     });
+
+//DB init
 const db=monk(url)
 db.then(()=>{console.log('Linked to DB');})
 const collection = db.get('Person')
@@ -33,15 +35,18 @@ userRouter
     .put('/:id',            check,KoaBody(), updateUser)
     .delete('/:id',         check,removeUser);
 
+
+
+//Passport
 passport.serializeUser(function(user, done) {
     console.log(user);
     
     done(null, user._id.toString())
   })
   
-  passport.deserializeUser(async function(id, done) {
+passport.deserializeUser(async function(id, done) {
     collection.find({_id:id}, done);
-  })
+})
 
 const LocalStrategy = require('passport-local').Strategy
 passport.use(new LocalStrategy(async function(username, password, done) {
@@ -58,6 +63,7 @@ passport.use(new LocalStrategy(async function(username, password, done) {
     }
 }))
   
+//Auth
 function check(ctx, next) {
     if (ctx.isAuthenticated()) {
       return next()
@@ -79,7 +85,7 @@ async function getbyId (ctx, next) {
 
 /**
  * 
- * @example curl -XGET "localhost:8081/users/check/test1"
+ * @example curl -XGET "localhost:8081/users/check/:name"
  */
 async function nameIsExist(ctx,next){
     ctx.body=await collection.find({username: ctx.params.name}).then((doc) => {
@@ -135,6 +141,7 @@ async function loginUser (ctx, next) {
 async function logoutUser (ctx, next) {
     ctx.logout()
     ctx.redirect('/')
+    await next()
 }
 
 
