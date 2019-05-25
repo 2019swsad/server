@@ -23,17 +23,17 @@ const collection = db.get('Person')
 
 const userRouter = new Router({prefix:'/users'});
 userRouter
-    .get('/',               list)
-    .get('/test/:id',       check,getbyId)
-    .get('/checkname/:name',   nameIsExist)
-    .post('/reg',           registerUser)
+    .get('/',                   check,  list)
+    .get('/test/:id',           check,  isSelfOp,   getbyId)
+    .get('/checkname/:name',    nameIsExist)
+    .post('/reg',               registerUser)
+    .get('/logout',             logoutUser)
+    .put('/:id',                check,  KoaBody(),  updateUser)
+    .delete('/:id',             check,  isSelfOp,   removeUser)
     .post('/login',   passport.authenticate('local', {
         successRedirect: '/test',
         failureRedirect: '/'
-    }))
-    .get('/logout',         logoutUser)
-    .put('/:id',            check,KoaBody(), updateUser)
-    .delete('/:id',         check,removeUser);
+    }));
 
 
 
@@ -71,6 +71,17 @@ function check(ctx, next) {
       ctx.redirect('/')
     }
 }
+
+//Check whether is it oneself
+function isSelfOp(ctx,next) {
+    if(ctx.state.user[0]._id.toString()===ctx.params.id){
+        return next()
+    }
+    else{
+        ctx.redirect('/')
+    }
+}
+
 
 /**
  * @example curl -XGET "http://localhost:8081/users/:_id"
@@ -151,6 +162,7 @@ async function logoutUser (ctx, next) {
 async function updateUser (ctx, next) {
     // let body = await Joi.validate(ctx.request.body, userSchema, {allowUnknown: true});
     console.log(ctx.params.id);
+    isSelfOp(ctx,next)
     ctx.body = await collection.findOneAndUpdate(
         {_id:ObjectId(ctx.params.id)}, 
         {$set:ctx.request.body}).then((upd)=>{});
@@ -158,10 +170,12 @@ async function updateUser (ctx, next) {
 }
 
 
+
 /**
  * @example curl -XDELETE "http://localhost:8081/users/:id"
  */
 async function removeUser (ctx, next) {
+    isSelfOp(ctx,next)
     await collection.remove({_id:ObjectId(ctx.params.id)});
     ctx.status = 204;
     await next();

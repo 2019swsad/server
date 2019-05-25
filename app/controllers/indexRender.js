@@ -7,7 +7,12 @@ async function renderIndex(ctx,next)
 }
 async function renderTest(ctx,next)
 {
-    await ctx.render('test')
+    let username=ctx.state.user[0].username
+    //console.log(ctx.state.user);
+    
+    await ctx.render('test',{
+        username
+    })
 }
 
 module.exports={
