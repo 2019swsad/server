@@ -109,26 +109,6 @@
 			"response": []
 		},
 		{
-			"name": "Logout",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:8081/users/logout",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8081",
-					"path": [
-						"users",
-						"logout"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "Create wallet",
 			"request": {
 				"method": "GET",
@@ -143,6 +123,26 @@
 					"path": [
 						"wallet",
 						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Logout",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/users/logout",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"users",
+						"logout"
 					]
 				}
 			},

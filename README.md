@@ -112,6 +112,34 @@ All need to Auth
 $ curl -XGET "http://localhost:8081/wallet/create"
 ```
 
+Test Module
+=====
+
+Under project folder:
+```sh
+$ npm install newman
+```
+
+Under /test folder:
+```sh
+$ newman run swsad_newman_restful_test.json
+```
+
+**Tested API:**
+
+- Get mainpage
+
+- Check name is avalible
+
+- Add new user / register
+
+- Login
+
+- Logout
+
+- Create wallet
+
+
 Doc
 ===
 ## KOA
@@ -185,7 +213,7 @@ Several new features have been added that can be used in conjunction with kubern
        // setReady(false) // to temporary disable new requests
        // ...
        // setReady(true) // to restore accept new requests
-   
+      
     ```
     This should be configured in the config of kubernetes pod, 
     the address on which poll is created: **/redyz**
@@ -197,7 +225,7 @@ Several new features have been added that can be used in conjunction with kubern
        // setHealth(false) // to tell kubernetes: "app is broken" 
        // ...
        // setHealth(true) // to tell kubernetes: "app is live"
-   
+      
     ```
     This should be configured in the config of kubernetes pod, 
     the address on which poll is created: **/healthz**
