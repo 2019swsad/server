@@ -8,13 +8,17 @@ const Joi = require('joi'),
 
 const db=monk(url)
 db.then(()=>{console.log('Linked to DB');})
-const collection = db.get('Wallet')
+const walletDB = db.get('Wallet')
+const transDB = db.get('transactions')
 
 const walletRouter=new Router({prefix:'/wallet'})
 walletRouter
     .get('/balance',        check,  getBalance)
     .get('/create',         check,  createWallet)   
-
+    .get('/deposit/:amount',check,  depositWallet)
+    .get('/transaction',    check,  getTransactions)
+    .post('/transaction',   check,  makeTransactions)
+    .post('/update',        check,  updateTransactions)
 
 
 function check(ctx, next) {
@@ -29,7 +33,7 @@ function check(ctx, next) {
  * @example curl -XGET "http://localhost:8081/wallet/balance"
  */
 async function getBalance (ctx, next) {
-    ctx.body=await collection
+    ctx.body=await walletDB
         .findOne({uid:ctx.state.user[0].uid})
         .then((doc)=>{return doc.balance})
     ctx.status = 201;
@@ -40,11 +44,95 @@ async function getBalance (ctx, next) {
  * @example curl -XGET "http://localhost:8081/wallet/create"
  */
 async function createWallet (ctx, next) {
-    ctx.body=await collection
+    ctx.body=await walletDB
         .insert({uid:ctx.state.user[0].uid,balance:0.0,wid:uuid()})
         .then((doc)=>{return true})
     ctx.status = 201;
     await next();
+}
+
+
+/**
+ * @example curl -XGET "http://localhost:8081/wallet/deposit/:amount"
+ */
+async function depositWallet (ctx, next) {
+    ctx.body=await walletDB
+        .findOneAndUpdate({uid:ctx.state.user[0].uid},{$set:{amount:ctx.param.amount}})
+        .then((doc)=>{if(doc.length!==0) return true; else return false})
+    ctx.status = 201
+    await next()
+}
+
+/**
+ * @example curl -XGET "http://localhost:8081/wallet/transaction"
+ * date amount receiver(uid) sender(uid) status o(rder)id 
+ */
+async function getTransactions (ctx, next) {
+    let receive_trans = await transDB
+        .find({receiver:ctx.state.user[0].uid})
+        .then((doc)=>{if(doc.length!==0) return doc.transaction; else return []})
+    let send_trans = await transDB
+        .find({sender:ctx.state.user[0].uid})
+        .then((doc)=>{if(doc.length!==0) return doc.transaction; else return []})
+    receive_trans.push(...send_trans)
+    ctx.body=receive_trans
+    ctx.status = 201
+    await next()
+}
+
+/**
+ * @example curl -XPOST "http://localhost:8081/wallet/transaction"
+ * date amount receiver sender status o(rder)id 
+ */
+async function makeTransactions (ctx, next) {
+    ctx.body=await transDB
+        .insert({
+            date:Date(),
+            amount:ctx.requset.body.amount,
+            receiver:ctx.requset.body.rec,
+            sender:ctx.requset.body.sender,
+            status:0,
+            oid:uuid()})
+        .then((doc)=>{if(doc.length!==0) return doc.transaction; else return []})
+    ctx.status = 201;
+    await next();
+}
+
+
+/**
+ * @example curl -XPOST "http://localhost:8081/wallet/update"
+ * date amount receiver sender status o(rder)id 
+ */
+async function updateTransactions (ctx, next) {
+    ctx.body=await transDB
+        .insert({
+            date:Date(),
+            amount:ctx.requset.body.amount,
+            receiver:ctx.requset.body.rec,
+            sender:ctx.requset.body.sender,
+            status:0,
+            oid:uuid()})
+        .then((doc)=>{if(doc.length!==0) return doc.transaction; else return []})
+    ctx.status = 201;
+    await next();
+}
+
+async function transfer(sender, receiver, amount) {
+    senderres = await walletDB.findOne({uid:sender})
+        .then((doc)=>{
+            if(doc[0].balance>=amount)
+                return doc[0].balance-amount
+        })
+    recres = await walletDB.findOne({uid:receiver})
+        .then((doc)=>{
+            if(doc[0].balance>=amount)
+                return doc[0].balance+amount
+        })
+    if(senderres>=0)
+        res=await walletDB.findOneAndUpdate({uid:sender},{$set:{amount:senderres}})
+            .then((upd)=>{return true})
+        res=await walletDB.findOneAndUpdate({uid:receiver},{$set:{amount:recres}})
+        .then((upd)=>{return true})
 }
 
 module.exports=walletRouter
