@@ -2,8 +2,8 @@ const Joi = require('joi'),
     uuid=require('uuid/v4'),
     Router = require('koa-router'),
     passport=require('koa-passport'),
-    db=require('./dbController')
-const {check,isSelfOp}=require('./authController')
+    db=require('../helpers/db'),
+    {check,isSelfOp}=require('../helpers/auth')
 
 
 const walletDB = db.get('Wallet')
@@ -34,9 +34,7 @@ async function getBalance (ctx, next) {
  * @example curl -XGET "http://localhost:8081/wallet/create"
  */
 async function createWallet (ctx, next) {
-    ctx.body=await walletDB
-        .insert({uid:ctx.state.user[0].uid,balance:0.0,wid:uuid()})
-        .then((doc)=>{return true})
+    ctx.body=await createTaskWallet(ctx.state.user[0].uid)
     ctx.status = 201;
     await next();
 }
@@ -136,5 +134,9 @@ async function transfer(sender, receiver, amount) {
         res=await walletDB.findOneAndUpdate({uid:receiver},{$set:{amount:recres}})
         .then((upd)=>{return true})
 }
-
-module.exports=walletRouter
+async function createWallet(tid) {
+    return await walletDB
+        .insert({uid:tid,balance:0.0,wid:uuid()})
+        .then((doc)=>{return true})
+}
+module.exports={walletRouter,createWallet}

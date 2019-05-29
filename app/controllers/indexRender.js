@@ -20,6 +20,7 @@ async function renderTest(ctx,next)
     await ctx.render('test',{
         username
     })
+    
 }
 
 

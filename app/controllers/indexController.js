@@ -2,8 +2,8 @@ const Joi = require('joi'),
     uuid=require('uuid/v4'),
     Router = require('koa-router'),
     passport=require('koa-passport'),
-    db=require('./dbController'),
-    {check,isSelfOp}=require('./authController')
+    db=require('../helpers/db'),
+    {check,isSelfOp}=require('../helpers/auth')
 
 // Simple user schema, more info: https://github.com/hapijs/joi
 const userRegSchema = Joi.object().keys({
