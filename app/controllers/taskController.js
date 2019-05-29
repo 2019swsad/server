@@ -20,9 +20,9 @@ const db=monk(url)
 db.then(()=>{console.log('Linked to DB');})
 const collection = db.get('Task')
 
-const walletRouter=new Router({prefix:'/task'})
-walletRouter
-    .get('/create',         check,  createTask)
+const taskRouter=new Router({prefix:'/task'})
+taskRouter
+    .post('/create',         check,  createTask)
 
 function check(ctx, next) {
     if (ctx.isAuthenticated()) {
@@ -37,12 +37,11 @@ function check(ctx, next) {
  */
 async function createTask (ctx, next) {
     let passData = await Joi.validate(ctx.request.body, taskRegSchema)
-    //passData.uid=uuid()
+    passData.uid=ctx.state.user[0].uid
     console.log(passData)
     ctx.body=await collection.insert(passData).then((doc)=>{return true})
     ctx.status = 201;
-    //ctx.redirect('/')
     await next();
 }
 
-module.exports=walletRouter
+module.exports=taskRouter
