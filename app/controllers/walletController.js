@@ -12,7 +12,7 @@ const transDB = db.get('transactions')
 const walletRouter=new Router({prefix:'/wallet'})
 walletRouter
     .get('/balance',        check,  getBalance)
-    .get('/create',         check,  createWallet)
+    .get('/create',         check,  createWalletWeb)
     .get('/deposit/:amount',check,  depositWallet)      //temp API
     .get('/transaction',    check,  getTransactions)
     .post('/transaction',   check,  makeTransactions)
@@ -33,8 +33,8 @@ async function getBalance (ctx, next) {
 /**
  * @example curl -XGET "http://localhost:8081/wallet/create"
  */
-async function createWallet (ctx, next) {
-    ctx.body=await createTaskWallet(ctx.state.user[0].uid)
+async function createWalletWeb (ctx, next) {
+    ctx.body=await createWallet(ctx.state.user[0].uid,false)
     ctx.status = 201;
     await next();
 }
@@ -134,9 +134,16 @@ async function transfer(sender, receiver, amount) {
         res=await walletDB.findOneAndUpdate({uid:receiver},{$set:{amount:recres}})
         .then((upd)=>{return true})
 }
-async function createWallet(tid) {
+
+/**
+ * 
+ * @param {string} id 
+ * @param {boolean} isTask 
+ */
+async function createWallet(id,isT) {
     return await walletDB
-        .insert({uid:tid,balance:0.0,wid:uuid()})
+        .insert({uid:id,balance:0.0,wid:uuid(),isTask:isT})
         .then((doc)=>{return true})
 }
+
 module.exports={walletRouter,createWallet}
