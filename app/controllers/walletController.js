@@ -146,4 +146,19 @@ async function createWallet(id,isT) {
         .then((doc)=>{return true})
 }
 
+/**
+ * 
+ * @param {userid} uid string
+ * @param {taskid} tid string
+ * @param {int} amount int
+ */
+async function chargeToTask(uid,tid,amount) {
+    userBalance=await walletDB
+        .findOne({uid:uid,isTask:false})
+        .then((doc)=>{
+            if(doc[0].balance>=amount)
+                return doc[0].balance
+        })
+}
+
 module.exports={walletRouter,createWallet}
