@@ -13,7 +13,7 @@ const taskRegSchema = Joi.object().keys({
         describtion:Joi.string(),
         beginTime:Joi.date().min('now'),
         expireTime:Joi.date().min(Joi.ref('beginTime')).required(),
-        participantNum:Joi.number().integer().min(1);
+        participantNum:Joi.number().integer().min(1)
     });
 
 const db=monk(url)
@@ -33,9 +33,9 @@ function check(ctx, next) {
 }
 
 /**
- * @example curl -XPOST "http://localhost:8081/task/create" -d '{"title":"New task"}' -H 'Content-Type: application/json'
+ * @example curl -XPOST "http://localhost:8081/task/create" -d '{"title":"test task","salary":"20","describtion":"task for test","beginTime":"8-20-2019","expireTime":"8-22-2019","participantNum":"1"}' -H 'Content-Type: application/json'
  */
-async function createWallet (ctx, next) {
+async function createTask (ctx, next) {
     let passData = await Joi.validate(ctx.request.body, taskRegSchema)
     //passData.uid=uuid()
     console.log(passData)
