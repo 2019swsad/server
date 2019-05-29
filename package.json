@@ -32,6 +32,7 @@
     "passport-local": "^1.0.0",
     "prom-client": ">=11.3.0",
     "prometheus-gc-stats": ">=0.6.1",
+    "silly-datetime": "^0.1.2",
     "to-time": "https://github.com/hafuta/to-time.git",
     "uuid": "^3.3.2"
   },
