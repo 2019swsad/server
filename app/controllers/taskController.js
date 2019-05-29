@@ -38,6 +38,7 @@ function check(ctx, next) {
 async function createTask (ctx, next) {
     let passData = await Joi.validate(ctx.request.body, taskRegSchema)
     passData.uid=ctx.state.user[0].uid
+    passData.tid=uuid()
     console.log(passData)
     ctx.body=await collection.insert(passData).then((doc)=>{return true})
     ctx.status = 201;
