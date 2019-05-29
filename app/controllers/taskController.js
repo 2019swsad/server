@@ -8,7 +8,7 @@ const Joi = require('joi'),
 
 // Task schema
 const taskRegSchema = Joi.object().keys({
-        title:Joi.string().alphanum().min(4).max(60).trim().required(),
+        title:Joi.string().min(4).max(60).trim().required(),
         salary:Joi.number().integer().min(1),
         describtion:Joi.string(),
         beginTime:Joi.date().min('now'),

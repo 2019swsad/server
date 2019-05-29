@@ -16,6 +16,7 @@ indexRouter
 const router=combineRouters (
     userRouter,
     indexRouter,
-    walletRouter
+    walletRouter,
+    taskRouter
 )
 module.exports = router;
