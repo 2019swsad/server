@@ -1,10 +1,9 @@
-const url='localhost:27017/data'
 const Joi = require('joi'),
-    monk=require('monk'),
-    ObjectId=require('mongodb').ObjectID,
     uuid=require('uuid/v4'),
     Router = require('koa-router'),
-    passport=require('koa-passport')
+    passport=require('koa-passport'),
+    db=require('./dbController'),
+    {check,isSelfOp}=require('./authController')
 
 // Simple user schema, more info: https://github.com/hapijs/joi
 const userRegSchema = Joi.object().keys({
@@ -15,10 +14,7 @@ const userRegSchema = Joi.object().keys({
     });
 
 //DB init
-const db=monk(url)
-db.then(()=>{console.log('Linked to DB');})
 const collection = db.get('Person')
-
 
 const userRouter = new Router({prefix:'/users'});
 userRouter
@@ -62,36 +58,6 @@ passport.use(new LocalStrategy(async function(username, password, done) {
     }
 }))
   
-//Auth
-function check(ctx, next) {
-    if (ctx.isAuthenticated()) {
-      return next()
-    } else {
-      ctx.redirect('/')
-    }
-}
-
-//Check whether is it oneself
-function isSelfOp(ctx,next) {
-    console.log(ctx.method);
-    if(ctx.method=='GET'){
-        if(ctx.state.user[0].uid===ctx.params.id){
-            return next()
-        }
-        else{
-            ctx.redirect('/')
-        }
-    }
-    else{
-        if(ctx.request.body.uid===ctx.state.user[0].uid){
-            return next()
-        }
-        else{
-            ctx.redirect('/')
-        }
-    }
-    
-}
 
 
 /**

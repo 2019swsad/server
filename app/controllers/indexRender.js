@@ -1,3 +1,8 @@
+const Router = require('koa-router')
+const indexRouter = new Router();
+indexRouter
+    .get('/',renderIndex)
+    .get('/test',renderTest)
 async function renderIndex(ctx,next)
 {
     let title=ctx.isAuthenticated()
@@ -17,7 +22,5 @@ async function renderTest(ctx,next)
     })
 }
 
-module.exports={
-    renderIndex,
-    renderTest
-}
+
+module.exports=indexRouter

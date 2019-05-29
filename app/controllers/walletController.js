@@ -1,33 +1,23 @@
-const url='localhost:27017/data'
 const Joi = require('joi'),
-    monk=require('monk'),
-    ObjectId=require('mongodb').ObjectID,
     uuid=require('uuid/v4'),
     Router = require('koa-router'),
-    passport=require('koa-passport')
+    passport=require('koa-passport'),
+    db=require('./dbController')
+const {check,isSelfOp}=require('./authController')
 
-const db=monk(url)
-db.then(()=>{console.log('Linked to DB');})
+
 const walletDB = db.get('Wallet')
 const transDB = db.get('transactions')
 
 const walletRouter=new Router({prefix:'/wallet'})
 walletRouter
     .get('/balance',        check,  getBalance)
-    .get('/create',         check,  createWallet)   
-    .get('/deposit/:amount',check,  depositWallet)
+    .get('/create',         check,  createWallet)
+    .get('/deposit/:amount',check,  depositWallet)      //temp API
     .get('/transaction',    check,  getTransactions)
     .post('/transaction',   check,  makeTransactions)
-    .post('/update',        check,  updateTransactions)
+    .post('/update',        check,  updateTransactions) //discussing
 
-
-function check(ctx, next) {
-    if (ctx.isAuthenticated()) {
-      return next()
-    } else {
-      ctx.redirect('/')
-    }
-}
 
 /**
  * @example curl -XGET "http://localhost:8081/wallet/balance"
@@ -85,15 +75,20 @@ async function getTransactions (ctx, next) {
  * date amount receiver sender status o(rder)id 
  */
 async function makeTransactions (ctx, next) {
-    ctx.body=await transDB
-        .insert({
-            date:Date(),
-            amount:ctx.requset.body.amount,
-            receiver:ctx.requset.body.rec,
-            sender:ctx.requset.body.sender,
-            status:0,
-            oid:uuid()})
-        .then((doc)=>{if(doc.length!==0) return doc.transaction; else return []})
+    isTransfer=await transfer(
+        ctx.request.body.sender,
+        ctx.request.body.receiver,
+        ctx.request.body.amount)
+    if(isTransfer)
+        ctx.body=await transDB
+            .insert({
+                date:Date(),
+                amount:ctx.request.body.amount,
+                receiver:ctx.request.body.rec,
+                sender:ctx.request.body.sender,
+                status:0,
+                oid:uuid()})
+            .then((doc)=>{if(doc.length!==0) return doc.transaction; else return []})
     ctx.status = 201;
     await next();
 }
@@ -107,9 +102,9 @@ async function updateTransactions (ctx, next) {
     ctx.body=await transDB
         .insert({
             date:Date(),
-            amount:ctx.requset.body.amount,
-            receiver:ctx.requset.body.rec,
-            sender:ctx.requset.body.sender,
+            amount:ctx.request.body.amount,
+            receiver:ctx.request.body.rec,
+            sender:ctx.request.body.sender,
             status:0,
             oid:uuid()})
         .then((doc)=>{if(doc.length!==0) return doc.transaction; else return []})
@@ -117,6 +112,13 @@ async function updateTransactions (ctx, next) {
     await next();
 }
 
+
+/**
+ * make real transfer
+ * @param {string} sender 
+ * @param {string} receiver 
+ * @param {number} amount 
+ */
 async function transfer(sender, receiver, amount) {
     senderres = await walletDB.findOne({uid:sender})
         .then((doc)=>{
