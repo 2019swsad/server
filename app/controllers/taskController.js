@@ -5,7 +5,7 @@ const Joi = require('joi'),
     db=require('../helpers/db'),
     {check,isSelfOp}=require('../helpers/auth'),
     {getNow}=require('../helpers/date'),
-    {_,createWallet}=require('./walletController')
+    {_,createWallet,transferFunc}=require('./walletController')
 
 // Task schema
 const taskRegSchema = Joi.object().keys({
@@ -33,7 +33,6 @@ taskRouter
 /**
  * @example curl -XPOST "http://localhost:8081/task/create" -d '{"title":"test task","type":"Questionaire","salary":"20","description":"task for test","beginTime":"8-20-2019","expireTime":"8-22-2019","participantNum":"1","tags":"Testing"}' -H 'Content-Type: application/json'
  * tid uid(organizer) type status createtime starttime endtime description location participantNum eachSalary tags
- * Todo: charge to task wallet
  */
 async function createTask (ctx, next) {
     let passData = await Joi.validate(ctx.request.body, taskRegSchema)
@@ -44,6 +43,7 @@ async function createTask (ctx, next) {
     passData.createTime=getNow()
     console.log(passData)
     createWallet(passData.tid,true)
+    transferFunc(passData.uid,passData.tid,passData.totalCost)
     ctx.body=await collection.insert(passData).then((doc)=>{return true})
     ctx.status = 201;
     await next();
@@ -59,10 +59,10 @@ async function getAllTask (ctx, next) {
 
 /**
 * @example curl -XGET "http://localhost:8081/task/cancel/:id"
-* Todo : Money operations.
 */
 async function cancelTask(ctx, next) {
   await collection.remove({tid:ctx.params.id,uid:ctx.state.user[0].uid});
+  transferFunc(ctx.params.id,ctx.state.user[0].uid,passData.totalCost)
   ctx.status = 204;
   await next();
 }
