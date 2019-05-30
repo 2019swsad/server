@@ -38,7 +38,6 @@ taskRouter
 /**
  * @example curl -XPOST "http://localhost:8081/task/create" -d '{"title":"test task","type":"Questionaire","salary":"20","description":"task for test","beginTime":"8-20-2019","expireTime":"8-22-2019","participantNum":"1","tags":"Testing"}' -H 'Content-Type: application/json'
  * tid uid(organizer) type status createtime starttime endtime description location participantNum eachSalary tags
- * Todo: charge to task wallet
  */
 async function createTask (ctx, next) {
     let passData = await Joi.validate(ctx.request.body, taskRegSchema)
