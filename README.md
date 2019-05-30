@@ -120,6 +120,34 @@ All need to Auth
 $ curl -XGET "http://localhost:8081/wallet/create"
 ```
 
+#### get balance 
+```sh
+$ curl -XGET "http://localhost:8081/wallet/balance"
+# return int
+```
+
+#### charge to self wallet
+```sh
+$ curl -XGET "http://localhost:8081/wallet/deposit/:amount"
+#return boolean
+```
+
+#### list transaction
+```sh
+$ curl -XGET "http://localhost:8081/wallet/transaction"
+#return list of transaction
+```
+
+#### make transaction
+```sh
+$ curl -XPOST "http://localhost:8081/wallet/transaction" -d '{
+  sender:"(uuid)",
+  receiver:"(uuid)",
+  amount:(int)
+  }' -H 'Content-Type: application/json'
+#return boolean
+```
+
 ### Task Part
 
 #### Create task
@@ -127,6 +155,7 @@ Need to Auth
 ```sh
 $ curl -XPOST "http://localhost:8081/task/create" -d '{"title":"test task","salary":"20","describtion":"task for test","beginTime":"8-20-2019","expireTime":"8-22-2019","participantNum":"1"}' -H 'Content-Type: application/json'
 ```
+
 Test Module
 =====
 
