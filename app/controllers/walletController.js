@@ -73,23 +73,11 @@ async function getTransactions (ctx, next) {
  * date amount receiver sender status o(rder)id 
  */
 async function makeTransactions (ctx, next) {
-    isTransfer=await transfer(
-        ctx.request.body.sender,
-        ctx.request.body.receiver,
-        ctx.request.body.amount)
-    if(isTransfer)
-        ctx.body=await transDB
-            .insert({
-                date:Date(),
-                amount:ctx.request.body.amount,
-                receiver:ctx.request.body.rec,
-                sender:ctx.request.body.sender,
-                status:0,
-                oid:uuid()})
-            .then((doc)=>{if(doc.length!==0) return doc.transaction; else return []})
-    ctx.status = 201;
-    await next();
+    ctx.body=writeTransactions(ctx.request.body)
+    ctx.status = 201
+    await next()
 }
+
 
 
 /**
@@ -116,6 +104,7 @@ async function updateTransactions (ctx, next) {
  * @param {string} sender 
  * @param {string} receiver 
  * @param {number} amount 
+ * @returns boolean
  */
 async function transfer(sender, receiver, amount) {
     senderres = await walletDB.findOne({uid:sender})
@@ -133,6 +122,7 @@ async function transfer(sender, receiver, amount) {
             .then((upd)=>{return true})
         res=await walletDB.findOneAndUpdate({uid:receiver},{$set:{amount:recres}})
         .then((upd)=>{return true})
+    return false
 }
 
 /**
@@ -146,19 +136,41 @@ async function createWallet(id,isT) {
         .then((doc)=>{return true})
 }
 
+
+/**
+ * 
+ * @param {*} info {sender,rec,amount}
+ */
+async function writeTransactions(info) {
+    isTransfer=await transfer(
+        info.sender,
+        info.receiver,
+        info.amount)
+    if(isTransfer)
+        res=await transDB
+            .insert({
+                date:Date(),
+                amount:info.amount,
+                receiver:info.receiver,
+                sender:info.sender,
+                status:0,
+                oid:uuid()})
+            .then((doc)=>{if(doc.length!==0) return doc.transaction; else return []})
+    return []
+}
+
 /**
  * 
  * @param {userid} uid string
  * @param {taskid} tid string
  * @param {int} amount int
+ * @returns boolean
  */
-async function chargeToTask(uid,tid,amount) {
-    userBalance=await walletDB
-        .findOne({uid:uid,isTask:false})
-        .then((doc)=>{
-            if(doc[0].balance>=amount)
-                return doc[0].balance
-        })
+async function transferFunc(uid,tid,amount) {
+    isTrans=await transfer(uid,tid,amount)
+    if(isTrans)
+        writeTransactions({sender:uid,receiver:tid,amount:amount})
+    return 
 }
 
-module.exports={walletRouter,createWallet}
+module.exports={walletRouter,createWallet,transferFunc}
