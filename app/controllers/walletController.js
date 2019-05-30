@@ -14,7 +14,7 @@ const walletRouter=new Router({prefix:'/wallet'})
 walletRouter
     .get('/balance',        check,  getBalance)
     .get('/create',         check,  createWalletWeb)
-    .get('/deposit/:amount',check,  depositWallet)      //temp API
+    .get('/deposit/:num',   check,  depositWallet)      //temp API
     .get('/transaction',    check,  getTransactions)
     .post('/transaction',   check,  makeTransactions)
     .post('/update',        check,  updateTransactions) //discussing
@@ -43,8 +43,10 @@ async function createWalletWeb (ctx, next) {
  * @example curl -XGET "http://localhost:8081/wallet/deposit/:amount"
  */
 async function depositWallet (ctx, next) {
+    console.log(ctx.params.num);
+    
     ctx.body=await walletDB
-        .findOneAndUpdate({uid:ctx.state.user[0].uid},{$set:{amount:ctx.param.amount}})
+        .findOneAndUpdate({uid:ctx.state.user[0].uid},{$set:{balance:ctx.params.num}})
         .then((doc)=>{if(doc.length!==0) return true; else return false})
     ctx.status = 201
     await next()
@@ -72,7 +74,13 @@ async function getTransactions (ctx, next) {
  * date amount receiver sender status o(rder)id 
  */
 async function makeTransactions (ctx, next) {
-    ctx.body=doTransactions(ctx.request.body)
+    console.log(ctx.request.body)
+    
+    isTrans=doTransactions(ctx.request.body)
+    if(isTrans)
+        ctx.redirect('/success')
+    else
+        ctx.redirect('/fail')
     ctx.status = 201
     await next()
 }
@@ -114,22 +122,32 @@ async function queryBalance(id) {
  * @param {number} amount 
  * @returns boolean
  */
-async function transfer(sender, receiver, amount) {
+async function transfer(sender, receiver, amountstr) {
+    amount=parseInt(amountstr)
     senderres = await walletDB.findOne({uid:sender})
         .then((doc)=>{
-            if(doc[0].balance>=amount)
-                return doc[0].balance-amount
+            num=parseInt(doc.balance)
+            if(num>=amount)
+                return num-amount
         })
+    console.log('sdr'+senderres);
+    
     recres = await walletDB.findOne({uid:receiver})
         .then((doc)=>{
-            if(doc[0].balance>=amount)
-                return doc[0].balance+amount
+            num=parseInt(doc.balance)
+            if(num>=amount)
+                return num+amount
         })
-    if(senderres>=0)
-        res=await walletDB.findOneAndUpdate({uid:sender},{$set:{amount:senderres}})
+    console.log('rec'+recres);
+    if(senderres>=0){
+        console.log('write amount info')
+        res=await walletDB.findOneAndUpdate({uid:sender},{$set:{balance:senderres}})
             .then((upd)=>{return true})
-        res=await walletDB.findOneAndUpdate({uid:receiver},{$set:{amount:recres}})
+        res=await walletDB.findOneAndUpdate({uid:receiver},{$set:{balance:recres}})
         .then((upd)=>{return true})
+        return res
+    }
+       
     return false
 }
 
@@ -155,7 +173,9 @@ async function doTransactions(info) {
         info.receiver,
         info.amount)
     if(isTransfer)
-        return await transDB
+    {
+        console.log('write log')
+        await transDB
             .insert({
                 date:getNow(),
                 amount:info.amount,
@@ -163,9 +183,10 @@ async function doTransactions(info) {
                 sender:info.sender,
                 status:0,
                 oid:uuid()})
-            .then((doc)=>{if(doc.length!==0) return doc.transaction; else return []})
+        return true
+    }    
     else
-        return []
+        return false
 }
 
 /**

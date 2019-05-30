@@ -19,7 +19,7 @@ const collection = db.get('Person')
 const userRouter = new Router({prefix:'/users'});
 userRouter
     .get('/',                   check,  list)
-    .get('/self/:id',           check,  isSelfOp,   getbyId)
+    .get('/self',               check,  getSelf)
     .get('/checkname/:name',    nameCanU)
     .post('/reg',               registerUser)
     .get('/logout',             logoutUser)
@@ -61,11 +61,11 @@ passport.use(new LocalStrategy(async function(username, password, done) {
 
 
 /**
- * @example curl -XGET "http://localhost:8081/users/:_id"
+ * @example curl -XGET "http://localhost:8081/users/self"
  */
-async function getbyId (ctx, next) {
+async function getSelf (ctx, next) {
     ctx.body=await collection
-        .findOne({uid:ctx.params.id})
+        .findOne({uid:ctx.state.user[0].uid})
         .then((doc)=>{return doc})
     await next();
 }
@@ -102,6 +102,7 @@ async function list (ctx, next) {
  * curl -XPOST "http://localhost:8081/users/reg" -d '{"name":"New record 1"}' -H 'Content-Type: application/json'
  */
 async function registerUser (ctx, next) {
+    
     let passData = await Joi.validate(ctx.request.body, userRegSchema);
     passData.uid=uuid()
     console.log(passData)
