@@ -161,15 +161,15 @@ async function writeTransactions(info) {
 
 /**
  * 
- * @param {userid} uid string
- * @param {taskid} tid string
+ * @param senderId string
+ * @param recid string
  * @param {int} amount int
  * @returns boolean
  */
-async function transferFunc(uid,tid,amount) {
-    isTrans=await transfer(uid,tid,amount)
+async function transferFunc(senderid,recid,amount) {
+    isTrans=await transfer(senderid,recid,amount)
     if(isTrans)
-        writeTransactions({sender:uid,receiver:tid,amount:amount})
+        writeTransactions({sender:senderid,receiver:recid,amount:amount})
     return 
 }
 
