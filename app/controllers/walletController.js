@@ -3,6 +3,7 @@ const Joi = require('joi'),
     Router = require('koa-router'),
     passport=require('koa-passport'),
     db=require('../helpers/db'),
+    {getNow}=require('../helpers/date'),
     {check,isSelfOp}=require('../helpers/auth')
 
 
@@ -87,7 +88,7 @@ async function makeTransactions (ctx, next) {
 async function updateTransactions (ctx, next) {
     ctx.body=await transDB
         .insert({
-            date:Date(),
+            date:getNow(),
             amount:ctx.request.body.amount,
             receiver:ctx.request.body.rec,
             sender:ctx.request.body.sender,
@@ -149,7 +150,7 @@ async function writeTransactions(info) {
     if(isTransfer)
         res=await transDB
             .insert({
-                date:Date(),
+                date:getNow(),
                 amount:info.amount,
                 receiver:info.receiver,
                 sender:info.sender,

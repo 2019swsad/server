@@ -4,7 +4,7 @@ const Joi = require('joi'),
     passport=require('koa-passport'),
     db=require('../helpers/db'),
     {check,isSelfOp}=require('../helpers/auth'),
-    date = require("silly-datetime"),
+    {getNow}=require('../helpers/date'),
     {_,createWallet}=require('./walletController')
 
 // Task schema
@@ -41,7 +41,7 @@ async function createTask (ctx, next) {
     passData.tid=uuid()
     passData.status="start"
     passData.totalCost=passData.salary*passData.participantNum
-    passData.createTime=date.format(new Date(),'YYYY-MM-DD HH:mm')
+    passData.createTime=getNow()
     console.log(passData)
     createWallet(passData.tid,true)
     ctx.body=await collection.insert(passData).then((doc)=>{return true})
@@ -61,8 +61,8 @@ async function getAllTask (ctx, next) {
 * @example curl -XGET "http://localhost:8081/task/cancel/:id"
 * Todo : Money operations.
 */
-async function concelTask(ctx, next) {
-  await collection.remove({tid:ctx.params.id});
+async function cancelTask(ctx, next) {
+  await collection.remove({tid:ctx.params.id,uid:ctx.state.user[0].uid});
   ctx.status = 204;
   await next();
 }
