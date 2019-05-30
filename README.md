@@ -17,14 +17,19 @@ $ node ./index.js
 API
 =======
 
-### Get mainpage
-
+### Render
+#### get mainpage
 ```sh
 $ curl -XGET 'http://localhost:8081/
 ```
 
+#### get testpage
+```sh
+$ curl -XGET 'http://localhost:8081/test
+
 ### User Part
-#### get user by (Need Auth and self)
+
+#### get user by uid (Need Auth and self)
 ```sh
 $ curl -XGET "http://localhost:8081/users/self/676271cb-ca17-4fcb-98de-174a21c6b1f7"
 
@@ -40,7 +45,7 @@ $ curl -XGET "http://localhost:8081/users/self/676271cb-ca17-4fcb-98de-174a21c6b
 
 #### Check name is avaliable
 ```sh
-$ curl -XGET "http://localhost:8081/users/namecanu/:name"
+$ curl -XGET "http://localhost:8081/users/checkname/:name"
 
 #return
 True #or
@@ -76,6 +81,9 @@ False
 #### Login
 ```sh
 $ curl -XPOST "http://localhost:8081/users/login" -d '{"username":"test","password":"123"}' -H 'Content-Type: application/json' -c cookies.txt
+
+#success redirect to /test
+#fail redirect to /
 ```
 
 #### Logout
@@ -86,7 +94,7 @@ $ curl -XGET "http://localhost:8081/users/logout"
 #fail redirect to /
 ```
 
-#### Edit user id 3 (Need Auth)
+#### Edit user by id (Need Auth)
 ```sh
 $ curl -XPOST "http://localhost:8081/users/" -d '{"uid":"92fb1730-2ec7-4db9-8fcb-7b35d0bd0fe3","password":"123123"}' -H 'Content-Type: application/json'
 
@@ -95,7 +103,7 @@ True #or
 False
 ```
 
-#### Delete user id 3 (Need Auth)
+#### Delete user by id  (Need Auth)
 ```sh
 $ curl -XGET "http://localhost:8081/users/676271cb-ca17-4fcb-98de-174a21c6b1f7"
 
