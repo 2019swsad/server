@@ -30,7 +30,7 @@ $ curl -XGET 'http://localhost:8081/test
 ### User Part
 
 #### get user by uid (Need Auth and self)
-```sh
+​```sh
 $ curl -XGET "http://localhost:8081/users/self/676271cb-ca17-4fcb-98de-174a21c6b1f7"
 
 #return
@@ -153,7 +153,20 @@ $ curl -XPOST "http://localhost:8081/wallet/transaction" -d '{
 #### Create task
 Need to Auth
 ```sh
-$ curl -XPOST "http://localhost:8081/task/create" -d '{"title":"test task","salary":"20","describtion":"task for test","beginTime":"8-20-2019","expireTime":"8-22-2019","participantNum":"1"}' -H 'Content-Type: application/json'
+$ curl -XPOST "http://localhost:8081/task/create" -d '{"title":"test task","type":"Questionaire","salary":"20","description":"task for test","beginTime":"8-20-2019","expireTime":"8-22-2019","participantNum":"1","tags":"Testing"}' -H 'Content-Type: application/json'
+```
+
+#### Cancel task
+Need to Auth and check user.
+Id refers to task id.
+```sh
+$ curl -XGET "http://localhost:8081/task/cancel/:id"
+```
+
+#### Get All Task
+
+```sh
+$ curl -XGET "http://localhost:8081/task/all"
 ```
 
 Test Module
@@ -168,6 +181,7 @@ Under /test folder:
 ```sh
 $ newman run swsad_newman_restful_test.json
 ```
+
 
 **Tested API:**
 
