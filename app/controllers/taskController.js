@@ -4,13 +4,14 @@ const Joi = require('joi'),
     passport=require('koa-passport'),
     db=require('../helpers/db'),
     {check,isSelfOp}=require('../helpers/auth'),
-    {getNow}=require('../helpers/date'),
+    {getNow,isEarly}=require('../helpers/date'),
     {
         createWallet,
         transferFunc,
         queryBalance,
         removeWallet
-    }=require('./walletController')
+    }=require('./walletController'),
+    {noticeNotFinish}=require('./orderController')
 
 // Task schema
 const taskRegSchema = Joi.object().keys({
@@ -28,9 +29,9 @@ const taskDB = db.get('Task')
 
 const taskRouter=new Router({prefix:'/task'})
 taskRouter
-    .post('/create',         check,  createTask)
+    .post('/create',         check,     createTask)
     .get('/all',             getAllTask)
-    .get('/cancel/:id',      check,  isSelfOp,   cancelTask)
+    .get('/cancel/:tid',     check,     applyCancel)
 
 
 
@@ -67,15 +68,28 @@ async function getAllTask (ctx, next) {
 
 /**
 * @example curl -XGET "http://localhost:8081/task/cancel/:id"
-* Todo : Money operations not finished
+* Todo : do as how 用例图 do
 */
-async function cancelTask(ctx, next) {
+async function finishTask(tid) {
+    noticeNotFinish(tid)
     resBalance=queryBalance(ctx.params.id)
     await transferFunc(ctx.params.id,ctx.state.user[0].uid,resBalance)
     removeStatus=await removeWallet(ctx.params.id)
     await taskDB.remove({tid:ctx.params.id,uid:ctx.state.user[0].uid})
     ctx.status = 204
     await next()
+}
+
+async function applyCancel(ctx,next) {
+    taskObj=taskDB.findOne({tid:ctx.params.tid}).then((doc)=>{return doc})
+    if(taskObj.uid!==ctx.state.user[0].uid)
+        return false
+    if(isEarly(getNow(),taskObj.endtime)){      //if not reach the end time
+        
+    }
+    else{
+        finishTask(taskObj.tid)
+    }
 }
 
 

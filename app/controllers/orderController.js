@@ -57,5 +57,9 @@ async function cancelOrder(ctx, next) {
   await next();
 }
 
+async function noticeNotFinish(tid){
+    await orderDB.find({tid:tid},{status:'taskFin'},{multi:true})
 
-module.exports={orderRouter}
+}
+
+module.exports={orderRouter,noticeNotFinish}
