@@ -24,11 +24,9 @@ walletRouter
  * @example curl -XGET "http://localhost:8081/wallet/balance"
  */
 async function getBalance (ctx, next) {
-    ctx.body=await walletDB
-        .findOne({uid:ctx.state.user[0].uid})
-        .then((doc)=>{return doc.balance})
-    ctx.status = 201;
-    await next();
+    ctx.body=await queryBalance(ctx.state.user[0].uid)
+    ctx.status = 201
+    await next()
 }
 
 /**
@@ -36,8 +34,8 @@ async function getBalance (ctx, next) {
  */
 async function createWalletWeb (ctx, next) {
     ctx.body=await createWallet(ctx.state.user[0].uid,false)
-    ctx.status = 201;
-    await next();
+    ctx.status = 201
+    await next()
 }
 
 
@@ -74,7 +72,7 @@ async function getTransactions (ctx, next) {
  * date amount receiver sender status o(rder)id 
  */
 async function makeTransactions (ctx, next) {
-    ctx.body=writeTransactions(ctx.request.body)
+    ctx.body=doTransactions(ctx.request.body)
     ctx.status = 201
     await next()
 }
@@ -95,10 +93,19 @@ async function updateTransactions (ctx, next) {
             status:0,
             oid:uuid()})
         .then((doc)=>{if(doc.length!==0) return doc.transaction; else return []})
-    ctx.status = 201;
-    await next();
+    ctx.status = 201
+    await next()
 }
 
+
+
+/**
+ * 
+ * @param {*} id int
+ */
+async function queryBalance(id) {
+    return await walletDB.findOne({uid:id}).then((doc)=>{return doc.balance})
+}
 
 /**
  * make real transfer
@@ -142,13 +149,13 @@ async function createWallet(id,isT) {
  * 
  * @param {*} info {sender,rec,amount}
  */
-async function writeTransactions(info) {
+async function doTransactions(info) {
     isTransfer=await transfer(
         info.sender,
         info.receiver,
         info.amount)
     if(isTransfer)
-        res=await transDB
+        return await transDB
             .insert({
                 date:getNow(),
                 amount:info.amount,
@@ -157,7 +164,8 @@ async function writeTransactions(info) {
                 status:0,
                 oid:uuid()})
             .then((doc)=>{if(doc.length!==0) return doc.transaction; else return []})
-    return []
+    else
+        return []
 }
 
 /**
@@ -168,10 +176,31 @@ async function writeTransactions(info) {
  * @returns boolean
  */
 async function transferFunc(senderid,recid,amount) {
-    isTrans=await transfer(senderid,recid,amount)
-    if(isTrans)
-        writeTransactions({sender:senderid,receiver:recid,amount:amount})
-    return 
+    res=doTransactions({sender:senderid,receiver:recid,amount:amount})
+    if(res.length===0)
+        return false
+    else
+        return true
 }
 
-module.exports={walletRouter,createWallet,transferFunc}
+/**
+ * 
+ * @param {*} id uuid
+ */
+async function removeWallet(id) {
+    if(queryBalance(id)>0)
+        return false
+    else{
+        await walletDB.remove({uid:id})
+        return true
+    }
+    
+}
+
+module.exports={
+    walletRouter,
+    createWallet,
+    transferFunc,
+    queryBalance,
+    removeWallet
+}

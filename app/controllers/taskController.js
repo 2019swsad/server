@@ -5,7 +5,12 @@ const Joi = require('joi'),
     db=require('../helpers/db'),
     {check,isSelfOp}=require('../helpers/auth'),
     {getNow}=require('../helpers/date'),
-    {_,createWallet}=require('./walletController')
+    {
+        createWallet,
+        transferFunc,
+        queryBalance,
+        removeWallet
+    }=require('./walletController')
 
 // Task schema
 const taskRegSchema = Joi.object().keys({
@@ -17,9 +22,9 @@ const taskRegSchema = Joi.object().keys({
         expireTime:Joi.date().min(Joi.ref('beginTime')).required(),
         participantNum:Joi.number().integer().min(1).required(),
         tags:Joi.string()
-    });
+    })
 
-const collection = db.get('Task')
+const taskDB = db.get('Task')
 
 const taskRouter=new Router({prefix:'/task'})
 taskRouter
@@ -43,28 +48,35 @@ async function createTask (ctx, next) {
     passData.totalCost=passData.salary*passData.participantNum
     passData.createTime=getNow()
     console.log(passData)
-    createWallet(passData.tid,true)
-    ctx.body=await collection.insert(passData).then((doc)=>{return true})
-    ctx.status = 201;
-    await next();
+    await createWallet(passData.tid,true)
+    
+    //TODO: need to handle failure
+    chargeStatus=await transferFunc(ctx.state.user[0].uid,passData.tid,passData.totalCost)
+
+    ctx.body=await taskDB.insert(passData).then((doc)=>{return true})
+    ctx.status = 201
+    await next()
 }
 
 /**
 * @example curl -XGET "http://localhost:8081/task/all"
 */
 async function getAllTask (ctx, next) {
-    ctx.body=await collection.find().then((docs)=>{return docs})
-    await next();
+    ctx.body=await taskDB.find().then((docs)=>{return docs})
+    await next()
 }
 
 /**
 * @example curl -XGET "http://localhost:8081/task/cancel/:id"
-* Todo : Money operations.
+* Todo : Money operations not finished
 */
 async function cancelTask(ctx, next) {
-  await collection.remove({tid:ctx.params.id,uid:ctx.state.user[0].uid});
-  ctx.status = 204;
-  await next();
+    resBalance=queryBalance(ctx.params.id)
+    await transferFunc(ctx.params.id,ctx.state.user[0].uid,resBalance)
+    removeStatus=await removeWallet(ctx.params.id)
+    await taskDB.remove({tid:ctx.params.id,uid:ctx.state.user[0].uid})
+    ctx.status = 204
+    await next()
 }
 
 
