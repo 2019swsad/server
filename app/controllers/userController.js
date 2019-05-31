@@ -14,7 +14,7 @@ const userRegSchema = Joi.object().keys({
     });
 
 //DB init
-const collection = db.get('Person')
+const personDB = db.get('Person')
 
 const userRouter = new Router({prefix:'/users'});
 userRouter
@@ -40,12 +40,12 @@ passport.serializeUser(function(user, done) {
   })
   
 passport.deserializeUser(async function(id, done) {
-    collection.find({_id:id}, done);
+    personDB.find({_id:id}, done);
 })
 
 const LocalStrategy = require('passport-local').Strategy
 passport.use(new LocalStrategy(async function(username, password, done) {
-    user=await collection.find({ username: username, password: password}).then((doc)=>{return doc})
+    user=await personDB.find({ username: username, password: password}).then((doc)=>{return doc})
     console.log(user);
     
     if(user.length===1)
@@ -64,7 +64,7 @@ passport.use(new LocalStrategy(async function(username, password, done) {
  * @example curl -XGET "http://localhost:8081/users/self"
  */
 async function getSelf (ctx, next) {
-    ctx.body=await collection
+    ctx.body=await personDB
         .findOne({uid:ctx.state.user[0].uid})
         .then((doc)=>{return doc})
     await next();
@@ -76,7 +76,7 @@ async function getSelf (ctx, next) {
  * @example curl -XGET "localhost:8081/users/check/:name"
  */
 async function nameCanU(ctx,next){
-    ctx.body=await collection.find({username: ctx.params.name}).then((doc) => {
+    ctx.body=await personDB.find({username: ctx.params.name}).then((doc) => {
         if (doc.length>0) {
             return false
         }
@@ -92,7 +92,7 @@ async function nameCanU(ctx,next){
 * @example curl -XGET "http://localhost:8081/users"
 */
 async function list (ctx, next) {
-    ctx.body=await collection.find().then((docs)=>{return docs})
+    ctx.body=await personDB.find().then((docs)=>{return docs})
     await next();
 }
 
@@ -106,7 +106,7 @@ async function registerUser (ctx, next) {
     let passData = await Joi.validate(ctx.request.body, userRegSchema);
     passData.uid=uuid()
     console.log(passData)
-    ctx.body=await collection.insert(passData).then((doc)=>{return true})
+    ctx.body=await personDB.insert(passData).then((doc)=>{return true})
     ctx.status = 201;
     //ctx.redirect('/')
     await next();
@@ -140,9 +140,7 @@ async function logoutUser (ctx, next) {
 async function updateUser (ctx, next) {
     // let body = await Joi.validate(ctx.request.body, userSchema, {allowUnknown: true});
     
-    ctx.body = await collection.findOneAndUpdate(
-        {uid:ctx.request.body.uid}, 
-        {$set:ctx.request.body}).then((upd)=>{return true});
+    ctx.body = updateUserFunc(ctx.request.body)
     ctx.status=201
     await next();
 }
@@ -153,10 +151,15 @@ async function updateUser (ctx, next) {
  * @example curl -XGET "http://localhost:8081/users/delete/:id"
  */
 async function removeUser (ctx, next) {
-    await collection.remove({uid:ctx.params.id});
+    await personDB.remove({uid:ctx.params.id});
     ctx.status = 204;
     await next();
 }
 
+async function updateUserFunc(user) {
+    return await personDB.findOneAndUpdate(
+        {uid:user.uid}, 
+        {$set:user}).then((upd)=>{return true});
+}
 
-module.exports = userRouter
+module.exports = {userRouter,updateUserFunc}

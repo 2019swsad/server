@@ -3,7 +3,7 @@ const Joi = require('joi'),
     Router = require('koa-router'),
     passport=require('koa-passport'),
     db=require('../helpers/db'),
-    {check,isSelfOp}=require('../helpers/auth'),
+    {check}=require('../helpers/auth'),
     {getNow,isEarly}=require('../helpers/date'),
     {
         createWallet,
@@ -11,7 +11,8 @@ const Joi = require('joi'),
         queryBalance,
         removeWallet
     }=require('./walletController'),
-    {noticeNotFinish}=require('./orderController')
+    {noticeNotFinish,payByTask}=require('./orderController'),
+    {updateUserFunc}=require('./userController')
 
 // Task schema
 const taskRegSchema = Joi.object().keys({
@@ -84,13 +85,13 @@ async function applyCancel(ctx,next) {
     taskObj=taskDB.findOne({tid:ctx.params.tid}).then((doc)=>{return doc})
     if(taskObj.uid!==ctx.state.user[0].uid)
         return false
-    if(isEarly(getNow(),taskObj.endtime)){      //if not reach the end time
-        
+    if(isEarly(getNow(),taskObj.endtime)){                  //if not reach the end time
+        updateUserFunc({uid:taskObj.uid,credit:'low'})      //?
+        payByTask(taskObj.tid,'notFin',0.3*taskObj.eachSalary)
     }
-    else{
-        finishTask(taskObj.tid)
-    }
+    finishTask(taskObj.tid)
+    
 }
 
 
-module.exports=taskRouter
+module.exports={taskRouter}
