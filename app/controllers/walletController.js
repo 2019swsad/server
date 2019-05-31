@@ -129,14 +129,14 @@ async function transfer(sender, receiver, amountstr) {
             num=parseInt(doc.balance)
             if(num>=amount)
                 return num-amount
+            return -1
         })
     console.log('sdr'+senderres);
     
     recres = await walletDB.findOne({uid:receiver})
         .then((doc)=>{
             num=parseInt(doc.balance)
-            if(num>=amount)
-                return num+amount
+            return num+amount
         })
     console.log('rec'+recres);
     if(senderres>=0){
@@ -158,7 +158,7 @@ async function transfer(sender, receiver, amountstr) {
  */
 async function createWallet(id,isT) {
     return await walletDB
-        .insert({uid:id,balance:0.0,wid:uuid(),isTask:isT})
+        .insert({uid:id,balance:0,wid:uuid(),isTask:isT})
         .then((doc)=>{return true})
 }
 

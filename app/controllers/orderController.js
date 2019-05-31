@@ -3,9 +3,11 @@ const Joi = require('joi'),
     Router = require('koa-router'),
     passport=require('koa-passport'),
     db=require('../helpers/db'),
+    {checkReq}=require('./taskController'),
     {check,isSelfOp}=require('../helpers/auth'),
     {getNow}=require('../helpers/date'),
     {transferFunc}=require('./walletController')
+    
 
 
 const orderDB = db.get('Order')
@@ -36,8 +38,19 @@ const orderSchema = Joi.object().keys({
 async function createOrder(ctx,next) {
     // let passdata=await Joi.validate(ctx.request.body,orderSchema)
     let passdata=ctx.request.body
-    passdata.oid=uuid()
     passdata.createTime=getNow()
+    let makeStatus=await checkReq(passdata.tid,passdata.createTime)
+    if(makeStatus!==-1)
+    {
+        passdata.oid=uuid()
+        passdata.uid=ctx.state.user[0].uid
+        passdata.status='open'
+        passdata.price=makeStatus
+        ctx.redirect('/success')
+        await next()
+    }
+    ctx.redirect('/failure')
+    await next()
 }
 
 /**
@@ -73,4 +86,11 @@ async function payByTask(tid,type,amount,uid='') {
     }
 }
 
-module.exports={orderRouter,noticeNotFinish,payByTask}
+async function countOrder(tid,uid='') {
+    if(uid!=='')
+        return await orderDB.count({tid:tid,uid:uid})
+    else
+        return await orderDB.count({tid:tid})
+}
+
+module.exports={orderRouter,noticeNotFinish,payByTask,countOrder}

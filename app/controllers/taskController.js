@@ -11,7 +11,7 @@ const Joi = require('joi'),
         queryBalance,
         removeWallet
     }=require('./walletController'),
-    {noticeNotFinish,payByTask}=require('./orderController'),
+    {noticeNotFinish,payByTask,countOrder}=require('./orderController'),
     {updateUserFunc}=require('./userController')
 
 // Task schema
@@ -53,6 +53,7 @@ async function createTask (ctx, next) {
     
     //TODO: need to handle failure
     chargeStatus=await transferFunc(ctx.state.user[0].uid,passData.tid,passData.totalCost)
+    console.log(chargeStatus)
 
     ctx.body=await taskDB.insert(passData).then((doc)=>{return true})
     ctx.status = 201
@@ -71,16 +72,6 @@ async function getAllTask (ctx, next) {
 * @example curl -XGET "http://localhost:8081/task/cancel/:id"
 * Todo : do as how 用例图 do
 */
-async function finishTask(tid) {
-    noticeNotFinish(tid)
-    resBalance=queryBalance(ctx.params.id)
-    await transferFunc(ctx.params.id,ctx.state.user[0].uid,resBalance)
-    removeStatus=await removeWallet(ctx.params.id)
-    await taskDB.remove({tid:ctx.params.id,uid:ctx.state.user[0].uid})
-    ctx.status = 204
-    await next()
-}
-
 async function applyCancel(ctx,next) {
     taskObj=taskDB.findOne({tid:ctx.params.tid}).then((doc)=>{return doc})
     if(taskObj.uid!==ctx.state.user[0].uid)
@@ -93,5 +84,33 @@ async function applyCancel(ctx,next) {
     
 }
 
+async function finishTask(tid) {
+    noticeNotFinish(tid)
+    resBalance=queryBalance(ctx.params.id)
+    await transferFunc(ctx.params.id,ctx.state.user[0].uid,resBalance)
+    removeStatus=await removeWallet(ctx.params.id)
+    await taskDB.remove({tid:ctx.params.id,uid:ctx.state.user[0].uid})
+    ctx.status = 204
+    await next()
+}
 
-module.exports={taskRouter}
+
+async function checkReq(tid,time) {
+    taskObj=await taskDB.findOne({tid:tid}).then((doc)=>{return doc})
+    tot=await countOrder(tid)
+    if(taskObj!==null)
+    {
+        if(
+            isEarly(time,taskObj.expireTime)
+            &&taskObj.participantNum>tot)
+        {
+            return taskObj.eachSalary
+        }
+    }
+    return -1
+}
+
+module.exports={
+    taskRouter,
+    checkReq
+}
