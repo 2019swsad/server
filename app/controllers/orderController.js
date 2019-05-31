@@ -3,20 +3,19 @@ const Joi = require('joi'),
     Router = require('koa-router'),
     passport=require('koa-passport'),
     db=require('../helpers/db'),
-    {checkReq}=require('./taskController'),
     {check,isSelfOp}=require('../helpers/auth'),
     {getNow}=require('../helpers/date'),
-    {transferFunc}=require('./walletController')
-    
+    {transferFunc}=require('./walletController'),
+    {testReq}=require('./taskController')
 
 
 const orderDB = db.get('Order')
 
 const orderRouter=new Router({prefix:'/order'})
 orderRouter
-    .post('/create',         check,  createOrder)
-    .get('/all',             getAllOrder)
-    .get('/cancel/:id',      check,  isSelfOp,   cancelOrder)
+    .post('/create',        check,  createOrder)
+    .get('/all',            getAllOrder)
+    .get('/cancel/:id',     check,  isSelfOp,   cancelOrder)
 
 
 // Task schema
@@ -39,7 +38,7 @@ async function createOrder(ctx,next) {
     // let passdata=await Joi.validate(ctx.request.body,orderSchema)
     let passdata=ctx.request.body
     passdata.createTime=getNow()
-    let makeStatus=await checkReq(passdata.tid,passdata.createTime)
+    let makeStatus=await testReq(passdata.tid,passdata.createTime)
     if(makeStatus!==-1)
     {
         passdata.oid=uuid()

@@ -95,7 +95,7 @@ async function finishTask(tid) {
 }
 
 
-async function checkReq(tid,time) {
+async function testReq(tid,time) {
     taskObj=await taskDB.findOne({tid:tid}).then((doc)=>{return doc})
     tot=await countOrder(tid)
     if(taskObj!==null)
@@ -110,7 +110,8 @@ async function checkReq(tid,time) {
     return -1
 }
 
+
 module.exports={
     taskRouter,
-    checkReq
+    testReq
 }
