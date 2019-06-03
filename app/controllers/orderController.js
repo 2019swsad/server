@@ -5,7 +5,7 @@ const Joi = require('joi'),
     db=require('../helpers/db'),
     {check,isSelfOp}=require('../helpers/auth'),
     {getNow}=require('../helpers/date'),
-    {transferFunc}=require('./walletController'),
+    
     {testReq}=require('./taskController')
 
 
@@ -70,26 +70,4 @@ async function cancelOrder(ctx, next) {
   await next();
 }
 
-//todo
-async function noticeNotFinish(tid){
-    await orderDB.find({tid:tid},{status:'taskFin'},{multi:true})
-
-}
-
-//todo
-async function payByTask(tid,type,amount,uid='') {
-    uidList=await orderDB.find({tid:tid,status:type}).then((doc)=>{return doc})
-    for (let index = 0; index < uidList.length; index++) {
-        const element = uidList[index];
-        await transferFunc(tid,element.uid,amount)
-    }
-}
-
-async function countOrder(tid,uid='') {
-    if(uid!=='')
-        return await orderDB.count({tid:tid,uid:uid})
-    else
-        return await orderDB.count({tid:tid})
-}
-
-module.exports={orderRouter,noticeNotFinish,payByTask,countOrder}
+module.exports=orderRouter
