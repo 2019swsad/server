@@ -3,6 +3,8 @@ const indexRouter = new Router();
 indexRouter
     .get('/',renderIndex)
     .get('/test',renderTest)
+    .get('/success',renderSuccess)
+    .get('/failure',renderFailure)
 async function renderIndex(ctx,next)
 {
     let title=ctx.isAuthenticated()
@@ -23,5 +25,12 @@ async function renderTest(ctx,next)
     
 }
 
+async function renderSuccess(ctx,next) {
+    await ctx.render('success')
+}
+
+async function renderFailure(ctx,next) {
+    await ctx.render('failure')
+}
 
 module.exports=indexRouter
