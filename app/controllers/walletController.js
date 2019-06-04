@@ -67,10 +67,11 @@ async function depositWallet (ctx, next) {
 async function getTransactions (ctx, next) {
     let receive_trans = await transDB
         .find({receiver:ctx.state.user[0].uid})
-        .then((doc)=>{if(doc.length!==0) return doc.transaction; else return []})
+        .then((doc)=>{if(doc.length!==0) return doc; else return []})
     let send_trans = await transDB
         .find({sender:ctx.state.user[0].uid})
-        .then((doc)=>{if(doc.length!==0) return doc.transaction; else return []})
+        .then((doc)=>{if(doc.length!==0) return doc; else return []})
+    
     receive_trans.push(...send_trans)
     ctx.body=receive_trans
     ctx.status = 201

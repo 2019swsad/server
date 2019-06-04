@@ -5,14 +5,9 @@ const Joi = require('joi'),
     db=require('../helpers/db'),
     {check}=require('../helpers/auth'),
     {getNow,isEarly}=require('../helpers/date'),
-    {
-        createWallet,
-        transferFunc,
-        queryBalance,
-        removeWallet
-    }=require('./walletController'),
     {noticeNotFinish,payByTask,countOrder}=require('./orderController'),
-    {updateUserFunc}=require('./userController')
+    {updateUserFunc}=require('./userController'),
+    {createWallet,transferFunc}=require('../helpers/walletHelper')
 
 // Task schema
 const taskRegSchema = Joi.object().keys({

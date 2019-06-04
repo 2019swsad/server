@@ -6,7 +6,7 @@ const Joi = require('joi'),
     {check,isSelfOp}=require('../helpers/auth'),
     {getNow}=require('../helpers/date'),
     
-    {testReq}=require('./taskController')
+    {testReq}=require('../helpers/taskHelper')
 
 
 const orderDB = db.get('Order')
@@ -45,11 +45,17 @@ async function createOrder(ctx,next) {
         passdata.uid=ctx.state.user[0].uid
         passdata.status='open'
         passdata.price=makeStatus
+
+        await orderDB.insert(passdata)
+
         ctx.redirect('/success')
         await next()
     }
-    ctx.redirect('/failure')
-    await next()
+    else{
+        ctx.redirect('/failure')
+        await next()
+    }
+    
 }
 
 /**

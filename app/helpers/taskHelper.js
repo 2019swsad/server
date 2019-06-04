@@ -1,5 +1,7 @@
 const db=require('../helpers/db')
 const taskDB = db.get('Task')
+const {countOrder}=require('./orderHelper'),
+    {getNow,isEarly}=require('./date')
 async function finishTask(tid) {
     noticeNotFinish(tid)
     resBalance=queryBalance(ctx.params.id)
@@ -20,7 +22,7 @@ async function testReq(tid,time) {
             isEarly(time,taskObj.expireTime)
             &&taskObj.participantNum>tot)
         {
-            return taskObj.eachSalary
+            return taskObj.salary
         }
     }
     return -1
