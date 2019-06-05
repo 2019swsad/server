@@ -5,7 +5,7 @@ const Joi = require('joi'),
     db=require('../helpers/db'),
     {check}=require('../helpers/auth'),
     {getNow,isEarly}=require('../helpers/date'),
-    {noticeNotFinish,payByTask,countOrder}=require('./orderController'),
+    {countOrder,payByTask,noticeNotFinish}=require('../helpers/orderHelper'),
     {updateUserFunc}=require('./userController'),
     {createWallet,transferFunc}=require('../helpers/walletHelper')
 
@@ -45,7 +45,7 @@ async function createTask (ctx, next) {
     passData.createTime=getNow()
     console.log(passData)
     await createWallet(passData.tid,true)
-    
+
     //TODO: need to handle failure
     chargeStatus=await transferFunc(ctx.state.user[0].uid,passData.tid,passData.totalCost)
     console.log(chargeStatus)
@@ -76,7 +76,7 @@ async function applyCancel(ctx,next) {
         payByTask(taskObj.tid,'notFin',0.3*taskObj.eachSalary)
     }
     finishTask(taskObj.tid)
-    
+
 }
 
 
