@@ -31,7 +31,7 @@ $ curl -XGET 'http://localhost:8081/test
 ### User Part
 
 #### get user by uid (Need Auth and self)
-​```sh
+```sh
 $ curl -XGET "http://localhost:8081/users/self/676271cb-ca17-4fcb-98de-174a21c6b1f7"
 
 #return
