@@ -5,7 +5,7 @@ const Joi = require('joi'),
     db=require('../helpers/db'),
     {check}=require('../helpers/auth'),
     {getNow,isEarly}=require('../helpers/date'),
-    {countOrder,payByTask,noticeNotFinish}=require('../helpers/orderHelper'),
+    {countOrder,payByTask,noticeNotFinish,createOrderByTask}=require('../helpers/orderHelper'),
     {updateUserFunc}=require('./userController'),
     {createWallet,transferFunc}=require('../helpers/walletHelper')
 
@@ -22,12 +22,14 @@ const taskRegSchema = Joi.object().keys({
     })
 
 const taskDB = db.get('Task')
+const userDB = db.get('Person')
 
 const taskRouter=new Router({prefix:'/task'})
 taskRouter
     .post('/create',         check,     createTask)
     .get('/all',             getAllTask)
     .get('/cancel/:tid',     check,     applyCancel)
+    .get('/participate/:id', check,     selectParticipator)
 
 
 
@@ -43,6 +45,7 @@ async function createTask (ctx, next) {
     passData.status="start"
     passData.totalCost=passData.salary*passData.participantNum
     passData.createTime=getNow()
+    passData.currentParticipator=0
     console.log(passData)
     await createWallet(passData.tid,true)
 
@@ -79,5 +82,16 @@ async function applyCancel(ctx,next) {
 
 }
 
+/**
+ * @example curl -XGET "http://localhost:8081/task/participate/:tid/:uid"
+ * @param tid: taskid
+ * @param uid: selected user
+ */
+async function selectParticipator(ctx, next){
+  taskObj=taskDB.findOne({tid:ctx.params.tid}).then((doc)=>{return doc})
+  userObj=userDB.findOne({uid:ctx.params.uid}).then((doc)=>{return doc})
+  taskObj.currentParticipator=taskObj.currentParticipator+1
+  createOrderByTask(taskObj.tid,userObj.uid)
+}
 
 module.exports=taskRouter
