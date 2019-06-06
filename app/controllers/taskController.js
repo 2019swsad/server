@@ -5,7 +5,7 @@ const Joi = require('joi'),
     db=require('../helpers/db'),
     {check}=require('../helpers/auth'),
     {getNow,isEarly}=require('../helpers/date'),
-    {countOrder,payByTask,noticeNotFinish}=require('../helpers/orderHelper'),
+    {countOrder,payByTask,noticeNotFinish,createOrderByTask}=require('../helpers/orderHelper'),
     {updateUserFunc}=require('./userController'),
     {createWallet,transferFunc}=require('../helpers/walletHelper')
 
@@ -86,12 +86,12 @@ async function applyCancel(ctx,next) {
  * @example curl -XGET "http://localhost:8081/task/participate/:tid/:uid"
  * @param tid: taskid
  * @param uid: selected user
- * TODO: Create order
  */
 async function selectParticipator(ctx, next){
   taskObj=taskDB.findOne({tid:ctx.params.tid}).then((doc)=>{return doc})
   userObj=userDB.findOne({uid:ctx.params.uid}).then((doc)=>{return doc})
   taskObj.currentParticipator=taskObj.currentParticipator+1
+  createOrderByTask(taskObj.tid,userObj.uid)
 }
 
 module.exports=taskRouter
