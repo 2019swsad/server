@@ -8,7 +8,9 @@ indexRouter
 async function renderIndex(ctx,next)
 {
     let title=ctx.isAuthenticated()
-    let username=ctx.state.user[0].username
+    let username='Not login'
+    if(title)
+        username=ctx.state.user[0].username
     await ctx.render('index',{
         username,
         title
