@@ -25,17 +25,12 @@ userRouter
     .get('/logout',             logoutUser)
     .post('/update',            check,  isSelfOp,   updateUser)
     .get('/delete/:id',         check,  isSelfOp,   removeUser)
-    .post('/login',   passport.authenticate('local', {
-        successRedirect: '/test',
-        failureRedirect: '/'
-    }));
+    .post('/login',             loginUser)
 
 
 
 //Passport
 passport.serializeUser(function(user, done) {
-    console.log(user);
-    
     done(null, user._id.toString())
   })
   
@@ -46,8 +41,6 @@ passport.deserializeUser(async function(id, done) {
 const LocalStrategy = require('passport-local').Strategy
 passport.use(new LocalStrategy(async function(username, password, done) {
     user=await personDB.find({ username: username, password: password}).then((doc)=>{return doc})
-    console.log(user);
-    
     if(user.length===1)
     {
       done(null,user[0])
@@ -117,10 +110,16 @@ async function registerUser (ctx, next) {
  * @example curl -XPOST "http://localhost:8081/users/login" -d '{"username":"test","password":"123"}' -H 'Content-Type: application/json'
  */
 async function loginUser (ctx, next) {
-
-    
-    console.log('108')
-    await next()
+    return passport.authenticate('local', (err, user, info, status) => {
+        if (user) {
+          ctx.login(user);
+          ctx.body={status:'success'};
+          ctx.status=200;
+        } else {
+          ctx.status = 400;
+          ctx.body={status:'error'};
+        }
+    })(ctx)
 }
 
 

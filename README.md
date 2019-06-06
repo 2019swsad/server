@@ -82,8 +82,8 @@ False
 ```sh
 $ curl -XPOST "http://localhost:8081/users/login" -d '{"username":"test","password":"123"}' -H 'Content-Type: application/json' -c cookies.txt
 
-#success redirect to /test
-#fail redirect to /
+#success return {"status": "success"}
+#fail return {"status": "error"}
 ```
 
 #### Logout
