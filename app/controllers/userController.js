@@ -95,11 +95,22 @@ async function list (ctx, next) {
  * curl -XPOST "http://localhost:8081/users/reg" -d '{"name":"New record 1"}' -H 'Content-Type: application/json'
  */
 async function registerUser (ctx, next) {
-    
+    res=await personDB.find({username: ctx.params.name}).then((doc) => {
+        if (doc.length>0) {
+            return false
+        }
+        else{
+            return true
+        }})
     let passData = await Joi.validate(ctx.request.body, userRegSchema);
     passData.uid=uuid()
     console.log(passData)
-    ctx.body=await personDB.insert(passData).then((doc)=>{return true})
+    if(res){
+        ctx.body=await personDB.insert(passData).then((doc)=>{return true})
+    }
+    else{
+        ctx.body=false
+    }
     ctx.status = 201;
     //ctx.redirect('/')
     await next();
