@@ -172,7 +172,7 @@ $ curl -XGET "http://localhost:8081/task/all"
 
 #### Get one task
 ```sh
-$curl -XGET "http://localhost:8081/task/id"
+$curl -XGET "http://localhost:8081/task/get/id"
 ```
 
 Test Module
