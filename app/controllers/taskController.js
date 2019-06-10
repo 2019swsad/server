@@ -30,7 +30,7 @@ taskRouter
     .get('/all',                getAllTask)
     .get('/cancel/:tid',        check,  applyCancel)
     .get('/participate/:id',    check,  selectParticipator)
-    .get('/:id',                check,  isSelfOp,   getTaskbyID)
+    .get('/get/:id',            check,  getTaskbyID)
 
 
 
@@ -53,7 +53,7 @@ async function createTask (ctx, next) {
     chargeStatus=await transferFunc(ctx.state.user[0].uid,passData.tid,passData.totalCost)
     console.log(chargeStatus)
 
-    ctx.body=await taskDB.insert(passData).then((doc)=>{return true})
+    ctx.body=await taskDB.insert(passData).then((doc)=>{return doc.tid})
     ctx.status = 201
     await next()
 }
@@ -63,6 +63,7 @@ async function createTask (ctx, next) {
 */
 async function getAllTask (ctx, next) {
     ctx.body=await taskDB.find().then((docs)=>{return docs})
+    ctx.status = 201
     await next()
 }
 
@@ -98,7 +99,9 @@ async function selectParticipator(ctx, next){
  * @example curl -XGET "http://localhost:8081/task/id"
  */
 async function getTaskbyID(ctx,next) {
-    ctx.body=await taskDB.findOne({tid:ctx.params.tid}).then((doc)=>{return doc})
+    ctx.body=await taskDB.findOne({tid:ctx.params.id}).then((doc)=>{return doc})
+    console.log(ctx.body)
+    ctx.status = 201
     await next()
 }
 

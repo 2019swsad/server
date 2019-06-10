@@ -3,6 +3,7 @@ function check(ctx, next) {
     if (ctx.isAuthenticated()) {
       return next()
     } else {
+        console.log('failed check')
       ctx.redirect('/')
     }
 }
@@ -15,6 +16,7 @@ function isSelfOp(ctx,next) {
             return next()
         }
         else{
+            console.log('failed self at get')
             ctx.redirect('/')
         }
     }
@@ -23,6 +25,7 @@ function isSelfOp(ctx,next) {
             return next()
         }
         else{
+            console.log('failed self at post')
             ctx.redirect('/')
         }
     }
