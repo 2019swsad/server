@@ -99,7 +99,13 @@ async function selectParticipator(ctx, next){
  * @example curl -XGET "http://localhost:8081/task/id"
  */
 async function getTaskbyID(ctx,next) {
-    ctx.body=await taskDB.findOne({tid:ctx.params.id}).then((doc)=>{return doc})
+    res=await taskDB.findOne({tid:ctx.params.id}).then((doc)=>{return doc})
+    if(res.uid===ctx.state.user[0].uid)
+        res.isOrganizer=true
+    else
+        res.isOrganizer=false
+
+    ctx.body=res
     console.log(ctx.body)
     ctx.status = 201
     await next()
