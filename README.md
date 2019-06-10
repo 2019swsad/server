@@ -170,6 +170,11 @@ $ curl -XGET "http://localhost:8081/task/cancel/:id"
 $ curl -XGET "http://localhost:8081/task/all"
 ```
 
+#### Get one task
+```sh
+$curl -XGET "http://localhost:8081/task/id"
+```
+
 Test Module
 =====
 use postman team

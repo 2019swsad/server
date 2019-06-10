@@ -3,7 +3,7 @@ const Joi = require('joi'),
     Router = require('koa-router'),
     passport=require('koa-passport'),
     db=require('../helpers/db'),
-    {check}=require('../helpers/auth'),
+    {check,isSelfOp}=require('../helpers/auth'),
     {getNow,isEarly}=require('../helpers/date'),
     {countOrder,payByTask,noticeNotFinish,createOrderByTask}=require('../helpers/orderHelper'),
     {updateUserFunc}=require('./userController'),
@@ -26,11 +26,11 @@ const userDB = db.get('Person')
 
 const taskRouter=new Router({prefix:'/task'})
 taskRouter
-    .post('/create',         check,     createTask)
-    .get('/all',             getAllTask)
-    .get('/cancel/:tid',     check,     applyCancel)
-    .get('/participate/:id', check,     selectParticipator)
-
+    .post('/create',            check,  createTask)
+    .get('/all',                getAllTask)
+    .get('/cancel/:tid',        check,  applyCancel)
+    .get('/participate/:id',    check,  selectParticipator)
+    .get('/:id',                check,  isSelfOp,   getTaskbyID)
 
 
 
@@ -71,7 +71,7 @@ async function getAllTask (ctx, next) {
 * Todo : do as how 用例图 do
 */
 async function applyCancel(ctx,next) {
-    taskObj=taskDB.findOne({tid:ctx.params.tid}).then((doc)=>{return doc})
+    taskObj=await taskDB.findOne({tid:ctx.params.tid}).then((doc)=>{return doc})
     if(taskObj.uid!==ctx.state.user[0].uid)
         return false
     if(isEarly(getNow(),taskObj.endtime)){                  //if not reach the end time
@@ -88,10 +88,18 @@ async function applyCancel(ctx,next) {
  * @param uid: selected user
  */
 async function selectParticipator(ctx, next){
-  taskObj=taskDB.findOne({tid:ctx.params.tid}).then((doc)=>{return doc})
-  userObj=userDB.findOne({uid:ctx.params.uid}).then((doc)=>{return doc})
+  taskObj=await taskDB.findOne({tid:ctx.params.tid}).then((doc)=>{return doc})
+  userObj=await userDB.findOne({uid:ctx.params.uid}).then((doc)=>{return doc})
   taskObj.currentParticipator=taskObj.currentParticipator+1
   createOrderByTask(taskObj.tid,userObj.uid)
+}
+
+/**
+ * @example curl -XGET "http://localhost:8081/task/id"
+ */
+async function getTaskbyID(ctx,next) {
+    ctx.body=await taskDB.findOne({tid:ctx.params.tid}).then((doc)=>{return doc})
+    await next()
 }
 
 module.exports=taskRouter
