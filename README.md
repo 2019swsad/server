@@ -30,7 +30,7 @@ $ curl -XGET 'http://localhost:8081/test
 
 ### User Part
 
-#### get user by uid (Need Auth and self)
+#### get user self (Need Auth and self)
 ```sh
 $ curl -XGET "http://localhost:8081/users/self/"
 
@@ -41,6 +41,19 @@ $ curl -XGET "http://localhost:8081/users/self/"
 "email":"asd@mail.com",
 "phone":"13800138000",
 "uid":"676271cb-ca17-4fcb-98de-174a21c6b1f7"}
+#or redirect to /
+```
+#### get user info by uid (future Need Auth)
+```sh
+$ curl -XGET "http://localhost:8081/users/info/:id"
+
+#return
+{
+  uid
+  username
+  credit
+  phone
+  url}
 #or redirect to /
 ```
 

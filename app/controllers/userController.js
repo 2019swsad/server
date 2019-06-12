@@ -26,6 +26,7 @@ userRouter
     .post('/update',            check,  isSelfOp,   updateUser)
     .get('/delete/:id',         check,  isSelfOp,   removeUser)
     .post('/login',             loginUser)
+    .get('/info/:id',           /*check,*/  getInfo)
 
 
 
@@ -153,6 +154,17 @@ async function updateUser (ctx, next) {
     ctx.body = updateUserFunc(ctx.request.body)
     ctx.status=201
     await next();
+}
+
+async function getInfo(ctx,next){
+    res=await personDB.find({uid:ctx.params.id}).then((doc)=>{return doc})
+    ctx.body.uid=res.uid
+    ctx.body.username=res.username
+    ctx.body.credit=res.credit
+    ctx.body.phone=res.phone
+    ctx.body.url=res.url
+    ctx.status=201
+    await next()
 }
 
 
