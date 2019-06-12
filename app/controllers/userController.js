@@ -124,12 +124,17 @@ async function registerUser (ctx, next) {
 async function loginUser (ctx, next) {
     return passport.authenticate('local', (err, user, info, status) => {
         if (user) {
-          ctx.login(user);
-          ctx.body={status:'success'};
-          ctx.status=200;
+            console.log('success')
+            console.log(user)
+            
+            ctx.login(user)
+            ctx.body={status:'success'}
+            ctx.status=200
         } else {
-          ctx.status = 400;
-          ctx.body={status:'error'};
+            console.log('success')
+            console.log(user)
+            ctx.status = 400
+            ctx.body={status:'error'}
         }
     })(ctx)
 }
