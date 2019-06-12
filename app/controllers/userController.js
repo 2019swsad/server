@@ -3,7 +3,8 @@ const Joi = require('joi'),
     Router = require('koa-router'),
     passport=require('koa-passport'),
     db=require('../helpers/db'),
-    {check,isSelfOp}=require('../helpers/auth')
+    {check,isSelfOp}=require('../helpers/auth'),
+    {queryPerson}=require('../helpers/userHelper')
 
 // Simple user schema, more info: https://github.com/hapijs/joi
 const userRegSchema = Joi.object().keys({
@@ -126,7 +127,7 @@ async function loginUser (ctx, next) {
         if (user) {
             console.log('success')
             console.log(user)
-            
+
             ctx.login(user)
             ctx.body={status:'success'}
             ctx.status=200
@@ -162,12 +163,7 @@ async function updateUser (ctx, next) {
 }
 
 async function getInfo(ctx,next){
-    res=await personDB.find({uid:ctx.params.id}).then((doc)=>{return doc})
-    ctx.body.uid=res.uid
-    ctx.body.username=res.username
-    ctx.body.credit=res.credit
-    ctx.body.phone=res.phone
-    ctx.body.url=res.url
+    ctx.body=await queryPerson(ctx.params.id)
     ctx.status=201
     await next()
 }

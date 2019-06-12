@@ -7,7 +7,8 @@ const Joi = require('joi'),
     {getNow,isEarly}=require('../helpers/date'),
     {countOrder,payByTask,noticeNotFinish,createOrderByTask}=require('../helpers/orderHelper'),
     {updateUserFunc}=require('./userController'),
-    {createWallet,transferFunc}=require('../helpers/walletHelper')
+    {createWallet,transferFunc}=require('../helpers/walletHelper'),
+    {queryPerson}=require('../helpers/userHelper')
 
 // Task schema
 const taskRegSchema = Joi.object().keys({
@@ -30,7 +31,7 @@ taskRouter
     .get('/all',                getAllTask)
     .get('/cancel/:tid',        check,  applyCancel)
     .get('/participate/:id',    check,  selectParticipator)
-    .get('/get/:id',            check,  getTaskbyID)
+    .get('/get/:id',            getTaskbyID)
 
 
 
@@ -105,6 +106,7 @@ async function getTaskbyID(ctx,next) {
     else
         res.isOrganizer=false
 
+    res.userinfo=queryPerson(res.uid)
     ctx.body=res
     console.log(ctx.body)
     ctx.status = 201
