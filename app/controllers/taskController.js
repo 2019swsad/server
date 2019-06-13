@@ -31,7 +31,7 @@ taskRouter
     .get('/all',                getAllTask)
     .get('/cancel/:tid',        check,  applyCancel)
     .get('/participate/:id',    check,  selectParticipator)
-    .get('/get/:id',            getTaskbyID)
+    .get('/get/:id',            check,  getTaskbyID)
 
 
 

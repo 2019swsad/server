@@ -11,4 +11,4 @@ async function queryPerson(uid) {
     return fin
 }
 
-module.export={queryPerson}
+module.exports={queryPerson}

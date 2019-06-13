@@ -16,6 +16,9 @@ $ node ./index.js
 
 API
 =======
+### Session
+Auth will check when access some personal info
+When fail,it will return ```{status:'session fail'}```
 
 ### Render
 #### get mainpage

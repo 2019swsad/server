@@ -4,7 +4,7 @@ function check(ctx, next) {
       return next()
     } else {
         console.log('failed check')
-      ctx.redirect('/')
+        ctx.body={status:'session fail'}
     }
 }
 
