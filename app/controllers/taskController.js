@@ -22,6 +22,17 @@ const taskRegSchema = Joi.object().keys({
         tags:Joi.string()
     })
 
+const taskQuerySchema = Joi.object().keys({
+        title:Joi.string().min(4).max(60).trim(),
+        type:Joi.string(),
+        salary:Joi.number().integer().min(1),
+        description:Joi.string(),
+        beginTime:Joi.date().min('now'),
+        expireTime:Joi.date().min(Joi.ref('beginTime')),
+        participantNum:Joi.number().integer().min(1),
+        tags:Joi.string()
+    })
+
 const taskDB = db.get('Task')
 const userDB = db.get('Person')
 
@@ -32,6 +43,7 @@ taskRouter
     .get('/cancel/:tid',        check,  applyCancel)
     .get('/participate/:id',    check,  selectParticipator)
     .get('/get/:id',            check,  getTaskbyID)
+    .post('/query',             queryTaskByOneElement)
 
 
 
@@ -112,5 +124,41 @@ async function getTaskbyID(ctx,next) {
     ctx.status = 201
     await next()
 }
+
+/**
+ * @example curl -XPOST "http://localhost:8081/task/query"  -d '{"title":"test task"}' -H 'Content-Type: application/json'
+ */
+async function queryTaskByOneElement(ctx,next) {
+    let passData = await Joi.validate(ctx.request.body, taskRegSchema)
+    if(passData.title!=null){
+      res=await taskDB.findOne({title:passData.title}).then((doc)=>{return doc})
+    }
+    else if(passData.type!=null){
+      res=await taskDB.findOne({type:passData.type}).then((doc)=>{return doc})
+    }
+    else if(passData.salary!=null){
+      res=await taskDB.findOne({salary:passData.salary}).then((doc)=>{return doc})
+    }
+    else if(passData.description!=null){
+      res=await taskDB.findOne({description:passData.description}).then((doc)=>{return doc})
+    }
+    else if(passData.beginTime!=null){
+      res=await taskDB.findOne({beginTimev:passData.beginTime}).then((doc)=>{return doc})
+    }
+    else if(passData.expireTime!=null){
+      res=await taskDB.findOne({expireTime:passData.expireTime}).then((doc)=>{return doc})
+    }
+    else if(passData.participantNum!=null){
+      res=await taskDB.findOne({participantNum:passData.participantNum}).then((doc)=>{return doc})
+    }
+    else if(passData.tags!=null){
+      res=await taskDB.findOne({tags:passData.tags}).then((doc)=>{return doc})
+    }
+    console.log(passData)
+    ctx.status=201
+    await next()
+}
+
+
 
 module.exports=taskRouter
