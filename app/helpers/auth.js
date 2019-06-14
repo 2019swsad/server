@@ -4,7 +4,8 @@ function check(ctx, next) {
       return next()
     } else {
         console.log('failed check')
-        ctx.body={status:'session fail'}
+        // ctx.body={status:'session fail'}
+        return next()
     }
 }
 
