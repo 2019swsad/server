@@ -5,8 +5,12 @@ module.exports = {
         version: package.version
     },
     server: {
-        port: process.env.NODE_APP_INSTANCE || 8081,
+        port: process.env.NODE_APP_INSTANCE || 443,
         lifeTime: process.env.NODE_LIFE_TIME || '', // For auto rebooting features use 'ms','m','s','h','d' suffix for this variable, for example 12h
+    },
+    httpserver:{
+        port:80,
+        lifeTime: process.env.NODE_LIFE_TIME || '',
     },
     worker: process.env.NODE_WORKER_NAME,
     rabbitMq: {
