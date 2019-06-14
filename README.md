@@ -137,7 +137,7 @@ All need to Auth
 $ curl -XGET "http://localhost:8081/wallet/create"
 ```
 
-#### get balance 
+#### get balance
 ```sh
 $ curl -XGET "http://localhost:8081/wallet/balance"
 # return int
@@ -191,6 +191,11 @@ $ curl -XGET "http://localhost:8081/task/all"
 $curl -XGET "http://localhost:8081/task/get/id"
 ```
 
+#### Query Task By element
+```sh
+curl -XPOST "http://localhost:8081/task/query"  -d '{"title":"test task"}' -H 'Content-Type: application/json'
+```
+
 Test Module
 =====
 use postman team
@@ -225,5 +230,3 @@ Doc
 
 ## Auth example
 [This](https://mherman.org/blog/user-authentication-with-passport-and-koa/)
-
-
