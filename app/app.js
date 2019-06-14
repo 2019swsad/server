@@ -1,4 +1,6 @@
 const http = require('http'),
+    https=require('https'),
+    fs=require('fs')
     Koa = require('koa'),
     config = require('config'),
     err = require('./helpers/error'),
@@ -6,15 +8,20 @@ const http = require('http'),
     session = require('koa-session'),
     bodyParser = require('koa-bodyparser'),
     passport = require('koa-passport'),
-    CSRF = require('koa-csrf');
+    CSRF = require('koa-csrf'),
+    { default: enforceHttps }=require('koa-sslify');
 
 const router  = require('./routes');
 
 app = new Koa();
 
 app.keys=['hihihi']
-     
+let options={
+    key:fs.readFileSync('./crt/server.key'),
+    cert:fs.readFileSync('./crt/server.pem')
+}
 app.use(err);
+app.use(enforceHttps({port:443}))
 app.use(views('app/views/',{extension:'ejs'}))
 app.use(session({}, app));
 app.use(bodyParser())
@@ -35,7 +42,14 @@ app.use(router());
 //     }
 //   })
 
-const server = http.createServer(
+const httpserver = http.createServer(
+    app.callback()).listen(config.httpserver.port, function () {
+        console.log(
+            '%s listening at port %d', 
+            config.app.name, config.httpserver.port);
+});
+
+const server = https.createServer(options,
     app.callback()).listen(config.server.port, function () {
         console.log(
             '%s listening at port %d', 
