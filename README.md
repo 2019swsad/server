@@ -203,16 +203,20 @@ curl -XPOST "https://www.volley99.com/task/query"  -d '{"title":"test task"}' -H
 #### Get create task 
 GET https://www.volley99.com/task/getCreate/  
 Return
+```
 [{
   ...
 }]
+```
 
 #### Get order task
 GET https://www.volley99.com/task/getJjoin/  
 Return
+```
 [{
   ...
 }]
+```
 
 #### Get finish number
 
@@ -244,6 +248,7 @@ Return
 #or
 {status:'fail'} code 400
 ```
+
 #### Get all order of oneself
 GET http://www.volley99.com/order/all  
 Return
@@ -272,6 +277,15 @@ Return
   message:'asshole',
   price:1 
 }]
+```
+
+#### Finish task
+GET http://www.volley99.com/order/finish/:id  
+Return
+```
+{status:'success'},code 200
+#or
+{status:'fail'} code 400
 ```
 
 #### Cancel one task

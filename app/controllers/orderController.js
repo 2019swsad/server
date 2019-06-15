@@ -79,7 +79,7 @@ async function finishOrder(ctx,next) {
 }
 
 async function getOrderbyID(ctx,next) {
-    res=await orderDB.findOne({tid:ctx.params.id}).then((doc)=>{return doc})
+    res=await orderDB.findOne({oid:ctx.params.id}).then((doc)=>{return doc})
     if(res.uid===ctx.state.user[0].uid){
         ctx.body=res
         ctx.status=200
@@ -90,7 +90,7 @@ async function getOrderbyID(ctx,next) {
         ctx=status=400
         console.log('get order fail :88')   
     }
-    await next()   
+    await next() 
 }
 
 
