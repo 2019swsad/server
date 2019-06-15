@@ -291,17 +291,10 @@ Return
 #### Cancel one task
 GET http://www.volley99.com/order/cancel/:id  
 Return
+204
 
-### Finish one order
-GET http://www.volley99.com/order/finish/:id  
-Return
-```
-{status:'success'},code 200
-# or
-{status:'fail'} code 400
-```
 
-### Get order by tasks id
+#### Get order by tasks id
 GET http://www.volley99.com/order/get/:id  
 Return
 ```
