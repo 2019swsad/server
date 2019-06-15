@@ -196,6 +196,14 @@ $curl -XGET "http://localhost:8081/task/get/id"
 curl -XPOST "http://localhost:8081/task/query"  -d '{"title":"test task"}' -H 'Content-Type: application/json'
 ```
 
+#### Get finish number
+
+Parameter:getTaskbyID
+
+```sh
+curl -XGET "http://localhost:8081/task/number/:id"
+```
+
 Test Module
 =====
 use postman team

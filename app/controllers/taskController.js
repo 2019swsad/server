@@ -40,10 +40,11 @@ const taskRouter=new Router({prefix:'/task'})
 taskRouter
     .post('/create',            check,  createTask)
     .get('/all',                getAllTask)
-    .get('/cancel/:tid',        check,  applyCancel)
+    .get('/cancel/:tid',        check,  isSelfOp, applyCancel)
     .get('/participate/:id',    check,  selectParticipator)
     .get('/get/:id',            check,  getTaskbyID)
     .post('/query',             queryTaskByOneElement)
+    .get('/number/:id',         check,  isSelfOp, getFinishNum)
 
 
 
@@ -59,6 +60,7 @@ async function createTask (ctx, next) {
     passData.totalCost=passData.salary*passData.participantNum
     passData.createTime=getNow()
     passData.currentParticipator=0
+    passData.finishNumber=Buffer.from([Math.floor(Math.random()*10),Math.floor(Math.random()*10),Math.floor(Math.random()*10),Math.floor(Math.random()*10)]);
     console.log(passData)
     await createWallet(passData.tid,true)
 
@@ -81,11 +83,21 @@ async function getAllTask (ctx, next) {
 }
 
 /**
+* @example curl -XGET "http://localhost:8081/task/number/:id"
+* @param id:tid
+*/
+async function getFinishNum(ctx, next){
+  number = await walletDB.findOne({tid:ctx.params.id}).then((doc)=>{return doc.finishNumber})
+  ctx.status = 201
+  await next()
+}
+
+/**
 * @example curl -XGET "http://localhost:8081/task/cancel/:id"
 * Todo : do as how 用例图 do
 */
 async function applyCancel(ctx,next) {
-    taskObj=await taskDB.findOne({tid:ctx.params.tid}).then((doc)=>{return doc})
+    taskObj=await taskDB.findOne({tid:ctx.params.id}).then((doc)=>{return doc})
     if(taskObj.uid!==ctx.state.user[0].uid)
         return false
     if(isEarly(getNow(),taskObj.endtime)){                  //if not reach the end time
