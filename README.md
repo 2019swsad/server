@@ -200,7 +200,7 @@ curl -XPOST "https://www.volley99.com/task/query"  -d '{"title":"test task"}' -H
 #uid
 ```
 
-#### Get create task 
+#### Get create task
 GET https://www.volley99.com/task/getCreate/  
 Return
 ```
@@ -260,7 +260,7 @@ Return
   uid:x,
   createTime:x,
   message:'asshole',
-  price:1 
+  price:1
 }]
 ```
 
@@ -275,7 +275,7 @@ Return
   uid:x,
   createTime:x,
   message:'asshole',
-  price:1 
+  price:1
 }]
 ```
 
@@ -303,6 +303,26 @@ order info,code 200
 {status:'fail'} code 400
 ```
 
+### Order part(All need auth)
+
+#### Get a receiver's msg list
+Get http://localhost:8081/msg/list
+
+#### Create a comment
+POST http://localhost:8081/msg/comment
+```json
+{uid:"...",
+msg:"test"}
+```
+uid is recerver's id
+
+#### Create a Massage
+
+POST http://localhost:8081/msg/create
+
+```json
+ {uid:"...",type:"comment",msg:"test"}
+```
 
 Test Module
 =====
