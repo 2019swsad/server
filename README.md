@@ -303,13 +303,13 @@ Return
 {status:'fail'} code 400
 ```
 
-#### Cancel one task
+#### Cancel one order
 GET http://www.volley99.com/order/cancel/:id  
 Return
 204
 
 
-#### Get order by tasks id
+#### Get order by id
 GET http://www.volley99.com/order/get/:id  
 Return
 ```
