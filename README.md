@@ -318,7 +318,7 @@ order info,code 200
 {status:'fail'} code 400
 ```
 
-### Order part(All need auth)
+### Massage part(All need auth)
 
 #### Get a receiver's msg list
 Get http://www.volley99.com/msg/list
