@@ -5,14 +5,15 @@ const Joi = require('joi'),
     db=require('../helpers/db'),
     {check,isSelfOp}=require('../helpers/auth'),
     {queryPerson}=require('../helpers/userHelper'),
-    {queryBalance}=require('../helpers/walletHelper')
+    {queryBalance,createWallet}=require('../helpers/walletHelper')
 
 // Simple user schema, more info: https://github.com/hapijs/joi
 const userRegSchema = Joi.object().keys({
         username: Joi.string().alphanum().min(4).max(30).trim().required(),
-        password:Joi.string().regex(/^[a-zA-Z0-9]{3,30}$/),
-        email: Joi.string().email({ minDomainSegments: 2, }),
-        phone:Joi.string().min(11).max(11)
+        password:Joi.string().regex(/^[a-zA-Z0-9]{3,30}$/).required(),
+        email: Joi.string().email({ minDomainSegments: 2, }).required(),
+        phone:Joi.string().min(11).max(11).trim().required(),
+        nickname:Joi.string().min(3).max(20).trim().required()
     });
 
 //DB init
@@ -100,7 +101,7 @@ async function list (ctx, next) {
  * curl -XPOST "http://localhost:8081/users/reg" -d '{"name":"New record 1"}' -H 'Content-Type: application/json'
  */
 async function registerUser (ctx, next) {
-    res=await personDB.find({username: ctx.params.name}).then((doc) => {
+    res=await personDB.find({username: ctx.request.body.username}).then((doc) => {
         if (doc.length>0) {
             return false
         }
@@ -113,6 +114,7 @@ async function registerUser (ctx, next) {
     console.log(passData)
     if(res){
         ctx.body=await personDB.insert(passData).then((doc)=>{return true})
+        await createWallet(passData.uid,false)
     }
     else{
         ctx.body=false

@@ -170,8 +170,19 @@ $ curl -XPOST "https://www.volley99.com/wallet/transaction" -d '{
 
 #### Create task
 Need to Auth
-```sh
-$ curl -XPOST "https://www.volley99.com/task/create" -d '{"title":"test task","type":"Questionaire","salary":"20","description":"task for test","beginTime":"8-20-2019","expireTime":"8-22-2019","participantNum":"1","tags":"Testing"}' -H 'Content-Type: application/json'
+POST https://www.volley99.com/task/create
+```
+{
+  "title":"test task",
+  "type":"Questionaire",
+  "salary":"20",
+  "description":"task for test",
+  "beginTime":"8-20-2019",
+  "expireTime":"8-22-2019",
+  "participantNum":"1",
+  "tags":"Testing",
+  position:"test"
+}
 ```
 
 #### Get All Task
@@ -200,7 +211,11 @@ curl -XPOST "https://www.volley99.com/task/query"  -d '{"title":"test task"}' -H
 #uid
 ```
 
+<<<<<<< HEAD
 #### Get create task
+=======
+#### Get created task
+>>>>>>> ac1d3c997b1478679db5444ddc3916d3d8402847
 GET https://www.volley99.com/task/getCreate/  
 Return
 ```
@@ -306,19 +321,20 @@ order info,code 200
 ### Order part(All need auth)
 
 #### Get a receiver's msg list
-Get http://localhost:8081/msg/list
+Get http://www.volley99.com/msg/list
 
 #### Create a comment
-POST http://localhost:8081/msg/comment
+POST http://www.volley99.com/msg/comment
 ```json
 {uid:"...",
 msg:"test"}
 ```
+
 uid is recerver's id
 
 #### Create a Massage
 
-POST http://localhost:8081/msg/create
+POST http://www.volley99.com/msg/create
 
 ```json
  {uid:"...",type:"comment",msg:"test"}
