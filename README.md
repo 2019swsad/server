@@ -294,7 +294,7 @@ Return
 }]
 ```
 
-#### Finish task
+#### Finish order
 GET http://www.volley99.com/order/finish/:id  
 Return
 ```

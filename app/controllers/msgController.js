@@ -1,12 +1,12 @@
 const uuid=require('uuid/v4'),
     Router = require('koa-router'),
     db=require('../helpers/db'),
-    {check,isSelfOp}=require('../helpers/auth')
-    {queryMsgList,createMsg}=require('../helpers/msgHelper'),
+    {check,isSelfOp}=require('../helpers/auth'),
+    {queryMsgList,createMsg}=require('../helpers/msgHelper')
 
 const taskRouter=new Router({prefix:'/msg'})
 taskRouter
-    .get('/list'           check,  createMsgList)
+    .get('/list',          check,  createMsgList)
     .post('/commemt',      check,  createComment)
     .post('/create',       chech,  createMsg)
 
