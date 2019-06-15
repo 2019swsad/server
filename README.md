@@ -1,4 +1,6 @@
-[TOC]
+[[TOC]]
+
+
 # Quick start
 
 **Install modules**
@@ -197,6 +199,20 @@ curl -XPOST "https://www.volley99.com/task/query"  -d '{"title":"test task"}' -H
 #tags
 #uid
 ```
+
+#### Get create task 
+GET https://www.volley99.com/task/getCreate/  
+Return
+[{
+  ...
+}]
+
+#### Get order task
+GET https://www.volley99.com/task/getJjoin/  
+Return
+[{
+  ...
+}]
 
 #### Get finish number
 

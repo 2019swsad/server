@@ -23,7 +23,7 @@ const taskRegSchema = Joi.object().keys({
     })
 
 const taskQuerySchema = Joi.object().keys({
-        title:Joi.string().min(4).max(60).trim(),
+        title:Joi.string().min(1).max(60).trim(),
         type:Joi.string(),
         salary:Joi.number().integer().min(1),
         description:Joi.string(),
@@ -39,11 +39,15 @@ const userDB = db.get('Person')
 const taskRouter=new Router({prefix:'/task'})
 taskRouter
     .post('/create',            check,  createTask)
-    .get('/all',                getAllTask)
     .post('/participate',       selectParticipator)
-    .get('/get/:id',            check,  getTaskbyID)
     .post('/query',             queryTaskByOneElement)
+    .post('/change',            check,  changeStatus)
+    .get('/get/:id',            check,  getTaskbyID)
+    .get('/getCreate',          check,  getCreateTask)
+    .get('/getjoin',            check,  getJoinTask)
+    .get('/all',                getAllTask)
     .get('/number/:id',         check,  isSelfOp, getFinishNum)
+
 
 
 
@@ -168,6 +172,28 @@ async function queryTaskByOneElement(ctx,next) {
     await next()
 }
 
+async function changeStatus(ctx,next) {
+    res=await orderDB.findOneAndUpdate({tid:ctx.request.tid},{status:ctx.request.status}).then((doc)=>{return doc})
+    if(res){
+        ctx.body={status:'success'}
+        ctx.status=200
+    }
+    else{
+        ctx.body={status:'failed'}
+        ctx.status=400
+    }
+    await next()
+}
 
 
+async function getCreateTask(ctx,next) {
+    res=await taskDB.find({uid:ctx.state.user[0].uid}).then((doc)=>{return doc})
+    ctx.body=res
+    ctx.status=200
+    await next()
+}
+
+async function getJoinTask(ctx,next) {
+    
+}
 module.exports=taskRouter
