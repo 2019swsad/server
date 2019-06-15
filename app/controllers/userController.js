@@ -5,7 +5,7 @@ const Joi = require('joi'),
     db=require('../helpers/db'),
     {check,isSelfOp}=require('../helpers/auth'),
     {queryPerson}=require('../helpers/userHelper'),
-    {queryBalance}=require('../helpers/walletHelper')
+    {queryBalance,createWallet}=require('../helpers/walletHelper')
 
 // Simple user schema, more info: https://github.com/hapijs/joi
 const userRegSchema = Joi.object().keys({
@@ -114,6 +114,7 @@ async function registerUser (ctx, next) {
     console.log(passData)
     if(res){
         ctx.body=await personDB.insert(passData).then((doc)=>{return true})
+        await createWallet(passData.uid,false)
     }
     else{
         ctx.body=false
