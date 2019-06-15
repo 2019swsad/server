@@ -132,7 +132,7 @@ async function getTaskbyID(ctx,next) {
  * @example curl -XPOST "http://localhost:8081/task/query"  -d '{"title":"test task"}' -H 'Content-Type: application/json'
  */
 async function queryTaskByOneElement(ctx,next) {
-    let passData = await Joi.validate(ctx.request.body, taskRegSchema)
+    let passData = await Joi.validate(ctx.request.body, taskQuerySchema)
     if(passData.title!=null){
       ctx.body=await taskDB.find({title:passData.title}).then((doc)=>{return doc})
     }
