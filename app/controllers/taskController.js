@@ -19,7 +19,8 @@ const taskRegSchema = Joi.object().keys({
         beginTime:Joi.date().min('now').required(),
         expireTime:Joi.date().min(Joi.ref('beginTime')).required(),
         participantNum:Joi.number().integer().min(1).required(),
-        tags:Joi.string()
+        tags:Joi.string(),
+        position:Joi.string()
     })
 
 const taskQuerySchema = Joi.object().keys({
