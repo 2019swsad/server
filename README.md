@@ -1,6 +1,5 @@
-
-Quick start
-===========
+[TOC]
+# Quick start
 
 **Install modules**
 ```sh
@@ -14,8 +13,8 @@ $ cnpm i #recommend
 $ node ./index.js
 ```
 
-API
-=======
+# API
+
 ### Session
 Auth will check when access some personal info
 When fail,it will return ```{status:'session fail'}```
@@ -212,6 +211,58 @@ curl -XGET "http://localhost:8081/task/number/:id"
 ```sh
 curl -XPOST "http://localhost:8081/task/participate" -d '{"tid":"...","uid":"..."}' -H 'Content-Type: application/json'
 ```
+
+### Order part(All need auth)
+
+#### create
+POST http://www.volley99.com/order/create  
+```json
+{
+  tid:'xxx',
+  message:'xxx',
+}
+```
+Return
+```
+{status:'success'},code 200
+#or
+{status:'fail'} code 400
+```
+#### Get all order of oneself
+GET http://www.volley99.com/order/all  
+Return
+```json
+[{
+  oid:x,
+  tid:x,
+  status:open/end,
+  uid:x,
+  createTime:x,
+  message:'asshole',
+  price:1 
+}]
+```
+
+#### Get all order of a task
+GET http://www.volley99.com/order/bytask/:id  
+Return
+```json
+[{
+  oid:x,
+  tid:x,
+  status:open/end,
+  uid:x,
+  createTime:x,
+  message:'asshole',
+  price:1 
+}]
+```
+
+#### Cancel one task
+GET http://www.volley99.com/order/cancel/:id  
+Return
+
+
 
 Test Module
 =====

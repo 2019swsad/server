@@ -14,8 +14,11 @@ const orderDB = db.get('Order')
 const orderRouter=new Router({prefix:'/order'})
 orderRouter
     .post('/create',        check,  createOrder)
-    .get('/all',            getAllOrder)
+    .get('/all',            check,  getAllOrder)
+    .get('/bytask/:id',     check,  getAllOrderOfTask)
     .get('/cancel/:id',     check,  isSelfOp,   cancelOrder)
+    .get('/finish/:id',     check,  finishOrder)
+    .get('/get/:id',        check,  getOrderbyID)
 
 
 // Task schema
@@ -48,21 +51,59 @@ async function createOrder(ctx,next) {
 
         await orderDB.insert(passdata)
 
-        ctx.redirect('/success')
+        ctx.body={status:'success'}
+        ctx.status=200
         await next()
     }
     else{
-        ctx.redirect('/failure')
+        ctx.body={status:'fail'}
+        ctx.status=400
         await next()
     }
     
 }
 
+async function finishOrder(ctx,next) {
+    res=await orderDB.findOneAndUpdate({tid:ctx.params.id},{status:'finish'})
+        .then((doc)=>{return true})
+    if(res){
+        ctx.body={status:'success'}
+        ctx.status=200
+    }
+    else{
+        ctx.body={status:'failed'}
+        ctx.status=400
+    }
+    await next()
+
+}
+
+async function getOrderbyID(ctx,next) {
+    res=await orderDB.findOne({tid:ctx.params.id}).then((doc)=>{return doc})
+    if(res.uid===ctx.state.user[0].uid){
+        ctx.body=res
+        ctx.status=200
+        console.log('get order success :83')   
+    }
+    else{
+        ctx.body={status:'fail'}
+        ctx=status=400
+        console.log('get order fail :88')   
+    }
+    await next()   
+}
+
+
 /**
 * @example curl -XGET "http://localhost:8081/order/all"
 */
 async function getAllOrder (ctx, next) {
-    ctx.body=await orderDB.find().then((docs)=>{return docs})
+    ctx.body=await orderDB.find({uid:ctx.state.user[0].uid}).then((docs)=>{return docs})
+    await next();
+}
+
+async function getAllOrderOfTask(ctx,next) {
+    ctx.body=await orderDB.find({tid:ctx.params.id}).then((docs)=>{return docs})
     await next();
 }
 
