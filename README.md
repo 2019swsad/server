@@ -22,19 +22,19 @@ When fail,it will return ```{status:'session fail'}```
 ### Render
 #### get mainpage
 ```sh
-$ curl -XGET 'http://localhost:8081/
+$ curl -XGET 'https://www.volley99.com/
 ```
 
 #### get testpage
 ```sh
-$ curl -XGET 'http://localhost:8081/test
+$ curl -XGET 'https://www.volley99.com/test
 ```
 
 ### User Part
 
 #### get user self (Need Auth and self)
 ```sh
-$ curl -XGET "http://localhost:8081/users/self/"
+$ curl -XGET "https://www.volley99.com/users/self/"
 
 #return
 {"_id":"5ce554fba2229c3a88b1fc15",
@@ -47,7 +47,7 @@ $ curl -XGET "http://localhost:8081/users/self/"
 ```
 #### get user info by uid (future Need Auth)
 ```sh
-$ curl -XGET "http://localhost:8081/users/info/:id"
+$ curl -XGET "https://www.volley99.com/users/info/:id"
 
 #return
 {
@@ -61,7 +61,7 @@ $ curl -XGET "http://localhost:8081/users/info/:id"
 
 #### Check name is avaliable
 ```sh
-$ curl -XGET "http://localhost:8081/users/checkname/:name"
+$ curl -XGET "https://www.volley99.com/users/checkname/:name"
 
 #return
 True #or
@@ -71,7 +71,7 @@ False
 
 #### get all users (deprecated)
 ```sh
-$ curl -XGET "http://localhost:8081/users"
+$ curl -XGET "https://www.volley99.com/users"
 
 #return like
 [{
@@ -86,7 +86,7 @@ $ curl -XGET "http://localhost:8081/users"
 
 #### Add new user / Register
 ```sh
-$ curl -XPOST "http://localhost:8081/users/reg" -d '{"username":"test","password":"123","phone":"13800138000","email":"example@mail.com"}' -H 'Content-Type: application/json'
+$ curl -XPOST "https://www.volley99.com/users/reg" -d '{"username":"test","password":"123","phone":"13800138000","email":"example@mail.com"}' -H 'Content-Type: application/json'
 
 #return states 201
 #return
@@ -96,7 +96,7 @@ False
 
 #### Login
 ```sh
-$ curl -XPOST "http://localhost:8081/users/login" -d '{"username":"test","password":"123"}' -H 'Content-Type: application/json' -c cookies.txt
+$ curl -XPOST "https://www.volley99.com/users/login" -d '{"username":"test","password":"123"}' -H 'Content-Type: application/json' -c cookies.txt
 
 #success return {"status": "success"}
 #fail return {"status": "error"}
@@ -104,7 +104,7 @@ $ curl -XPOST "http://localhost:8081/users/login" -d '{"username":"test","passwo
 
 #### Logout
 ```sh
-$ curl -XGET "http://localhost:8081/users/logout"
+$ curl -XGET "https://www.volley99.com/users/logout"
 
 #success redirect to /test
 #fail redirect to /
@@ -112,7 +112,7 @@ $ curl -XGET "http://localhost:8081/users/logout"
 
 #### Edit user by id (Need Auth)
 ```sh
-$ curl -XPOST "http://localhost:8081/users/" -d '{"uid":"92fb1730-2ec7-4db9-8fcb-7b35d0bd0fe3","password":"123123"}' -H 'Content-Type: application/json'
+$ curl -XPOST "https://www.volley99.com/users/" -d '{"uid":"92fb1730-2ec7-4db9-8fcb-7b35d0bd0fe3","password":"123123"}' -H 'Content-Type: application/json'
 
 #return
 True #or
@@ -121,7 +121,7 @@ False
 
 #### Delete user by id  (Need Auth)
 ```sh
-$ curl -XGET "http://localhost:8081/users/676271cb-ca17-4fcb-98de-174a21c6b1f7"
+$ curl -XGET "https://www.volley99.com/users/676271cb-ca17-4fcb-98de-174a21c6b1f7"
 
 #return 204
 #return
@@ -133,30 +133,30 @@ False
 All need to Auth
 #### Create wallet
 ```sh
-$ curl -XGET "http://localhost:8081/wallet/create"
+$ curl -XGET "https://www.volley99.com/wallet/create"
 ```
 
 #### get balance
 ```sh
-$ curl -XGET "http://localhost:8081/wallet/balance"
+$ curl -XGET "https://www.volley99.com/wallet/balance"
 # return int
 ```
 
 #### charge to self wallet
 ```sh
-$ curl -XGET "http://localhost:8081/wallet/deposit/:amount"
+$ curl -XGET "https://www.volley99.com/wallet/deposit/:amount"
 #return boolean
 ```
 
 #### list transaction
 ```sh
-$ curl -XGET "http://localhost:8081/wallet/transaction"
+$ curl -XGET "https://www.volley99.com/wallet/transaction"
 #return list of transaction
 ```
 
 #### make transaction
 ```sh
-$ curl -XPOST "http://localhost:8081/wallet/transaction" -d '{
+$ curl -XPOST "https://www.volley99.com/wallet/transaction" -d '{
   sender:"(uuid)",
   receiver:"(uuid)",
   amount:(int)
@@ -169,23 +169,23 @@ $ curl -XPOST "http://localhost:8081/wallet/transaction" -d '{
 #### Create task
 Need to Auth
 ```sh
-$ curl -XPOST "http://localhost:8081/task/create" -d '{"title":"test task","type":"Questionaire","salary":"20","description":"task for test","beginTime":"8-20-2019","expireTime":"8-22-2019","participantNum":"1","tags":"Testing"}' -H 'Content-Type: application/json'
+$ curl -XPOST "https://www.volley99.com/task/create" -d '{"title":"test task","type":"Questionaire","salary":"20","description":"task for test","beginTime":"8-20-2019","expireTime":"8-22-2019","participantNum":"1","tags":"Testing"}' -H 'Content-Type: application/json'
 ```
 
 #### Get All Task
 
 ```sh
-$ curl -XGET "http://localhost:8081/task/all"
+$ curl -XGET "https://www.volley99.com/task/all"
 ```
 
 #### Get one task
 ```sh
-$curl -XGET "http://localhost:8081/task/get/id"
+$curl -XGET "https://www.volley99.com/task/get/id"
 ```
 
 #### Query Task By element
 ```sh
-curl -XPOST "http://localhost:8081/task/query"  -d '{"title":"test task"}' -H 'Content-Type: application/json'
+curl -XPOST "https://www.volley99.com/task/query"  -d '{"title":"test task"}' -H 'Content-Type: application/json'
 # Allow element
 #title
 #type
@@ -203,13 +203,13 @@ curl -XPOST "http://localhost:8081/task/query"  -d '{"title":"test task"}' -H 'C
 Parameter:getTaskbyID
 
 ```sh
-curl -XGET "http://localhost:8081/task/number/:id"
+curl -XGET "https://www.volley99.com/task/number/:id"
 ```
 
 #### Select participator
 
 ```sh
-curl -XPOST "http://localhost:8081/task/participate" -d '{"tid":"...","uid":"..."}' -H 'Content-Type: application/json'
+curl -XPOST "https://www.volley99.com/task/participate" -d '{"tid":"...","uid":"..."}' -H 'Content-Type: application/json'
 ```
 
 ### Order part(All need auth)
