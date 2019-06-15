@@ -86,7 +86,7 @@ async function getAllTask (ctx, next) {
 * @param id:tid
 */
 async function getFinishNum(ctx, next){
-  number = await walletDB.findOne({tid:ctx.params.id}).then((doc)=>{return doc.finishNumber})
+  ctx.body = await walletDB.findOne({tid:ctx.params.id}).then((doc)=>{return doc.finishNumber})
   ctx.status = 201
   await next()
 }
@@ -103,7 +103,10 @@ async function selectParticipator(ctx, next){
     taskObj.currentParticipator=taskObj.currentParticipator+1
     let judge = createOrderByTask(taskObj.tid,userObj.uid)
   }
-
+  else {
+    ctx.body = false
+  }
+  ctx.body = judge
   ctx.status = 201
   await next()
 }
@@ -131,28 +134,31 @@ async function getTaskbyID(ctx,next) {
 async function queryTaskByOneElement(ctx,next) {
     let passData = await Joi.validate(ctx.request.body, taskRegSchema)
     if(passData.title!=null){
-      res=await taskDB.find({title:passData.title}).then((doc)=>{return doc})
+      ctx.body=await taskDB.find({title:passData.title}).then((doc)=>{return doc})
     }
     else if(passData.type!=null){
-      res=await taskDB.find({type:passData.type}).then((doc)=>{return doc})
+      ctx.body=await taskDB.find({type:passData.type}).then((doc)=>{return doc})
     }
     else if(passData.salary!=null){
-      res=await taskDB.find({salary:passData.salary}).then((doc)=>{return doc})
+      ctx.body=await taskDB.find({salary:passData.salary}).then((doc)=>{return doc})
     }
     else if(passData.description!=null){
-      res=await taskDB.find({description:passData.description}).then((doc)=>{return doc})
+      ctx.body=await taskDB.find({description:passData.description}).then((doc)=>{return doc})
     }
     else if(passData.beginTime!=null){
-      res=await taskDB.find({beginTimev:passData.beginTime}).then((doc)=>{return doc})
+      ctx.body=await taskDB.find({beginTimev:passData.beginTime}).then((doc)=>{return doc})
     }
     else if(passData.expireTime!=null){
-      res=await taskDB.find({expireTime:passData.expireTime}).then((doc)=>{return doc})
+      ctx.body=await taskDB.find({expireTime:passData.expireTime}).then((doc)=>{return doc})
     }
     else if(passData.participantNum!=null){
-      res=await taskDB.find({participantNum:passData.participantNum}).then((doc)=>{return doc})
+      ctx.body=await taskDB.find({participantNum:passData.participantNum}).then((doc)=>{return doc})
     }
     else if(passData.tags!=null){
-      res=await taskDB.find({tags:passData.tags}).then((doc)=>{return doc})
+      ctx.body=await taskDB.find({tags:passData.tags}).then((doc)=>{return doc})
+    }
+    else {
+      ctx.body=null
     }
     console.log(passData)
     ctx.status=201
