@@ -2,14 +2,9 @@ const db=require('../helpers/db')
 const personDB=db.get('Person')
 
 async function queryPerson(uid) {
+    let fin=new Object()
     res=await personDB.find({uid:uid}).then((doc)=>{return doc})
-    let fin={}
-    fin.uid=res.uid
-    fin.username=res.username
-    fin.credit=res.credit
-    fin.phone=res.phone
-    fin.url=res.url
-    return fin
+    return res
 }
 
 module.exports={queryPerson}

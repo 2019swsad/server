@@ -120,9 +120,9 @@ async function getTaskbyID(ctx,next) {
         res.isOrganizer=true
     else
         res.isOrganizer=false
-
-    res.userinfo=queryPerson(res.uid)
+    // usr=await queryPerson(res.uid)
     ctx.body=res
+    ctx.body.userinfo=await queryPerson(res.uid).then((doc)=>{return doc})
     console.log(ctx.body)
     ctx.status = 201
     await next()
@@ -157,6 +157,9 @@ async function queryTaskByOneElement(ctx,next) {
     else if(passData.tags!=null){
       ctx.body=await taskDB.find({tags:passData.tags}).then((doc)=>{return doc})
     }
+    else if(passData.uid!=null){
+        ctx.body=await taskDB.find({tags:passData.uid}).then((doc)=>{return doc})
+      }
     else {
       ctx.body=null
     }

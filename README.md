@@ -187,6 +187,16 @@ $curl -XGET "http://localhost:8081/task/get/id"
 #### Query Task By element
 ```sh
 curl -XPOST "http://localhost:8081/task/query"  -d '{"title":"test task"}' -H 'Content-Type: application/json'
+# Allow element
+#title
+#type
+#salary
+#description
+#beginTime
+#expireTime
+#participantNum
+#tags
+#uid
 ```
 
 #### Get finish number
