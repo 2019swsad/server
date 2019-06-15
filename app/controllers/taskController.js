@@ -41,7 +41,7 @@ taskRouter
     .post('/create',            check,  createTask)
     .get('/all',                getAllTask)
     .get('/cancel/:tid',        check,  isSelfOp, applyCancel)
-    .get('/participate/:id',    check,  selectParticipator)
+    .post('/participate',       selectParticipator)
     .get('/get/:id',            check,  getTaskbyID)
     .post('/query',             queryTaskByOneElement)
     .get('/number/:id',         check,  isSelfOp, getFinishNum)
@@ -109,15 +109,20 @@ async function applyCancel(ctx,next) {
 }
 
 /**
- * @example curl -XGET "http://localhost:8081/task/participate/:tid/:uid"
+ * @example curl -XPOST "http://localhost:8081/task/participate" -d '{"tid":"...","uid":"..."}' -H 'Content-Type: application/json'
  * @param tid: taskid
  * @param uid: selected user
  */
 async function selectParticipator(ctx, next){
   taskObj=await taskDB.findOne({tid:ctx.params.tid}).then((doc)=>{return doc})
   userObj=await userDB.findOne({uid:ctx.params.uid}).then((doc)=>{return doc})
-  taskObj.currentParticipator=taskObj.currentParticipator+1
-  createOrderByTask(taskObj.tid,userObj.uid)
+  if(taskObj.currentParticipator < taskObj.participantNum){
+    taskObj.currentParticipator=taskObj.currentParticipator+1
+    let judge = createOrderByTask(taskObj.tid,userObj.uid)
+  }
+
+  ctx.status = 201
+  await next()
 }
 
 /**

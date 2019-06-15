@@ -204,6 +204,12 @@ Parameter:getTaskbyID
 curl -XGET "http://localhost:8081/task/number/:id"
 ```
 
+#### Select participator
+
+```sh
+curl -XPOST "http://localhost:8081/task/participate" -d '{"tid":"...","uid":"..."}' -H 'Content-Type: application/json'
+```
+
 Test Module
 =====
 use postman team
