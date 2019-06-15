@@ -101,7 +101,7 @@ async function list (ctx, next) {
  * curl -XPOST "http://localhost:8081/users/reg" -d '{"name":"New record 1"}' -H 'Content-Type: application/json'
  */
 async function registerUser (ctx, next) {
-    res=await personDB.find({username: ctx.params.name}).then((doc) => {
+    res=await personDB.find({username: ctx.request.body.username}).then((doc) => {
         if (doc.length>0) {
             return false
         }
