@@ -9,7 +9,7 @@ const transDB = db.get('transactions')
  * @param {*} id int
  */
 async function queryBalance(id) {
-    return await walletDB.findOne({uid:id}).then((doc)=>{return doc.balance})
+    return await walletDB.findOne({uid:id}).then((doc)=>{console.log(doc);return doc.balance})
 }
 
 /**

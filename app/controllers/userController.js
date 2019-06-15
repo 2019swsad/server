@@ -4,7 +4,8 @@ const Joi = require('joi'),
     passport=require('koa-passport'),
     db=require('../helpers/db'),
     {check,isSelfOp}=require('../helpers/auth'),
-    {queryPerson}=require('../helpers/userHelper')
+    {queryPerson}=require('../helpers/userHelper'),
+    {queryBalance}=require('../helpers/walletHelper')
 
 // Simple user schema, more info: https://github.com/hapijs/joi
 const userRegSchema = Joi.object().keys({
@@ -22,12 +23,13 @@ userRouter
     .get('/',                   check,  list)
     .get('/self',               check,  getSelf)
     .get('/checkname/:name',    nameCanU)
-    .post('/reg',               registerUser)
-    .get('/logout',             logoutUser)
-    .post('/update',            check,  isSelfOp,   updateUser)
-    .get('/delete/:id',         check,  isSelfOp,   removeUser)
-    .post('/login',             loginUser)
     .get('/info/:id',           /*check,*/  getInfo)
+    .get('/logout',             logoutUser)
+    .get('/delete/:id',         check,  isSelfOp,   removeUser)
+    .post('/reg',               registerUser)
+    .post('/update',            check,  isSelfOp,   updateUser)
+    .post('/login',             loginUser)
+    
 
 
 
@@ -62,7 +64,8 @@ async function getSelf (ctx, next) {
     ctx.body=await personDB
         .findOne({uid:ctx.state.user[0].uid})
         .then((doc)=>{return doc})
-    await next();
+    ctx.body.balance=await queryBalance(ctx.state.user[0].uid)
+    await next()
 }
 
 
