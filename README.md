@@ -137,7 +137,7 @@ All need to Auth
 $ curl -XGET "http://localhost:8081/wallet/create"
 ```
 
-#### get balance 
+#### get balance
 ```sh
 $ curl -XGET "http://localhost:8081/wallet/balance"
 # return int
@@ -173,13 +173,6 @@ Need to Auth
 $ curl -XPOST "http://localhost:8081/task/create" -d '{"title":"test task","type":"Questionaire","salary":"20","description":"task for test","beginTime":"8-20-2019","expireTime":"8-22-2019","participantNum":"1","tags":"Testing"}' -H 'Content-Type: application/json'
 ```
 
-#### Cancel task
-Need to Auth and check user.
-Id refers to task id.
-```sh
-$ curl -XGET "http://localhost:8081/task/cancel/:id"
-```
-
 #### Get All Task
 
 ```sh
@@ -189,6 +182,25 @@ $ curl -XGET "http://localhost:8081/task/all"
 #### Get one task
 ```sh
 $curl -XGET "http://localhost:8081/task/get/id"
+```
+
+#### Query Task By element
+```sh
+curl -XPOST "http://localhost:8081/task/query"  -d '{"title":"test task"}' -H 'Content-Type: application/json'
+```
+
+#### Get finish number
+
+Parameter:getTaskbyID
+
+```sh
+curl -XGET "http://localhost:8081/task/number/:id"
+```
+
+#### Select participator
+
+```sh
+curl -XPOST "http://localhost:8081/task/participate" -d '{"tid":"...","uid":"..."}' -H 'Content-Type: application/json'
 ```
 
 Test Module
@@ -225,5 +237,3 @@ Doc
 
 ## Auth example
 [This](https://mherman.org/blog/user-authentication-with-passport-and-koa/)
-
-

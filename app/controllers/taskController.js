@@ -22,6 +22,17 @@ const taskRegSchema = Joi.object().keys({
         tags:Joi.string()
     })
 
+const taskQuerySchema = Joi.object().keys({
+        title:Joi.string().min(4).max(60).trim(),
+        type:Joi.string(),
+        salary:Joi.number().integer().min(1),
+        description:Joi.string(),
+        beginTime:Joi.date().min('now'),
+        expireTime:Joi.date().min(Joi.ref('beginTime')),
+        participantNum:Joi.number().integer().min(1),
+        tags:Joi.string()
+    })
+
 const taskDB = db.get('Task')
 const userDB = db.get('Person')
 
@@ -29,9 +40,10 @@ const taskRouter=new Router({prefix:'/task'})
 taskRouter
     .post('/create',            check,  createTask)
     .get('/all',                getAllTask)
-    .get('/cancel/:tid',        check,  applyCancel)
-    .get('/participate/:id',    check,  selectParticipator)
+    .post('/participate',       selectParticipator)
     .get('/get/:id',            check,  getTaskbyID)
+    .post('/query',             queryTaskByOneElement)
+    .get('/number/:id',         check,  isSelfOp, getFinishNum)
 
 
 
@@ -47,6 +59,7 @@ async function createTask (ctx, next) {
     passData.totalCost=passData.salary*passData.participantNum
     passData.createTime=getNow()
     passData.currentParticipator=0
+    passData.finishNumber=Buffer.from([Math.floor(Math.random()*10),Math.floor(Math.random()*10),Math.floor(Math.random()*10),Math.floor(Math.random()*10)]);
     console.log(passData)
     await createWallet(passData.tid,true)
 
@@ -69,31 +82,33 @@ async function getAllTask (ctx, next) {
 }
 
 /**
-* @example curl -XGET "http://localhost:8081/task/cancel/:id"
-* Todo : do as how 用例图 do
+* @example curl -XGET "http://localhost:8081/task/number/:id"
+* @param id:tid
 */
-async function applyCancel(ctx,next) {
-    taskObj=await taskDB.findOne({tid:ctx.params.tid}).then((doc)=>{return doc})
-    if(taskObj.uid!==ctx.state.user[0].uid)
-        return false
-    if(isEarly(getNow(),taskObj.endtime)){                  //if not reach the end time
-        updateUserFunc({uid:taskObj.uid,credit:'low'})      //?
-        payByTask(taskObj.tid,'notFin',0.3*taskObj.eachSalary)
-    }
-    finishTask(taskObj.tid)
-
+async function getFinishNum(ctx, next){
+  ctx.body = await walletDB.findOne({tid:ctx.params.id}).then((doc)=>{return doc.finishNumber})
+  ctx.status = 201
+  await next()
 }
 
 /**
- * @example curl -XGET "http://localhost:8081/task/participate/:tid/:uid"
+ * @example curl -XPOST "http://localhost:8081/task/participate" -d '{"tid":"...","uid":"..."}' -H 'Content-Type: application/json'
  * @param tid: taskid
  * @param uid: selected user
  */
 async function selectParticipator(ctx, next){
   taskObj=await taskDB.findOne({tid:ctx.params.tid}).then((doc)=>{return doc})
   userObj=await userDB.findOne({uid:ctx.params.uid}).then((doc)=>{return doc})
-  taskObj.currentParticipator=taskObj.currentParticipator+1
-  createOrderByTask(taskObj.tid,userObj.uid)
+  if(taskObj.currentParticipator < taskObj.participantNum){
+    taskObj.currentParticipator=taskObj.currentParticipator+1
+    let judge = createOrderByTask(taskObj.tid,userObj.uid)
+  }
+  else {
+    ctx.body = false
+  }
+  ctx.body = judge
+  ctx.status = 201
+  await next()
 }
 
 /**
@@ -112,5 +127,44 @@ async function getTaskbyID(ctx,next) {
     ctx.status = 201
     await next()
 }
+
+/**
+ * @example curl -XPOST "http://localhost:8081/task/query"  -d '{"title":"test task"}' -H 'Content-Type: application/json'
+ */
+async function queryTaskByOneElement(ctx,next) {
+    let passData = await Joi.validate(ctx.request.body, taskRegSchema)
+    if(passData.title!=null){
+      ctx.body=await taskDB.find({title:passData.title}).then((doc)=>{return doc})
+    }
+    else if(passData.type!=null){
+      ctx.body=await taskDB.find({type:passData.type}).then((doc)=>{return doc})
+    }
+    else if(passData.salary!=null){
+      ctx.body=await taskDB.find({salary:passData.salary}).then((doc)=>{return doc})
+    }
+    else if(passData.description!=null){
+      ctx.body=await taskDB.find({description:passData.description}).then((doc)=>{return doc})
+    }
+    else if(passData.beginTime!=null){
+      ctx.body=await taskDB.find({beginTimev:passData.beginTime}).then((doc)=>{return doc})
+    }
+    else if(passData.expireTime!=null){
+      ctx.body=await taskDB.find({expireTime:passData.expireTime}).then((doc)=>{return doc})
+    }
+    else if(passData.participantNum!=null){
+      ctx.body=await taskDB.find({participantNum:passData.participantNum}).then((doc)=>{return doc})
+    }
+    else if(passData.tags!=null){
+      ctx.body=await taskDB.find({tags:passData.tags}).then((doc)=>{return doc})
+    }
+    else {
+      ctx.body=null
+    }
+    console.log(passData)
+    ctx.status=201
+    await next()
+}
+
+
 
 module.exports=taskRouter
