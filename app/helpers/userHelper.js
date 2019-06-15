@@ -3,6 +3,7 @@ const personDB=db.get('Person')
 
 async function queryPerson(uid) {
     res=await personDB.find({uid:uid}).then((doc)=>{return doc})
+    let fin={}
     fin.uid=res.uid
     fin.username=res.username
     fin.credit=res.credit

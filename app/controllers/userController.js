@@ -132,8 +132,11 @@ async function loginUser (ctx, next) {
             ctx.body={status:'success'}
             ctx.status=200
         } else {
-            console.log('success')
+            console.log('false at login')
             console.log(user)
+            console.log(err)
+            console.log(info)
+            console.log(status)
             ctx.status = 400
             ctx.body={status:'error'}
         }
