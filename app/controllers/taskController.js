@@ -8,7 +8,7 @@ const Joi = require('joi'),
     {countOrder,payByTask,noticeNotFinish,createOrderByTask}=require('../helpers/orderHelper'),
     {updateUserFunc}=require('./userController'),
     {createWallet,transferFunc}=require('../helpers/walletHelper'),
-    {queryPerson}=require('../helpers/userHelper')
+    {queryPerson}=require('../helpers/userHelper'),
     {queryMsgList,createMsg}=require('../helpers/msgHelper')
 
 
