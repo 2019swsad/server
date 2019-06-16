@@ -73,9 +73,16 @@ async function createTask (ctx, next) {
     //TODO: need to handle failure
     chargeStatus=await transferFunc(ctx.state.user[0].uid,passData.tid,passData.totalCost)
     console.log(chargeStatus)
+    if(chargeStatus){
+      ctx.body=await taskDB.insert(passData).then((doc)=>{return doc.tid})
+      await createMsg(ctx.state.user[0].uid,ctx.state.user[0].uid, "Create task", "你成功发布了"+passData.title+"任务")
+      ctx.status = 201
+    }
+    else {
+      ctx.body={status:"No enough money"}
+      ctx.status = 400
+    }
 
-    ctx.body=await taskDB.insert(passData).then((doc)=>{return doc.tid})
-    ctx.status = 201
     await next()
 }
 
@@ -93,7 +100,9 @@ async function getAllTask (ctx, next) {
 * @param id:tid
 */
 async function getFinishNum(ctx, next){
-  ctx.body = await walletDB.findOne({tid:ctx.params.id}).then((doc)=>{return doc.finishNumber})
+  res = await walletDB.findOne({tid:ctx.params.id}).then((doc)=>{return doc})
+  ctx.body = res.finishNumber
+  await createMsg(ctx.state.user[0].uid, ctx.state.user[0].uid, "Finish number", "任务"+res.title+"的完成码是："+res.finishNumber)
   ctx.status = 201
   await next()
 }
@@ -114,7 +123,7 @@ async function selectParticipator(ctx, next){
     ctx.body = false
   }
   if(judge){
-    createMsg(ctx.state.user[0].uid, ctx.params.uid, "Add participator", "你发布的"+taskObj.title+"任务有了新的参与者"+userObj.nickname)
+    await createMsg(ctx.state.user[0].uid, ctx.params.uid, "Add participator", "你发布的"+taskObj.title+"任务有了新的参与者"+userObj.nickname)
   }
   ctx.body = judge
   ctx.status = 201
