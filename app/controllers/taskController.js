@@ -34,7 +34,8 @@ const taskQuerySchema = Joi.object().keys({
         expireTime:Joi.date().min(Joi.ref('beginTime')),
         participantNum:Joi.number().integer().min(1),
         status:Joi.string(),
-        tags:Joi.string()
+        tags:Joi.string(),
+        uid:Joi.string()
     })
 
 const taskDB = db.get('Task')
