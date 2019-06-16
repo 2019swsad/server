@@ -1,5 +1,6 @@
 const {transferFunc}=require('../helpers/walletHelper'),
     {testReq}=require('../helpers/taskHelper'),
+    uuid=require('uuid/v4'),
     db=require('../helpers/db'),
     {getNow}=require('../helpers/date')
 
