@@ -39,6 +39,7 @@ const taskQuerySchema = Joi.object().keys({
 
 const taskDB = db.get('Task')
 const userDB = db.get('Person')
+const orderDB = db.get('Order')
 
 const taskRouter=new Router({prefix:'/task'})
 taskRouter
@@ -54,6 +55,16 @@ taskRouter
     .get('/finish/:id',         check,  setTaskFinish)
     .get('/ongoing/:id',        check,  setOnGoing)
     .get('/start/:id',          check,  setTaskStart)
+    .get('/participator',       getParticipator)
+
+
+async function getParticipator(ctx, next){
+  res = await orderDB.find({tid:ctx.params.id}).then((docs)=>{return docs.uid})
+  ctx.body = await userDB.find({uid:res}).then((docs)=>{return docs})
+  console.log(ctx.body)
+  ctx.status = 201
+  await next()
+}
 
 /**
  * @example curl -XGET "http://localhost:8081/task/finish/:id"
