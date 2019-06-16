@@ -5,7 +5,7 @@ const Joi = require('joi'),
     db=require('../helpers/db'),
     {check,isSelfOp}=require('../helpers/auth'),
     {getNow}=require('../helpers/date'),
-    
+
     {testReq}=require('../helpers/taskHelper')
 
 
@@ -19,6 +19,9 @@ orderRouter
     .get('/cancel/:id',     check,  isSelfOp,   cancelOrder)
     .get('/finish/:id',     check,  finishOrder)
     .get('/get/:id',        check,  getOrderbyID)
+    .get('/status/finish/:id',     check,  isSelfOp, setTaskFinish)
+    .get('/status/ongoing/:id',    check,  isSelfOp, setOnGoing)
+    .get('/status/start/:id',      check,  isSelfOp, setTaskStart)
 
 
 // Task schema
@@ -29,7 +32,7 @@ const orderSchema = Joi.object().keys({
 
 /**
  * @example curl -XPOST "http://localhost:8081/order/create" -d '{uid:"xxx",tid:"xxx",}' -H 'Content-Type: application/json'
- * oid tid status uid createTime message price 
+ * oid tid status uid createTime message price
  */
 async function createOrder(ctx,next) {
     let passdata=await Joi.validate(ctx.request.body,orderSchema)
@@ -54,7 +57,7 @@ async function createOrder(ctx,next) {
         ctx.status=400
         await next()
     }
-    
+
 }
 
 async function finishOrder(ctx,next) {
@@ -77,14 +80,14 @@ async function getOrderbyID(ctx,next) {
     if(res.uid===ctx.state.user[0].uid){
         ctx.body=res
         ctx.status=200
-        console.log('get order success :83')   
+        console.log('get order success :83')
     }
     else{
         ctx.body={status:'fail'}
         ctx=status=400
-        console.log('get order fail :88')   
+        console.log('get order fail :88')
     }
-    await next() 
+    await next()
 }
 
 
@@ -109,6 +112,39 @@ async function cancelOrder(ctx, next) {
   await orderDB.remove({oid:ctx.params.id,uid:ctx.state.user[0].uid});
   ctx.status = 204;
   await next();
+}
+
+/**
+ * @example curl -XGET "http://localhost:8081/order/status/finish/:id"
+ */
+async function setTaskFinish(ctx, next){
+  res = await orderDB.findOne({oid:ctx.params.id}).then((doc)=>{return doc})
+  res.status = "已结束"
+  ctx.body = res.status
+  ctx.status = 201
+  await next()
+}
+
+/**
+ * @example curl -XGET "http://localhost:8081/order/status/ongoing/:id"
+ */
+async function setOnGoing(ctx, next){
+  res = await orderDB.findOne({oid:ctx.params.id}).then((doc)=>{return doc})
+  res.status = "进行中"
+  ctx.body = res.status
+  ctx.status = 201
+  await next()
+}
+
+/**
+ * @example curl -XGET "http://localhost:8081/order/status/start/:id"
+ */
+async function setTaskStart(ctx, next){
+  res = await orderDB.findOne({oid:ctx.params.id}).then((doc)=>{return doc})
+  res.status = "未开始"
+  ctx.body = res.status
+  ctx.status = 201
+  await next()
 }
 
 module.exports=orderRouter

@@ -340,6 +340,27 @@ order info,code 200
 {status:'fail'} code 400
 ```
 
+#### Change order status
+
+Parameter: id: order id
+Return: order status
+
+Set to 已结束:
+```sh
+curl -XGET "https://www.volley99.com/order/status/finish/:id"
+```
+
+Set to 进行中:
+```sh
+curl -XGET "https://www.volley99.com/order/status/ongoing/:id"
+```
+
+Set to 未开始:
+```sh
+curl -XGET "https://www.volley99.com/order/status/start/:id"
+```
+
+
 ### Massage part(All need auth)
 
 #### Get a receiver's msg list
