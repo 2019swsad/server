@@ -50,10 +50,10 @@ taskRouter
     .get('/getCreate',          check,  getCreateTask)
     .get('/getjoin',            check,  getJoinTask)
     .get('/all',                getAllTask)
-    .get('/number/:id',         check,  isSelfOp, getFinishNum)
-    .get('/finish/:id',         check,  isSelfOp, setTaskFinish)
-    .get('/ongoing/:id',        check,  isSelfOp, setOnGoing)
-    .get('/start/:id',          check,  isSelfOp, setTaskStart)
+    .get('/number/:id',         check,  getFinishNum)
+    .get('/finish/:id',         check,  setTaskFinish)
+    .get('/ongoing/:id',        check,  setOnGoing)
+    .get('/start/:id',          check,  setTaskStart)
 
 /**
  * @example curl -XGET "http://localhost:8081/task/finish/:id"
