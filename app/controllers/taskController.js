@@ -55,7 +55,7 @@ taskRouter
     .get('/finish/:id',         check,  setTaskFinish)
     .get('/ongoing/:id',        check,  setOnGoing)
     .get('/start/:id',          check,  setTaskStart)
-    .get('/participator',       getParticipator)
+    .get('/participator/:id',   getParticipator)
 
 
 async function getParticipator(ctx, next){
