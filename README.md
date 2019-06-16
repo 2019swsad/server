@@ -325,7 +325,7 @@ Get http://www.volley99.com/msg/list
 
 #### Create a comment
 POST http://www.volley99.com/msg/comment
-```json
+```
 {uid:"...",
 msg:"test"}
 ```

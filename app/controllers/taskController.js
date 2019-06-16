@@ -9,6 +9,8 @@ const Joi = require('joi'),
     {updateUserFunc}=require('./userController'),
     {createWallet,transferFunc}=require('../helpers/walletHelper'),
     {queryPerson}=require('../helpers/userHelper')
+    {queryMsgList,createMsg}=require('../helpers/msgHelper')
+
 
 // Task schema
 const taskRegSchema = Joi.object().keys({
@@ -111,6 +113,9 @@ async function selectParticipator(ctx, next){
   else {
     ctx.body = false
   }
+  if(judge){
+    createMsg(ctx.state.user[0].uid, ctx.params.uid, "Add participator", "你发布的"+taskObj.title+"任务有了新的参与者"+userObj.nickname)
+  }
   ctx.body = judge
   ctx.status = 201
   await next()
@@ -195,6 +200,6 @@ async function getCreateTask(ctx,next) {
 }
 
 async function getJoinTask(ctx,next) {
-    
+
 }
 module.exports=taskRouter
