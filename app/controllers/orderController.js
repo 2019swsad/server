@@ -23,14 +23,8 @@ orderRouter
 
 // Task schema
 const orderSchema = Joi.object().keys({
-    title:Joi.string().min(4).max(60).trim().required(),
-    type:Joi.string().required(),
-    salary:Joi.number().integer().min(1).required(),
-    description:Joi.string(),
-    beginTime:Joi.date().min('now').required(),
-    expireTime:Joi.date().min(Joi.ref('beginTime')).required(),
-    participantNum:Joi.number().integer().min(1).required(),
-    tags:Joi.string()
+    tid:Joi.string().trim().required(),
+    status:Joi.string().trim().required()
 });
 
 /**
@@ -38,15 +32,15 @@ const orderSchema = Joi.object().keys({
  * oid tid status uid createTime message price 
  */
 async function createOrder(ctx,next) {
-    // let passdata=await Joi.validate(ctx.request.body,orderSchema)
-    let passdata=ctx.request.body
+    let passdata=await Joi.validate(ctx.request.body,orderSchema)
+    // let passdata=ctx.request.body
     passdata.createTime=getNow()
     let makeStatus=await testReq(passdata.tid,passdata.createTime)
     if(makeStatus!==-1)
     {
         passdata.oid=uuid()
         passdata.uid=ctx.state.user[0].uid
-        passdata.status='open'
+        // passdata.status='open'
         passdata.price=makeStatus
 
         await orderDB.insert(passdata)
