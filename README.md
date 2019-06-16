@@ -254,8 +254,10 @@ POST http://www.volley99.com/order/create
 ```json
 {
   tid:'xxx',
-  message:'xxx',
+  //message:'xxx',
+  status:'success'/'waiting'
 }
+#成功报名并且已经开启,和成功报名但需要等待确认/启动
 ```
 Return
 ```
