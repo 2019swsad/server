@@ -59,12 +59,11 @@ taskRouter
  * @example curl -XGET "http://localhost:8081/task/finish/:id"
  */
 async function setTaskFinish(ctx, next){
-  res = await taskDB.findOne({tid:ctx.params.id}).then((doc)=>{
-    doc.status="已结束"
-    return doc})
+  res = await taskDB.findOneAndUpdate({tid:ctx.params.id},{$set:{status:"已结束"}}).then((doc)=>{return doc})
   res.status = "已结束"
   ctx.body = res.status
   ctx.status = 201
+  console.log(res)
   await next()
 }
 
@@ -72,12 +71,11 @@ async function setTaskFinish(ctx, next){
  * @example curl -XGET "http://localhost:8081/task/ongoing/:id"
  */
 async function setOnGoing(ctx, next){
-  res = await taskDB.findOne({tid:ctx.params.id}).then((doc)=>{
-    doc.status="进行中"
-    return doc})
+  res = await taskDB.findOneAndUpdate({tid:ctx.params.id},{$set:{status:"进行中"}}).then((doc)=>{return doc})
   res.status = "进行中"
   ctx.body = res.status
   ctx.status = 201
+  console.log(res)
   await next()
 }
 
@@ -85,12 +83,11 @@ async function setOnGoing(ctx, next){
  * @example curl -XGET "http://localhost:8081/task/start/:id"
  */
 async function setTaskStart(ctx, next){
-  res = await taskDB.findOne({tid:ctx.params.id}).then((doc)=>{
-    doc.status="未开始"
-    return doc})
+  res = await taskDB.findOneAndUpdate({tid:ctx.params.id},{$set:{status:"未开始"}}).then((doc)=>{return doc})
   res.status = "未开始"
   ctx.body = res.status
   ctx.status = 201
+  console.log(res)
   await next()
 }
 
