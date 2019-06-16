@@ -247,6 +247,26 @@ curl -XGET "https://www.volley99.com/task/number/:id"
 curl -XPOST "https://www.volley99.com/task/participate" -d '{"tid":"...","uid":"..."}' -H 'Content-Type: application/json'
 ```
 
+#### Change task status
+
+Parameter: id: task id
+Return: task status
+
+Set to 已结束:
+```sh
+curl -XGET "https://www.volley99.com/task/finish/:id"
+```
+
+Set to 进行中:
+```sh
+curl -XGET "https://www.volley99.com/task/ongoing/:id"
+```
+
+Set to 未开始:
+```sh
+curl -XGET "https://www.volley99.com/task/start/:id"
+```
+
 ### Order part(All need auth)
 
 #### create

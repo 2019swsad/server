@@ -50,9 +50,42 @@ taskRouter
     .get('/getjoin',            check,  getJoinTask)
     .get('/all',                getAllTask)
     .get('/number/:id',         check,  isSelfOp, getFinishNum)
+    .get('/finish/:id',         check,  isSelfOp, setTaskFinish)
+    .get('/ongoing/:id',        check,  isSelfOp, setOnGoing)
+    .get('/start/:id',          check,  isSelfOp, setTaskStart)
 
+/**
+ * @example curl -XGET "http://localhost:8081/task/finish/:id"
+ */
+async function setTaskFinish(ctx, next){
+  res = await taskDB.findOne({tid:ctx.params.id}).then((doc)=>{return doc})
+  res.status = "已结束"
+  ctx.body = res.status
+  ctx.status = 201
+  await next()
+}
 
+/**
+ * @example curl -XGET "http://localhost:8081/task/ongoing/:id"
+ */
+async function setOnGoing(ctx, next){
+  res = await taskDB.findOne({tid:ctx.params.id}).then((doc)=>{return doc})
+  res.status = "进行中"
+  ctx.body = res.status
+  ctx.status = 201
+  await next()
+}
 
+/**
+ * @example curl -XGET "http://localhost:8081/task/start/:id"
+ */
+async function setTaskStart(ctx, next){
+  res = await taskDB.findOne({tid:ctx.params.id}).then((doc)=>{return doc})
+  res.status = "未开始"
+  ctx.body = res.status
+  ctx.status = 201
+  await next()
+}
 
 /**
  * @example curl -XPOST "http://localhost:8081/task/create" -d '{"title":"test task","type":"Questionaire","salary":"20","description":"task for test","beginTime":"8-20-2019","expireTime":"8-22-2019","participantNum":"1","tags":"Testing"}' -H 'Content-Type: application/json'
@@ -62,7 +95,7 @@ async function createTask (ctx, next) {
     let passData = await Joi.validate(ctx.request.body, taskRegSchema)
     passData.uid=ctx.state.user[0].uid
     passData.tid=uuid()
-    passData.status="start"
+    passData.status="未开始"
     passData.totalCost=passData.salary*passData.participantNum
     passData.createTime=getNow()
     passData.currentParticipator=0
@@ -100,7 +133,7 @@ async function getAllTask (ctx, next) {
 * @param id:tid
 */
 async function getFinishNum(ctx, next){
-  res = await walletDB.findOne({tid:ctx.params.id}).then((doc)=>{return doc})
+  res = await taskDB.findOne({tid:ctx.params.id}).then((doc)=>{return doc})
   ctx.body = res.finishNumber
   await createMsg(ctx.state.user[0].uid, ctx.state.user[0].uid, "Finish number", "任务"+res.title+"的完成码是："+res.finishNumber)
   ctx.status = 201
