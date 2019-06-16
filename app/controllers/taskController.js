@@ -33,6 +33,7 @@ const taskQuerySchema = Joi.object().keys({
         beginTime:Joi.date().min('now'),
         expireTime:Joi.date().min(Joi.ref('beginTime')),
         participantNum:Joi.number().integer().min(1),
+        status:Joi.string(),
         tags:Joi.string()
     })
 
@@ -198,7 +199,7 @@ async function queryTaskByOneElement(ctx,next) {
       ctx.body=await taskDB.find({description:passData.description}).then((doc)=>{return doc})
     }
     else if(passData.beginTime!=null){
-      ctx.body=await taskDB.find({beginTimev:passData.beginTime}).then((doc)=>{return doc})
+      ctx.body=await taskDB.find({beginTime:passData.beginTime}).then((doc)=>{return doc})
     }
     else if(passData.expireTime!=null){
       ctx.body=await taskDB.find({expireTime:passData.expireTime}).then((doc)=>{return doc})
@@ -210,7 +211,10 @@ async function queryTaskByOneElement(ctx,next) {
       ctx.body=await taskDB.find({tags:passData.tags}).then((doc)=>{return doc})
     }
     else if(passData.uid!=null){
-        ctx.body=await taskDB.find({tags:passData.uid}).then((doc)=>{return doc})
+        ctx.body=await taskDB.find({uid:passData.uid}).then((doc)=>{return doc})
+    }
+    else if(passData.status!=null){
+        ctx.body=await taskDB.find({status:passData.status}).then((doc)=>{return doc})
       }
     else {
       ctx.body=null
