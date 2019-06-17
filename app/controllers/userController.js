@@ -203,7 +203,7 @@ async function updateUserFunc(user) {
  async function rateUser(ctx, next){
    ctx.body = await personDB.findOneAndUpdate(
        {uid:ctx.request.body.uid},
-       {$set:{number:number+=1}},{$set:{credit:(credit*(number-1)+rate)/number}}).then((docs)=>{return docs});
+       {$set:{number:number+=1}},{$set:{credit:(credit*number+rate)/(number+1)}}).then((docs)=>{return docs});
    ctx.status = 201
    await next()
  }

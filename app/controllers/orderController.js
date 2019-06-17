@@ -39,58 +39,58 @@ const orderSchema = Joi.object().keys({
  */
 async function createOrder(ctx,next) {
     let passdata=await Joi.validate(ctx.request.body,orderSchema)
-    let task = await taskDB.findOne({tid:passdata.tid}).then((doc)=>{return true})
+    let task = await taskDB.findOne({tid:passdata.tid}).then((doc)=>{return doc})
     if(task.status === "已结束"){
       ctx.body = {status:'failure'}
     }
     else{
-    if(task.currentParticipator < task.participantNum){
-       task.currentParticipator=task.currentParticipator+1
-        // let passdata=ctx.request.body
-        passdata.createTime=getNow()
-        let makeStatus=await testReq(passdata.tid,passdata.createTime)
-        if(makeStatus!==-1) {
-            passdata.oid=uuid()
-            passdata.uid=ctx.state.user[0].uid
-            passdata.status='success'
-            passdata.price=makeStatus
+      if(task.currentParticipator < task.participantNum){
+         task.currentParticipator=task.currentParticipator+1
+          // let passdata=ctx.request.body
+          passdata.createTime=getNow()
+          let makeStatus=await testReq(passdata.tid,passdata.createTime)
+          if(makeStatus!==-1) {
+              passdata.oid=uuid()
+              passdata.uid=ctx.state.user[0].uid
+              passdata.status='success'
+              passdata.price=makeStatus
 
-            await orderDB.insert(passdata)
+              await orderDB.insert(passdata)
 
-            ctx.body={status:'success'}
-            ctx.status=200
-            await next()
+              ctx.body={status:'success'}
+              ctx.status=200
+              await next()
+          }
+          else{
+              ctx.body={status:'fail'}
+              ctx.status=400
+              await next()
+          }
         }
-        else{
-            ctx.body={status:'fail'}
-            ctx.status=400
-            await next()
-        }
-      }
 
-    else{
-        task.candidate += 1
-        // let passdata=ctx.request.body
-        passdata.createTime=getNow()
-        let makeStatus=await testReq(passdata.tid,passdata.createTime)
-        if(makeStatus!==-1) {
-            passdata.oid=uuid()
-            passdata.uid=ctx.state.user[0].uid
-            passdata.status='pending'
-            passdata.price=makeStatus
+      else{
+          task.candidate += 1
+          // let passdata=ctx.request.body
+          passdata.createTime=getNow()
+          let makeStatus=await testReq(passdata.tid,passdata.createTime)
+          if(makeStatus!==-1) {
+              passdata.oid=uuid()
+              passdata.uid=ctx.state.user[0].uid
+              passdata.status='pending'
+              passdata.price=makeStatus
 
-            await orderDB.insert(passdata)
+              await orderDB.insert(passdata)
 
-            ctx.body={status:'success'}
-            ctx.status=200
-            await next()
+              ctx.body={status:'success'}
+              ctx.status=200
+              await next()
+          }
+          else{
+              ctx.body={status:'fail'}
+              ctx.status=400
+              await next()
+          }
         }
-        else{
-            ctx.body={status:'fail'}
-            ctx.status=400
-            await next()
-        }
-      }
     }
   }
 
