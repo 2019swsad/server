@@ -29,7 +29,7 @@ orderRouter
 // Task schema
 const orderSchema = Joi.object().keys({
     tid:Joi.string().trim().required(),
-    status:Joi.string().trim().required()
+    status:Joi.string().trim()
 });
 
 /**
@@ -42,31 +42,58 @@ async function createOrder(ctx,next) {
     if(task.status === "已结束"){
       ctx.body = {status:'failure'}
     }
-    else{
-      // let passdata=ctx.request.body
-      passdata.createTime=getNow()
-      let makeStatus=await testReq(passdata.tid,passdata.createTime)
-      if(makeStatus!==-1)
-      {
-          passdata.oid=uuid()
-          passdata.uid=ctx.state.user[0].uid
-          // passdata.status='open'
-          passdata.price=makeStatus
-
-          await orderDB.insert(passdata)
-
-          ctx.body={status:'success'}
-          ctx.status=200
-          await next()
-      }
+    if(task.currentParticipator < task.participantNum){
+      taskObj.currentParticipator=taskObj.currentParticipator+1
       else{
-          ctx.body={status:'fail'}
-          ctx.status=400
-          await next()
+        // let passdata=ctx.request.body
+        passdata.createTime=getNow()
+        let makeStatus=await testReq(passdata.tid,passdata.createTime)
+        if(makeStatus!==-1) {
+            passdata.oid=uuid()
+            passdata.uid=ctx.state.user[0].uid
+            passdata.status='success'
+            passdata.price=makeStatus
+
+            await orderDB.insert(passdata)
+
+            ctx.body={status:'success'}
+            ctx.status=200
+            await next()
+        }
+        else{
+            ctx.body={status:'fail'}
+            ctx.status=400
+            await next()
+        }
       }
     }
+    else{
+      taskObj.candidate += 1
+      else{
+        // let passdata=ctx.request.body
+        passdata.createTime=getNow()
+        let makeStatus=await testReq(passdata.tid,passdata.createTime)
+        if(makeStatus!==-1) {
+            passdata.oid=uuid()
+            passdata.uid=ctx.state.user[0].uid
+            passdata.status='pending'
+            passdata.price=makeStatus
 
-}
+            await orderDB.insert(passdata)
+
+            ctx.body={status:'success'}
+            ctx.status=200
+            await next()
+        }
+        else{
+            ctx.body={status:'fail'}
+            ctx.status=400
+            await next()
+        }
+      }
+    }
+  }
+
 
 /**
  * @example curl -XPOST "http://localhost:8081/order/enroll" -d '{uid:"xxx",tid:"xxx",}' -H 'Content-Type: application/json'
@@ -175,7 +202,15 @@ async function setTaskFinish(ctx, next){
  * @example curl -XGET "http://localhost:8081/task/ongoing/:id"
  */
 async function setOnGoing(ctx, next){
-  res = await orderDB.findOneAndUpdate({tid:ctx.params.id},{$set:{status:"进行中"}}).then((doc)=>{return doc})
+  let taskObj = await taskDB.findOne({tid:passData.tid}).then((doc)=>{return true})
+  if(taskObj.status === "已结束"){
+    ctx.body = {status:'failure'}
+  }
+  if(taskObj.currentParticipator < taskObj.participantNum){
+    taskObj.currentParticipator=taskObj.currentParticipator+1
+    let judge = createOrderByTask(taskObj.tid,userObj.uid)
+  }
+  res = await orderDB.findOneAndUpdate({tid:ctx.params.id},{$set:{status:"success"}}).then((doc)=>{return doc})
   res.status = "success"
   ctx.body = res.status
   ctx.status = 201

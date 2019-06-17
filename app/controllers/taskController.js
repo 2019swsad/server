@@ -115,6 +115,7 @@ async function createTask (ctx, next) {
     passData.totalCost=passData.salary*passData.participantNum
     passData.createTime=getNow()
     passData.currentParticipator=0
+    passData.candidate=0
     passData.finishNumber=Buffer.from([Math.floor(Math.random()*10),Math.floor(Math.random()*10),Math.floor(Math.random()*10),Math.floor(Math.random()*10)]);
     console.log(passData)
     await createWallet(passData.tid,true)
