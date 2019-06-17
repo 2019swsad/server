@@ -43,6 +43,9 @@ async function createOrder(ctx,next) {
     if(task.status === "已结束"){
       ctx.body = {status:'failure'}
     }
+    else if(task.uid === ctx.request.body.uid){
+      ctx.body = {status:"same uid in create order"}
+    }
     else{
       if(task.currentParticipator < task.participantNum){
           let temp = await taskDB.findOneAndUpdate({tid:passdata.tid},{$set:{currentParticipator:task.currentParticipator+1}}).then((doc)=>{return doc})
