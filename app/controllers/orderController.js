@@ -45,7 +45,7 @@ async function createOrder(ctx,next) {
     }
     else{
       if(task.currentParticipator < task.participantNum){
-         task.currentParticipator=task.currentParticipator+1
+        let temp = await taskDB.findOneAndUpdate({tid:passdata.tid},{$set:{currentParticipator:currentParticipator+1}}).then((doc)=>{return doc})
           // let passdata=ctx.request.body
           passdata.createTime=getNow()
           let makeStatus=await testReq(passdata.tid,passdata.createTime)
@@ -69,27 +69,17 @@ async function createOrder(ctx,next) {
         }
 
       else{
-          task.candidate += 1
+          let temp = await taskDB.findOneAndUpdate({tid:passdata.tid},{$set:{candidate:candidate+1}}).then((doc)=>{return doc})
           // let passdata=ctx.request.body
           passdata.createTime=getNow()
-          let makeStatus=await testReq(passdata.tid,passdata.createTime)
-          if(makeStatus!==-1) {
-              passdata.oid=uuid()
-              passdata.uid=ctx.state.user[0].uid
-              passdata.status='pending'
-              passdata.price=makeStatus
-
-              await orderDB.insert(passdata)
-
-              ctx.body={status:'success'}
-              ctx.status=200
-              await next()
-          }
-          else{
-              ctx.body={status:'fail'}
-              ctx.status=400
-              await next()
-          }
+          passdata.oid=uuid()
+          passdata.uid=ctx.state.user[0].uid
+          passdata.status='pending'
+          passdata.price=makeStatus
+          await orderDB.insert(passdata)
+          ctx.body={status:'success'}
+          ctx.status=200
+          await next()
         }
     }
   }
