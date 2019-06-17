@@ -376,6 +376,11 @@ Set to success:
 curl -XGET "https://www.volley99.com/order/status/ongoing/:id"
 ```
 
+Set to pending:
+```sh
+curl -XGET "https://www.volley99.com/order/status/pending/:id"
+```
+
 
 ### Massage part(All need auth)
 

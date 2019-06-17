@@ -24,6 +24,7 @@ orderRouter
     //.get('/status/finish/:id',     check,  isSelfOp, setTaskFinish)
     .get('/status/ongoing/:id',    check,  setOnGoing)
     //.get('/status/start/:id',      check,  isSelfOp, setTaskStart)
+    .get('/status/pending/:id',    check,  setOrderPending)
 
 
 // Task schema
@@ -75,7 +76,7 @@ async function createOrder(ctx,next) {
         if(makeStatus!==-1) {
             passdata.oid=uuid()
             passdata.uid=ctx.state.user[0].uid
-            passdata.status='open'
+            passdata.status='pending'
             passdata.price=makeStatus
 
             await orderDB.insert(passdata)
@@ -186,11 +187,18 @@ async function cancelOrder(ctx, next) {
 }
 
 /**
- * @example curl -XGET "http://localhost:8081/task/finish/:id"
+ * @example curl -XGET "http://localhost:8081/task/pending/:id"
  */
-async function setTaskFinish(ctx, next){
-  res = await orderDB.findOneAndUpdate({tid:ctx.params.id},{$set:{status:"已结束"}}).then((doc)=>{return doc})
-  res.status = "已结束"
+async function setOrderPending(ctx, next){
+  let taskObj = await taskDB.findOne({tid:passData.tid}).then((doc)=>{return true})
+  if(taskObj.status === "已结束"){
+    ctx.body = {status:'failure'}
+  }
+  taskObj.currentParticipator=taskObj.currentParticipator-1
+  taskObj.candidate = taskObj.candidate+1
+  let judge = createOrderByTask(taskObj.tid,userObj.uid)
+  res = await orderDB.findOneAndUpdate({tid:ctx.params.id},{$set:{status:"pending"}}).then((doc)=>{return doc})
+  res.status = "pending"
   ctx.body = res.status
   ctx.status = 201
   console.log(res)
