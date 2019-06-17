@@ -5,7 +5,7 @@ const Joi = require('joi'),
     db=require('../helpers/db'),
     {check,isSelfOp}=require('../helpers/auth'),
     {getNow}=require('../helpers/date'),
-    {_,createMsg}=require('../helpers/msgHelper')
+    {_,createMsg}=require('../helpers/msgHelper'),
     {testReq}=require('../helpers/taskHelper')
 
 
