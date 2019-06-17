@@ -69,7 +69,7 @@ async function createOrder(ctx,next) {
         }
 
       else{
-          let temp = await taskDB.findOneAndUpdate({tid:passdata.tid},{$set:{candidate:candidate+1}}).then((doc)=>{return doc})
+          let temp = await taskDB.findOneAndUpdate({tid:passdata.tid},{$set:{candidate:task.candidate+1}}).then((doc)=>{return doc})
           // let passdata=ctx.request.body
           passdata.createTime=getNow()
           passdata.oid=uuid()
