@@ -6,9 +6,10 @@ const uuid=require('uuid/v4'),
 
 const taskRouter=new Router({prefix:'/msg'})
 taskRouter
-    .get('/list',          check,  createMsgList)
-    .post('/commemt',      check,  createComment)
-    .post('/create',       chech,  createMsg)
+    .get('/list',          createMsgList)
+    .post('/commemt',      createComment)
+    .post('/create',       createMsge)
+    .post('/enroll'        enrollMsg)
 
 const msgDB = db.get('Massage')
 
@@ -23,17 +24,27 @@ async function createMsgList(ctx,next) {
  * @param uid: msg receiver
  */
 async function createComment(ctx,next){
-  ctx.body=await createMsg(ctx.request.body.uid,ctx.state.user[0].uid,"comment",ctx.request.body.msg)
+  ctx.body=await createMsg(ctx.request.body.uid,ctx.state.user[0].uid,"comment",ctx.request.body.msg,"有新的评论")
   ctx.status = 201
   await next()
 }
 
 /**
- * @example curl -XPOST "http://localhost:8081/msg/create" -d '{"uid":"...","type":"comment","msg":"test"}' -H 'Content-Type: application/json'
+ * @example curl -XPOST "http://localhost:8081/msg/create" -d '{"uid":"...","type":"comment","msg":"test","title":"评论"}' -H 'Content-Type: application/json'
  * @param uid: msg receiver
  */
-async function createMsg(ctx,next){
-  ctx.body=await createMsg(ctx.request.body.uid,ctx.state.user[0].uid,ctx.request.body.type,ctx.request.body.msg)
+async function createMsge(ctx,next){
+  ctx.body=await createMsg(ctx.request.body.uid,ctx.state.user[0].uid,ctx.request.body.type,ctx.request.body.msg,ctx.request.body.title)
+  ctx.status = 201
+  await next()
+}
+
+/**
+ * @example curl -XPOST "http://localhost:8081/msg/enroll" -d '{"uid":"...""msg":"test"}' -H 'Content-Type: application/json'
+ * @param uid: msg receiver
+ */
+async function enrollMsg(ctx,next){
+  ctx.body=await createMsg(ctx.request.body.uid,ctx.state.user[0].uid,"enrollment",ctx.request.body.msg,"有新的报名者")
   ctx.status = 201
   await next()
 }

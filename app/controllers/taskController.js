@@ -124,7 +124,7 @@ async function createTask (ctx, next) {
     console.log(chargeStatus)
     if(chargeStatus){
       ctx.body=await taskDB.insert(passData).then((doc)=>{return doc.tid})
-      await createMsg(ctx.state.user[0].uid,ctx.state.user[0].uid, "Create task", "你成功发布了"+passData.title+"任务")
+      await createMsg(ctx.state.user[0].uid,ctx.state.user[0].uid, "Create task", "你成功发布了"+passData.title+"任务","发布了任务"++passData.title)
       ctx.status = 201
     }
     else {
@@ -151,7 +151,7 @@ async function getAllTask (ctx, next) {
 async function getFinishNum(ctx, next){
   res = await taskDB.findOne({tid:ctx.params.id}).then((doc)=>{return doc})
   ctx.body = res.finishNumber
-  await createMsg(ctx.state.user[0].uid, ctx.state.user[0].uid, "Finish number", "任务"+res.title+"的完成码是："+res.finishNumber)
+  await createMsg(ctx.state.user[0].uid, ctx.state.user[0].uid, "Finish number", "任务"+res.title+"的完成码是："+res.finishNumber,"任务完成码")
   ctx.status = 201
   await next()
 }
@@ -172,7 +172,7 @@ async function selectParticipator(ctx, next){
     ctx.body = false
   }
   if(judge){
-    await createMsg(ctx.state.user[0].uid, ctx.params.uid, "Add participator", "你发布的"+taskObj.title+"任务有了新的参与者"+userObj.nickname)
+    await createMsg(ctx.state.user[0].uid, ctx.params.uid, "Add participator", "你发布的"+taskObj.title+"任务有了新的参与者"+userObj.nickname, "有新的参与者")
   }
   ctx.body = judge
   ctx.status = 201

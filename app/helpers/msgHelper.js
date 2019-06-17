@@ -17,8 +17,8 @@ async function queryMsgList(id) {
  * @param {string} msg receiver uid
  * @param {string} msg sender uid
  */
-async function createMsg(id,id2,type,msg){
-  return await msgDB.insert({uid:id,sender:id2,mid:uuid(),type:type,msg:msg}).then((doc)=>{return true})
+async function createMsg(id,id2,type,msg,tile="消息"){
+  return await msgDB.insert({uid:id,sender:id2,mid:uuid(),type:type,msg:msg,title:tile,date:getNow()}).then((doc)=>{return true})
 }
 
 module.exports={queryMsgList,createMsg}
