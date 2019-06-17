@@ -42,9 +42,10 @@ async function createOrder(ctx,next) {
     if(task.status === "已结束"){
       ctx.body = {status:'failure'}
     }
+    else{
     if(task.currentParticipator < task.participantNum){
       taskObj.currentParticipator=taskObj.currentParticipator+1
-      else{
+
         // let passdata=ctx.request.body
         passdata.createTime=getNow()
         let makeStatus=await testReq(passdata.tid,passdata.createTime)
@@ -69,7 +70,6 @@ async function createOrder(ctx,next) {
 
     else{
       taskObj.candidate += 1
-      else{
         // let passdata=ctx.request.body
         passdata.createTime=getNow()
         let makeStatus=await testReq(passdata.tid,passdata.createTime)
@@ -92,7 +92,7 @@ async function createOrder(ctx,next) {
         }
       }
     }
-  
+  }
 
 
 /**
