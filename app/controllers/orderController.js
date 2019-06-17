@@ -38,7 +38,7 @@ const orderSchema = Joi.object().keys({
  */
 async function createOrder(ctx,next) {
     let passdata=await Joi.validate(ctx.request.body,orderSchema)
-    let task = await taskDB.findOne({tid:passData.tid}).then((doc)=>{return true})
+    let task = await taskDB.findOne({tid:passdata.tid}).then((doc)=>{return true})
     if(task.status === "已结束"){
       ctx.body = {status:'failure'}
     }
