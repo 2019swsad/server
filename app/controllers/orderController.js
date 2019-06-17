@@ -66,7 +66,7 @@ async function createOrder(ctx,next) {
             await next()
         }
       }
-    }
+
     else{
       taskObj.candidate += 1
       else{
@@ -76,7 +76,7 @@ async function createOrder(ctx,next) {
         if(makeStatus!==-1) {
             passdata.oid=uuid()
             passdata.uid=ctx.state.user[0].uid
-            passdata.status='pending'
+            passdata.status='open'
             passdata.price=makeStatus
 
             await orderDB.insert(passdata)
@@ -92,7 +92,7 @@ async function createOrder(ctx,next) {
         }
       }
     }
-  }
+  
 
 
 /**
