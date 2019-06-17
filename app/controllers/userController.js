@@ -201,9 +201,12 @@ async function updateUserFunc(user) {
  * curl -XPOST "http://localhost:8081/users/rating" -d '{"uid":"...","rate":"80"}' -H 'Content-Type: application/json'
  */
  async function rateUser(ctx, next){
+   let temp = await personDB.findOne(
+       {uid:ctx.request.body.uid}).then((docs)=>{return docs});
+
    ctx.body = await personDB.findOneAndUpdate(
        {uid:ctx.request.body.uid},
-       {$set:{number:number+=1}},{$set:{credit:(credit*number+rate)/(number+1)}}).then((docs)=>{return docs});
+       {$set:{number:temp.number+=1}},{$set:{credit:(temp.credit*(temp.number+1)+ctx.params.rate)/(temp.number+2)}}).then((docs)=>{return docs});
    ctx.status = 201
    await next()
  }

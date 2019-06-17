@@ -45,7 +45,7 @@ async function createOrder(ctx,next) {
     }
     else{
       if(task.currentParticipator < task.participantNum){
-        let temp = await taskDB.findOneAndUpdate({tid:passdata.tid},{$set:{currentParticipator:currentParticipator+1}}).then((doc)=>{return doc})
+          let temp = await taskDB.findOneAndUpdate({tid:passdata.tid},{$set:{currentParticipator:task.currentParticipator+1}}).then((doc)=>{return doc})
           // let passdata=ctx.request.body
           passdata.createTime=getNow()
           let makeStatus=await testReq(passdata.tid,passdata.createTime)
