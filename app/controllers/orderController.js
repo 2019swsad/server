@@ -190,7 +190,7 @@ async function cancelOrder(ctx, next) {
  * @example curl -XGET "http://localhost:8081/task/pending/:id"
  */
 async function setOrderPending(ctx, next){
-  let taskObj = await taskDB.findOne({tid:passData.tid}).then((doc)=>{return true})
+  let taskObj = await taskDB.findOne({tid:passData.tid}).then((doc)=>{return doc})
   if(taskObj.status === "已结束"){
     ctx.body = {status:'failure'}
   }
@@ -209,7 +209,7 @@ async function setOrderPending(ctx, next){
  * @example curl -XGET "http://localhost:8081/task/ongoing/:id"
  */
 async function setOnGoing(ctx, next){
-  let taskObj = await taskDB.findOne({tid:passData.tid}).then((doc)=>{return true})
+  let taskObj = await taskDB.findOne({tid:passData.tid}).then((doc)=>{return doc})
   if(taskObj.status === "已结束"){
     ctx.body = {status:'failure'}
   }
