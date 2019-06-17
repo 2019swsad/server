@@ -124,7 +124,7 @@ async function createTask (ctx, next) {
     console.log(chargeStatus)
     if(chargeStatus){
       ctx.body=await taskDB.insert(passData).then((doc)=>{return doc.tid})
-      await createMsg(ctx.state.user[0].uid,ctx.state.user[0].uid, "Create task", "你成功发布了"+passData.title+"任务","发布了任务"++passData.title)
+      await createMsg(ctx.state.user[0].uid,ctx.state.user[0].uid, "Create task", "你成功发布了"+passData.title+"任务","发布了任务"+passData.title)
       ctx.status = 201
     }
     else {
