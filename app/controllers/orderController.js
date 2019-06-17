@@ -75,7 +75,7 @@ async function createOrder(ctx,next) {
           passdata.oid=uuid()
           passdata.uid=ctx.state.user[0].uid
           passdata.status='pending'
-          passdata.price=makeStatus
+          passdata.price=temp.salary
           await orderDB.insert(passdata)
           ctx.body={status:'success'}
           ctx.status=200
