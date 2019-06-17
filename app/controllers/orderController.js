@@ -43,7 +43,7 @@ async function createOrder(ctx,next) {
     if(task.status === "已结束"){
       ctx.body = {status:'failure'}
     }
-    else if(task.uid === ctx.request.body.uid || ctx.state.user[0].uid === task.uid){
+    else if(ctx.state.user[0].uid === task.uid){
       ctx.body = {status:"same uid in create order"}
     }
     else{
