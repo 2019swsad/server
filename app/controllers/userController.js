@@ -30,7 +30,8 @@ userRouter
     .post('/reg',               registerUser)
     .post('/update',            check,  isSelfOp,   updateUser)
     .post('/login',             loginUser)
-    
+    .post('/rating',            rateUser)
+
 
 
 
@@ -38,7 +39,7 @@ userRouter
 passport.serializeUser(function(user, done) {
     done(null, user._id.toString())
   })
-  
+
 passport.deserializeUser(async function(id, done) {
     personDB.find({_id:id}, done);
 })
@@ -55,7 +56,7 @@ passport.use(new LocalStrategy(async function(username, password, done) {
       done(null,false)
     }
 }))
-  
+
 
 
 /**
@@ -71,7 +72,7 @@ async function getSelf (ctx, next) {
 
 
 /**
- * 
+ *
  * @example curl -XGET "localhost:8081/users/check/:name"
  */
 async function nameCanU(ctx,next){
@@ -97,7 +98,7 @@ async function list (ctx, next) {
 
 
 /**
- * @example 
+ * @example
  * curl -XPOST "http://localhost:8081/users/reg" -d '{"name":"New record 1"}' -H 'Content-Type: application/json'
  */
 async function registerUser (ctx, next) {
@@ -151,7 +152,7 @@ async function loginUser (ctx, next) {
 
 
 /**
- * @example curl -XGET "http://localhost:8081/users/logout" 
+ * @example curl -XGET "http://localhost:8081/users/logout"
  */
 async function logoutUser (ctx, next) {
     ctx.logout()
@@ -165,7 +166,7 @@ async function logoutUser (ctx, next) {
  */
 async function updateUser (ctx, next) {
     // let body = await Joi.validate(ctx.request.body, userSchema, {allowUnknown: true});
-    
+
     ctx.body = updateUserFunc(ctx.request.body)
     ctx.status=201
     await next();
@@ -190,8 +191,20 @@ async function removeUser (ctx, next) {
 
 async function updateUserFunc(user) {
     return await personDB.findOneAndUpdate(
-        {uid:user.uid}, 
+        {uid:user.uid},
         {$set:user}).then((upd)=>{return true});
 }
+
+/**
+ * @example
+ * curl -XPOST "http://localhost:8081/users/rating" -d '{"uid":"...","rate":"80"}' -H 'Content-Type: application/json'
+ */
+ async function rateUser(ctx, next){
+   ctx.body = await personDB.findOneAndUpdate(
+       {uid:ctx.request.body.uid},
+       {$set:{number:number+=1},{credit:(credit*(number-1)+rate)/number}}).then((docs)=>{return docs});
+   ctx.status = 201
+   await next()
+ }
 
 module.exports = {userRouter,updateUserFunc}
