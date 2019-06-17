@@ -5,7 +5,7 @@ const Joi = require('joi'),
     db=require('../helpers/db'),
     {check,isSelfOp}=require('../helpers/auth'),
     {getNow}=require('../helpers/date'),
-
+    {_,createMsg}=require('../helpers/msgHelper')
     {testReq}=require('../helpers/taskHelper')
 
 
@@ -20,9 +20,10 @@ orderRouter
     .get('/cancel/:id',     check,  isSelfOp,   cancelOrder)
     .get('/finish/:id',     check,  finishOrder)
     .get('/get/:id',        check,  getOrderbyID)
-    .get('/status/finish/:id',     check,  isSelfOp, setTaskFinish)
-    .get('/status/ongoing/:id',    check,  isSelfOp, setOnGoing)
-    .get('/status/start/:id',      check,  isSelfOp, setTaskStart)
+    .get('/enroll',         check,  signupTask)
+    //.get('/status/finish/:id',     check,  isSelfOp, setTaskFinish)
+    .get('/status/ongoing/:id',    check,  setOnGoing)
+    //.get('/status/start/:id',      check,  isSelfOp, setTaskStart)
 
 
 // Task schema
@@ -55,6 +56,43 @@ async function createOrder(ctx,next) {
           await orderDB.insert(passdata)
 
           ctx.body={status:'success'}
+          ctx.status=200
+          await next()
+      }
+      else{
+          ctx.body={status:'fail'}
+          ctx.status=400
+          await next()
+      }
+    }
+
+}
+
+/**
+ * @example curl -XPOST "http://localhost:8081/order/enroll" -d '{uid:"xxx",tid:"xxx",}' -H 'Content-Type: application/json'
+ * oid tid status uid createTime message price
+ */
+async function signupTask(ctx,next) {
+    let passdata=await Joi.validate(ctx.request.body,orderSchema)
+    let task = await taskDB.findOne({tid:passData.tid}).then((doc)=>{return true})
+    if(task.status === "已结束"){
+      ctx.body = {status:'failure'}
+    }
+    else{
+      // let passdata=ctx.request.body
+      passdata.createTime=getNow()
+      let makeStatus=await testReq(passdata.tid,passdata.createTime)
+      if(makeStatus!==-1)
+      {
+          passdata.oid=uuid()
+          passdata.uid=ctx.state.user[0].uid
+          passdata.status='pending'
+          passdata.price=makeStatus
+
+          await orderDB.insert(passdata)
+          await createMsg(ctx.request.body.uid,ctx.state.user[0].uid,"enrollment",ctx.request.body.msg,"有新的报名者")
+
+          ctx.body={status:'pending'}
           ctx.status=200
           await next()
       }
@@ -138,7 +176,7 @@ async function setTaskFinish(ctx, next){
  */
 async function setOnGoing(ctx, next){
   res = await orderDB.findOneAndUpdate({tid:ctx.params.id},{$set:{status:"进行中"}}).then((doc)=>{return doc})
-  res.status = "进行中"
+  res.status = "success"
   ctx.body = res.status
   ctx.status = 201
   console.log(res)

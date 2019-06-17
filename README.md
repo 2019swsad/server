@@ -295,6 +295,23 @@ Return
 {status:'fail'} code 400
 ```
 
+#### Enroll 报名
+POST http://www.volley99.com/order/enroll
+```json
+{
+  tid:'xxx',
+  //message:'xxx',
+  status:'pending'
+}
+#成功报名并且已经开启,和成功报名但需要等待确认/启动
+```
+Return
+```
+{status:'success'},code 200
+#or
+{status:'fail'} code 400
+```
+
 #### Get all order of oneself
 GET http://www.volley99.com/order/all  
 Return
@@ -354,23 +371,15 @@ order info,code 200
 Parameter: id: order id
 Return: order status
 
-Set to 已结束:
-```sh
-curl -XGET "https://www.volley99.com/order/status/finish/:id"
-```
-
-Set to 进行中:
+Set to success:
 ```sh
 curl -XGET "https://www.volley99.com/order/status/ongoing/:id"
 ```
 
-Set to 未开始:
-```sh
-curl -XGET "https://www.volley99.com/order/status/start/:id"
-```
-
 
 ### Massage part(All need auth)
+
+** 评论的类型为"comment",报名的话type "enrollment" **
 
 #### Get a receiver's msg list
 Get http://www.volley99.com/msg/list
@@ -390,6 +399,13 @@ POST http://www.volley99.com/msg/create
 
 ```json
  {uid:"...",type:"comment",msg:"test"}
+```
+
+#### Create an enrollment
+POST http://www.volley99.com/msg/enroll
+```
+{uid:"...",
+msg:"test"}
 ```
 
 Test Module
