@@ -10,6 +10,7 @@ const Joi = require('joi'),
 
 
 const orderDB = db.get('Order')
+const taskDB = db.get('Task')
 
 const orderRouter=new Router({prefix:'/order'})
 orderRouter
@@ -36,26 +37,32 @@ const orderSchema = Joi.object().keys({
  */
 async function createOrder(ctx,next) {
     let passdata=await Joi.validate(ctx.request.body,orderSchema)
-    // let passdata=ctx.request.body
-    passdata.createTime=getNow()
-    let makeStatus=await testReq(passdata.tid,passdata.createTime)
-    if(makeStatus!==-1)
-    {
-        passdata.oid=uuid()
-        passdata.uid=ctx.state.user[0].uid
-        // passdata.status='open'
-        passdata.price=makeStatus
-
-        await orderDB.insert(passdata)
-
-        ctx.body={status:'success'}
-        ctx.status=200
-        await next()
+    let task = await taskDB.findOne({tid:passData.tid}).then((doc)=>{return true})
+    if(task.status === "已结束"){
+      ctx.body = {status:'failure'}
     }
     else{
-        ctx.body={status:'fail'}
-        ctx.status=400
-        await next()
+      // let passdata=ctx.request.body
+      passdata.createTime=getNow()
+      let makeStatus=await testReq(passdata.tid,passdata.createTime)
+      if(makeStatus!==-1)
+      {
+          passdata.oid=uuid()
+          passdata.uid=ctx.state.user[0].uid
+          // passdata.status='open'
+          passdata.price=makeStatus
+
+          await orderDB.insert(passdata)
+
+          ctx.body={status:'success'}
+          ctx.status=200
+          await next()
+      }
+      else{
+          ctx.body={status:'fail'}
+          ctx.status=400
+          await next()
+      }
     }
 
 }
