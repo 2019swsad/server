@@ -47,6 +47,18 @@ $ curl -XGET "https://www.volley99.com/users/self/"
 "uid":"676271cb-ca17-4fcb-98de-174a21c6b1f7"}
 #or redirect to /
 ```
+
+#### Rate someone
+
+$ curl -XPOST "https://www.volley99.com/users/rating"
+
+body:
+{
+  "uid":...
+  "rate":...
+}
+
+
 #### get user info by uid (future Need Auth)
 ```sh
 $ curl -XGET "https://www.volley99.com/users/info/:id"
@@ -211,11 +223,8 @@ curl -XPOST "https://www.volley99.com/task/query"  -d '{"title":"test task"}' -H
 #uid
 ```
 
-<<<<<<< HEAD
-#### Get create task
-=======
+
 #### Get created task
->>>>>>> ac1d3c997b1478679db5444ddc3916d3d8402847
 GET https://www.volley99.com/task/getCreate/  
 Return
 ```

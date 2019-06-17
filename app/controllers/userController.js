@@ -112,6 +112,7 @@ async function registerUser (ctx, next) {
     let passData = await Joi.validate(ctx.request.body, userRegSchema);
     passData.uid=uuid()
     passData.credit=100
+    passData.number=0
     console.log(passData)
     if(res){
         ctx.body=await personDB.insert(passData).then((doc)=>{return true})
