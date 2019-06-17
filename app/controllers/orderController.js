@@ -44,8 +44,7 @@ async function createOrder(ctx,next) {
     }
     else{
     if(task.currentParticipator < task.participantNum){
-      taskObj.currentParticipator=taskObj.currentParticipator+1
-
+       task.currentParticipator=task.currentParticipator+1
         // let passdata=ctx.request.body
         passdata.createTime=getNow()
         let makeStatus=await testReq(passdata.tid,passdata.createTime)
@@ -69,7 +68,7 @@ async function createOrder(ctx,next) {
       }
 
     else{
-      taskObj.candidate += 1
+        task.candidate += 1
         // let passdata=ctx.request.body
         passdata.createTime=getNow()
         let makeStatus=await testReq(passdata.tid,passdata.createTime)
@@ -206,10 +205,9 @@ async function setOnGoing(ctx, next){
   if(taskObj.status === "已结束"){
     ctx.body = {status:'failure'}
   }
-  if(taskObj.currentParticipator < taskObj.participantNum){
-    taskObj.currentParticipator=taskObj.currentParticipator+1
-    let judge = createOrderByTask(taskObj.tid,userObj.uid)
-  }
+  taskObj.currentParticipator=taskObj.currentParticipator+1
+  taskObj.candidate = taskObj.candidate-1
+  let judge = createOrderByTask(taskObj.tid,userObj.uid)
   res = await orderDB.findOneAndUpdate({tid:ctx.params.id},{$set:{status:"success"}}).then((doc)=>{return doc})
   res.status = "success"
   ctx.body = res.status
