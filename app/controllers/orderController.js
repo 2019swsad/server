@@ -80,7 +80,7 @@ async function createOrder(ctx,next) {
           passdata.status='pending'
           passdata.price=temp.salary
           await orderDB.insert(passdata)
-          ctx.body={status:'success'}
+          ctx.body={status:'pending'}
           ctx.status=200
           await next()
         }
