@@ -231,7 +231,7 @@ async function setOnGoing(ctx, next){
     ctx.body = {status:'Task finished'}
     await next()
   }
-  else if(taskObj.currentParticipator >== taskObj.participantNum){
+  else if(taskObj.currentParticipator >= taskObj.participantNum){
     ctx.body = {status:'Max participator'}
     await next()
   }
