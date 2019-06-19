@@ -47,3 +47,5 @@ async function enrollMsg(ctx,next){
   ctx.status = 201
   await next()
 }
+
+module.exports=msgRouter
