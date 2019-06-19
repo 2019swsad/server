@@ -4,12 +4,11 @@ const uuid=require('uuid/v4'),
     {check,isSelfOp}=require('../helpers/auth'),
     {queryMsgList,createMsg}=require('../helpers/msgHelper')
 
-const taskRouter=new Router({prefix:'/msg'})
-taskRouter
+const msgRouter=new Router({prefix:'/msg'})
+msgRouter
     .get('/list',          createMsgList)
-    .post('/commemt',      createComment)
-    .post('/create',       createMsge)
-    .post('/enroll'        enrollMsg)
+    //.post('/commemt',      createComment)
+    //.post('/create',       createMsge)
 
 const msgDB = db.get('Massage')
 
