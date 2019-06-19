@@ -143,7 +143,7 @@ async function finishOrder(ctx,next) {
     let taskObj = await taskDB.findOne({tid:orderObj.tid}).then((doc)=>{return doc})
     let user = await userDB.findOne({uid:ctx.state.user[0].uid}).then((doc)=>{return doc})
     if(res){
-        await createMsg(taskObj.uid,orderObj.uid,taskObj.type,"参与者"+ctx.state"完成了您发布的"+taskObj.title+"任务")
+        await createMsg(taskObj.uid,orderObj.uid,taskObj.type,"参与者"+user.nickname+"完成了您发布的"+taskObj.title+"任务")
         ctx.body={status:'success'}
         ctx.status=200
     }
