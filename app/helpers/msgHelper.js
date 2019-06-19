@@ -10,7 +10,7 @@ const msgDB = db.get('Massage')
  * @param {string} uid
  */
 async function queryMsgList(id) {
-    return await msgDB.find({uid:id})
+    return await msgDB.find({uid:id}).then((docs)=>{return docs})
 }
 
 /**
