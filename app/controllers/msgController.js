@@ -7,7 +7,7 @@ const uuid=require('uuid/v4'),
 const msgRouter=new Router({prefix:'/msg'})
 msgRouter
     .get('/list',          createMsgList)
-    //.post('/commemt',      createComment)
+    .post('/commemt',      createComment)
     //.post('/create',       createMsge)
 
 const msgDB = db.get('Massage')
@@ -23,7 +23,7 @@ async function createMsgList(ctx,next) {
  * @param uid: msg receiver
  */
 async function createComment(ctx,next){
-  ctx.body=await createMsg(ctx.request.body.uid,ctx.state.user[0].uid,"comment",ctx.request.body.msg,"有新的评论")
+  ctx.body=await createMsg(ctx.request.body.uid,ctx.state.user[0].uid,"评论",ctx.request.body.msg,"有新的评论")
   ctx.status = 201
   await next()
 }

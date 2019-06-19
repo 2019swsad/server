@@ -198,7 +198,8 @@ async function cancelOrder(ctx, next) {
  * @example curl -XGET "http://localhost:8081/task/pending/:id"
  */
 async function setOrderPending(ctx, next){
-  let taskObj = await taskDB.findOne({tid:passData.tid}).then((doc)=>{return doc})
+  let orderObj = await orderDB.findOne({oid:ctx.params.id}).then((doc)=>{return doc})
+  let taskObj = await taskDB.findOne({tid:orderObj.tid}).then((doc)=>{return doc})
   if(taskObj.status === "已结束"){
     ctx.body = {status:'failure'}
     await next()
@@ -208,7 +209,7 @@ async function setOrderPending(ctx, next){
     await next()
   }
   else {
-    let task = await taskDB.findOneAndUpdate({tid:passData.tid},{$set:{currentParticipator:taskObj.currentParticipator-1}},{$set:{candidate:taskObj.candidate+1}}).then((doc)=>{return doc})
+    let task = await taskDB.findOneAndUpdate({tid:orderObj.tid},{$set:{currentParticipator:taskObj.currentParticipator-1}},{$set:{candidate:taskObj.candidate+1}}).then((doc)=>{return doc})
 
     res = await orderDB.findOneAndUpdate({tid:ctx.params.id},{$set:{status:"pending"}}).then((doc)=>{return doc})
     await createMsg(res.uid,taskObj.uid,taskObj.type,"您报名的"+taskObj.title+"任务已将您转为候补，请等待转正后再完成任务。")
@@ -224,8 +225,8 @@ async function setOrderPending(ctx, next){
  * @example curl -XGET "http://localhost:8081/task/ongoing/:id"
  */
 async function setOnGoing(ctx, next){
-  let taskObj = await taskDB.findOne({tid:ctx.params.id}).then((doc)=>{return doc})
-  res = await orderDB.findOneAndUpdate({tid:ctx.params.id},{$set:{status:"success"}}).then((doc)=>{return doc})
+  let orderObj = await orderDB.findOne({oid:ctx.params.id}).then((doc)=>{return doc})
+  let taskObj = await taskDB.findOne({tid:orderObj.tid}).then((doc)=>{return doc})
   if(taskObj.status === "已结束"){
     ctx.body = {status:'failure'}
     await next()
@@ -239,7 +240,7 @@ async function setOnGoing(ctx, next){
     await next()
   }
   else {
-    let task = await taskDB.findOneAndUpdate({tid:passData.tid},{$set:{currentParticipator:taskObj.currentParticipator+1}},{$set:{candidate:taskObj.candidate-1}}).then((doc)=>{return doc})
+    let task = await taskDB.findOneAndUpdate({tid:orderObj.tid},{$set:{currentParticipator:taskObj.currentParticipator+1}},{$set:{candidate:taskObj.candidate-1}}).then((doc)=>{return doc})
     res = await orderDB.findOneAndUpdate({tid:ctx.params.id},{$set:{status:"success"}}).then((doc)=>{return doc})
     await createMsg(res.uid,taskObj.uid,taskObj.type,"您报名的"+taskObj.title+"任务的候补资格已被转正，请抓紧时机去完成任务吧！")
     res.status = "success"
