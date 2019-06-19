@@ -3,8 +3,9 @@ const Router = require('koa-router'),
     {userRouter} = require('../controllers/userController'),
     walletRouter=require('../controllers/walletController'),
     taskRouter=require('../controllers/taskController'),
-    orderRouter=require('../controllers/orderController')
-    indexRouter=require('../controllers/indexRender');
+    orderRouter=require('../controllers/orderController'),
+    indexRouter=require('../controllers/indexRender'),
+    msgRouter=require('../controllers/msgController');
 
 
 
@@ -13,6 +14,7 @@ const router=combineRouters (
     indexRouter,
     walletRouter,
     taskRouter,
-    orderRouter
+    orderRouter,
+    msgRouter
 )
 module.exports = router;
