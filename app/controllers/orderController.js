@@ -235,7 +235,7 @@ async function setOnGoing(ctx, next){
     ctx.body = {status:'failure'}
     await next()
   }
-  else if(res.status !== 'pending'){
+  else if(orderObj.status !== 'pending'){
     ctx.body = {status:'failure'}
     await next()
   }
