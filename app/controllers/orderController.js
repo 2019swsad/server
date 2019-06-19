@@ -228,15 +228,15 @@ async function setOnGoing(ctx, next){
   let orderObj = await orderDB.findOne({oid:ctx.params.id}).then((doc)=>{return doc})
   let taskObj = await taskDB.findOne({tid:orderObj.tid}).then((doc)=>{return doc})
   if(taskObj.status === "已结束"){
-    ctx.body = {status:'failure'}
+    ctx.body = {status:'Task finished'}
     await next()
   }
-  else if(taskObj.currentParticipator >= taskObj.participantNum){
-    ctx.body = {status:'failure'}
+  else if(taskObj.currentParticipator >== taskObj.participantNum){
+    ctx.body = {status:'Max participator'}
     await next()
   }
   else if(orderObj.status !== 'pending'){
-    ctx.body = {status:'failure'}
+    ctx.body = {status:'order status is not pending'}
     await next()
   }
   else {
