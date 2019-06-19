@@ -11,6 +11,7 @@ const Joi = require('joi'),
 
 const orderDB = db.get('Order')
 const taskDB = db.get('Task')
+const userDB = db.get('Person')
 
 const orderRouter=new Router({prefix:'/order'})
 orderRouter
@@ -58,7 +59,11 @@ async function createOrder(ctx,next) {
               passdata.status='success'
               passdata.price=makeStatus
 
+              let owner = await userDB.findOne({uid:ctx.state.user[0].uid}).then((doc)=>{return doc})
+
               await orderDB.insert(passdata)
+              await createMsg(task.uid,ctx.state.user[0].uid,task.type,"您的任务"+task.title+"有新的参与者"+owner.nickname)
+              await createMsg(ctx.state.user[0].uid,task.uid,task.type,"您已成功登记为"+task.title+"任务的参与人员。")
 
               ctx.body={status:'success'}
               ctx.status=200
@@ -79,7 +84,12 @@ async function createOrder(ctx,next) {
           passdata.uid=ctx.state.user[0].uid
           passdata.status='pending'
           passdata.price=temp.salary
+          let owner = await userDB.findOne({uid:ctx.state.user[0].uid}).then((doc)=>{return doc})
+
           await orderDB.insert(passdata)
+          await createMsg(task.uid,ctx.state.user[0].uid,task.type,"您的任务"+task.title+"有新的报名者"+owner.nickname+"，请移步至“任务中心”查看任务报名详情。")
+          await createMsg(ctx.state.user[0].uid,task.uid,task.type,"您已成功报名"+task.title+"任务，现在登记您为报名者。")
+
           ctx.body={status:'pending'}
           ctx.status=200
           await next()
@@ -110,7 +120,7 @@ async function signupTask(ctx,next) {
           passdata.price=makeStatus
 
           await orderDB.insert(passdata)
-          await createMsg(ctx.request.body.uid,ctx.state.user[0].uid,"enrollment",ctx.request.body.msg,"有新的报名者")
+          await createMsg(ctx.request.body.uid,ctx.state.user[0].uid,task.type,"有新的报名者")
 
           ctx.body={status:'pending'}
           ctx.status=200
@@ -126,9 +136,14 @@ async function signupTask(ctx,next) {
 }
 
 async function finishOrder(ctx,next) {
-    res=await orderDB.findOneAndUpdate({tid:ctx.params.id},{status:'finish'})
+    res=await orderDB.findOneAndUpdate({tid:ctx.params.id},{$set:{status:'finish'}})
         .then((doc)=>{return true})
+    let orderObj=await orderDB.findOne({tid:ctx.params.id})
+            .then((doc)=>{return doc})
+    let taskObj = await taskDB.findOne({tid:orderObj.tid}).then((doc)=>{return doc})
+    let user = await userDB.findOne({uid:ctx.state.user[0].uid}).then((doc)=>{return doc})
     if(res){
+        await createMsg(taskObj.uid,orderObj.uid,taskObj.type,"参与者"+ctx.state"完成了您发布的"+taskObj.title+"任务")
         ctx.body={status:'success'}
         ctx.status=200
     }
@@ -186,16 +201,23 @@ async function setOrderPending(ctx, next){
   let taskObj = await taskDB.findOne({tid:passData.tid}).then((doc)=>{return doc})
   if(taskObj.status === "已结束"){
     ctx.body = {status:'failure'}
+    await next()
   }
-  taskObj.currentParticipator=taskObj.currentParticipator-1
-  taskObj.candidate = taskObj.candidate+1
-  let judge = createOrderByTask(taskObj.tid,userObj.uid)
-  res = await orderDB.findOneAndUpdate({tid:ctx.params.id},{$set:{status:"pending"}}).then((doc)=>{return doc})
-  res.status = "pending"
-  ctx.body = res.status
-  ctx.status = 201
-  console.log(res)
-  await next()
+  else if(res.status === 'pending'){
+    ctx.body = {status:'failure'}
+    await next()
+  }
+  else {
+    let task = await taskDB.findOneAndUpdate({tid:passData.tid},{$set:{currentParticipator:taskObj.currentParticipator-1}},{$set:{candidate:taskObj.candidate+1}}).then((doc)=>{return doc})
+
+    res = await orderDB.findOneAndUpdate({tid:ctx.params.id},{$set:{status:"pending"}}).then((doc)=>{return doc})
+    await createMsg(res.uid,taskObj.uid,taskObj.type,"您报名的"+taskObj.title+"任务已将您转为候补，请等待转正后再完成任务。")
+    res.status = "pending"
+    ctx.body = res.status
+    ctx.status = 201
+    console.log(res)
+    await next()
+  }
 }
 
 /**
@@ -203,18 +225,29 @@ async function setOrderPending(ctx, next){
  */
 async function setOnGoing(ctx, next){
   let taskObj = await taskDB.findOne({tid:ctx.params.id}).then((doc)=>{return doc})
+  res = await orderDB.findOneAndUpdate({tid:ctx.params.id},{$set:{status:"success"}}).then((doc)=>{return doc})
   if(taskObj.status === "已结束"){
     ctx.body = {status:'failure'}
+    await next()
   }
-  taskObj.currentParticipator=taskObj.currentParticipator+1
-  taskObj.candidate = taskObj.candidate-1
-  let judge = createOrderByTask(taskObj.tid,userObj.uid)
-  res = await orderDB.findOneAndUpdate({tid:ctx.params.id},{$set:{status:"success"}}).then((doc)=>{return doc})
-  res.status = "success"
-  ctx.body = res.status
-  ctx.status = 201
-  console.log(res)
-  await next()
+  else if(taskObj.currentParticipator >= taskObj.participantNum){
+    ctx.body = {status:'failure'}
+    await next()
+  }
+  else if(res.status !== 'pending'){
+    ctx.body = {status:'failure'}
+    await next()
+  }
+  else {
+    let task = await taskDB.findOneAndUpdate({tid:passData.tid},{$set:{currentParticipator:taskObj.currentParticipator+1}},{$set:{candidate:taskObj.candidate-1}}).then((doc)=>{return doc})
+    res = await orderDB.findOneAndUpdate({tid:ctx.params.id},{$set:{status:"success"}}).then((doc)=>{return doc})
+    await createMsg(res.uid,taskObj.uid,taskObj.type,"您报名的"+taskObj.title+"任务的候补资格已被转正，请抓紧时机去完成任务吧！")
+    res.status = "success"
+    ctx.body = res.status
+    ctx.status = 201
+    console.log(res)
+    await next()
+  }
 }
 
 /**

@@ -17,7 +17,7 @@ async function queryMsgList(id) {
  * @param {string} msg receiver uid
  * @param {string} msg sender uid
  */
-async function createMsg(id,id2,type,msg,tile="消息"){
+async function createMsg(id,id2,type,msg,tile="您有新的消息"){
   return await msgDB.insert({uid:id,sender:id2,mid:uuid(),type:type,msg:msg,title:tile,date:getNow()}).then((doc)=>{return true})
 }
 
