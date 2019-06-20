@@ -10,7 +10,7 @@ msgRouter
     .post('/commemt',      createComment)
     //.post('/create',       createMsge)
 
-const msgDB = db.get('Massage')
+const msgDB = db.get('Message')
 
 async function createMsgList(ctx,next) {
   ctx.body=await queryMsgList(ctx.state.user[0].uid)
