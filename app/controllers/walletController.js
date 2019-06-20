@@ -52,9 +52,10 @@ async function createWalletWeb (ctx, next) {
  */
 async function depositWallet (ctx, next) {
     console.log(ctx.params.num);
-    
+    balance=walletDB.find({uid:ctx.state.user[0].uid}).then((doc)=>{return doc.balance})
+    fin=Number(balance)+Number(ctx.params.num)
     ctx.body=await walletDB
-        .findOneAndUpdate({uid:ctx.state.user[0].uid},{$set:{balance:ctx.params.num}})
+        .findOneAndUpdate({uid:ctx.state.user[0].uid},{$set:{balance:fin}})
         .then((doc)=>{if(doc.length!==0) return true; else return false})
     ctx.status = 201
     await next()
