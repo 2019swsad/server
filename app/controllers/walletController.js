@@ -87,13 +87,17 @@ async function getTransactions (ctx, next) {
  */
 async function makeTransactions (ctx, next) {
     console.log(ctx.request.body)
-    
     isTrans=doTransactions(ctx.request.body)
     if(isTrans)
-        ctx.redirect('/success')
+    {
+        ctx.body={status:'success'}
+        ctx.status = 201
+    }
     else
-        ctx.redirect('/fail')
-    ctx.status = 201
+    {
+        ctx.body={status:'error'}
+        ctx.status = 400
+    }
     await next()
 }
 

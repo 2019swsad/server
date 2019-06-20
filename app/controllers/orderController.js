@@ -104,34 +104,44 @@ async function createOrder(ctx,next) {
  */
 async function signupTask(ctx,next) {
     let passdata=await Joi.validate(ctx.request.body,orderSchema)
-    let task = await taskDB.findOne({tid:passData.tid}).then((doc)=>{return true})
-    if(task.status === "已结束"){
+    let repeat=
+      await orderDB.findOne({uid:ctx.state.user[0].uid,tid:passdata.tid})
+      .then((doc)=>{if(doc.length===0)return false;else return true;})
+    if(repeat){
       ctx.body = {status:'failure'}
     }
     else{
-      // let passdata=ctx.request.body
-      passdata.createTime=getNow()
-      let makeStatus=await testReq(passdata.tid,passdata.createTime)
-      if(makeStatus!==-1)
-      {
-          passdata.oid=uuid()
-          passdata.uid=ctx.state.user[0].uid
-          passdata.status='pending'
-          passdata.price=makeStatus
-
-          await orderDB.insert(passdata)
-          await createMsg(ctx.request.body.uid,ctx.state.user[0].uid,task.type,"有新的报名者")
-
-          ctx.body={status:'pending'}
-          ctx.status=200
-          await next()
+      let task = await taskDB.findOne({tid:passData.tid}).then((doc)=>{return doc})
+      if(task.status === "已结束"){
+        ctx.body = {status:'failure'}
+        await next()
       }
       else{
-          ctx.body={status:'fail'}
-          ctx.status=400
-          await next()
+        // let passdata=ctx.request.body
+        passdata.createTime=getNow()
+        let makeStatus=await testReq(passdata.tid,passdata.createTime)
+        if(makeStatus!==-1)
+        {
+            passdata.oid=uuid()
+            passdata.uid=ctx.state.user[0].uid
+            passdata.status='pending'
+            passdata.price=makeStatus
+  
+            await orderDB.insert(passdata)
+            await createMsg(ctx.request.body.uid,ctx.state.user[0].uid,task.type,"有新的报名者")
+  
+            ctx.body={status:'pending'}
+            ctx.status=200
+            await next()
+        }
+        else{
+            ctx.body={status:'fail'}
+            ctx.status=400
+            await next()
+        }
       }
     }
+    
 
 }
 

@@ -55,7 +55,7 @@ async function transfer(sender, receiver, amountstr) {
  */
 async function createWallet(id,isT) {
     return await walletDB
-        .insert({uid:id,balance:0,wid:uuid(),isTask:isT})
+        .insert({uid:id,balance:'0',wid:uuid(),isTask:isT})
         .then((doc)=>{return true})
 }
 
