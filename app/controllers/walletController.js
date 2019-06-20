@@ -53,9 +53,9 @@ async function createWalletWeb (ctx, next) {
 async function depositWallet (ctx, next) {
     console.log('params'+ctx.params.num);
     balance=await walletDB.find({uid:ctx.state.user[0].uid}).then((doc)=>{return doc})
-    console.log('balance'+balance)
+    console.log(balance)
     
-    fin=Number(balance)+Number(ctx.params.num)
+    fin=parseInt(balance)+parseInt(ctx.params.num)
     console.log('fin'+fin)
     
     ctx.body=await walletDB
