@@ -51,9 +51,13 @@ async function createWalletWeb (ctx, next) {
  * @example curl -XGET "http://localhost:8081/wallet/deposit/:amount"
  */
 async function depositWallet (ctx, next) {
-    console.log(ctx.params.num);
-    balance=walletDB.find({uid:ctx.state.user[0].uid}).then((doc)=>{return doc.balance})
+    console.log('params'+ctx.params.num);
+    balance=await walletDB.find({uid:ctx.state.user[0].uid}).then((doc)=>{return doc})
+    console.log('balance'+balance)
+    
     fin=Number(balance)+Number(ctx.params.num)
+    console.log('fin'+fin)
+    
     ctx.body=await walletDB
         .findOneAndUpdate({uid:ctx.state.user[0].uid},{$set:{balance:fin}})
         .then((doc)=>{if(doc.length!==0) return true; else return false})
