@@ -45,8 +45,8 @@ const orderDB = db.get('Order')
 const taskRouter=new Router({prefix:'/task'})
 taskRouter
     .post('/create',            check,  createTask)
-    .post('/participate',       selectParticipator)
-    .post('/query',             queryTaskByOneElement)
+    .post('/participate',       check,  selectParticipator)
+    .post('/query',             check,  queryTaskByOneElement)
     .post('/change',            check,  changeStatus)
     .get('/get/:id',            check,  getTaskbyID)
     .get('/getCreate',          check,  getCreateTask)
@@ -56,12 +56,13 @@ taskRouter
     .get('/finish/:id',         check,  setTaskFinish)
     .get('/ongoing/:id',        check,  setOnGoing)
     .get('/start/:id',          check,  setTaskStart)
-    .get('/participator/:id',   getParticipator)
+    .get('/participator/:id',   check,  getParticipator)
 
 
 async function getParticipator(ctx, next){
-  res = await orderDB.find({tid:ctx.params.id}).then((docs)=>{return docs.uid})
-  ctx.body = await userDB.find({uid:res}).then((docs)=>{return docs})
+  res = await orderDB.find({tid:ctx.params.id}).then((docs)=>{return docs})
+  //ctx.body = await userDB.find({uid:res}).then((docs)=>{return docs})
+  ctx.body=res
   console.log(ctx.body)
   ctx.status = 201
   await next()
