@@ -185,15 +185,21 @@ async function selectParticipator(ctx, next){
  */
 async function getTaskbyID(ctx,next) {
     res=await taskDB.findOne({tid:ctx.params.id}).then((doc)=>{return doc})
-    if(res.uid===ctx.state.user[0].uid)
+    if(res!==null){
+      if(res.uid===ctx.state.user[0].uid)
         res.isOrganizer=true
-    else
-        res.isOrganizer=false
-    // usr=await queryPerson(res.uid)
-    ctx.body=res
-    ctx.body.userinfo=await queryPerson(res.uid).then((doc)=>{return doc})
-    console.log(ctx.body)
-    ctx.status = 201
+      else
+          res.isOrganizer=false
+      // usr=await queryPerson(res.uid)
+      ctx.body=res
+      ctx.body.userinfo=await queryPerson(res.uid).then((doc)=>{return doc})
+      console.log(ctx.body)
+      ctx.status = 201
+    }
+    else{
+      ctx.body={status:'error'}
+      ctx.status=400
+    }
     await next()
 }
 

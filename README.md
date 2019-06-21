@@ -206,6 +206,10 @@ $ curl -XGET "https://www.volley99.com/task/all"
 #### Get one task
 ```sh
 $curl -XGET "https://www.volley99.com/task/get/id"
+
+return info
+#or
+{status:'error'}
 ```
 
 #### Query Task By element
