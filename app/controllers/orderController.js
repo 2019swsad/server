@@ -22,10 +22,10 @@ orderRouter
     .get('/finish/:id',     check,  finishOrder)
     .get('/get/:id',        check,  getOrderbyID)
     .get('/enroll',         check,  signupTask)
-    //.get('/status/finish/:id',     check,  isSelfOp, setTaskFinish)
-    .get('/status/ongoing/:id',    check,  setOnGoing)
-    //.get('/status/start/:id',      check,  isSelfOp, setTaskStart)
-    .get('/status/pending/:id',    check,  setOrderPending)
+    //.get('/status/finish/:id',    check,  isSelfOp, setTaskFinish)
+    .get('/status/ongoing/:id',     check,  setOnGoing)
+    //.get('/status/start/:id',     check,  isSelfOp, setTaskStart)
+    .get('/status/pending/:id',     check,  setOrderPending)
     .post('/accomplish',    check,  orderAccomplish)
 
 
@@ -113,7 +113,7 @@ async function signupTask(ctx,next) {
     }
     else{
       let task = await taskDB.findOne({tid:passData.tid}).then((doc)=>{return doc})
-      if(task.status === "已结束"){
+      if(task.status === "已结束"||task.status==="进行中"){
         ctx.body = {status:'failure'}
         await next()
       }
