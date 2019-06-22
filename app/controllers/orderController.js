@@ -20,7 +20,7 @@ orderRouter
   .get('/all', check, getAllOrder)
   .get('/bytask/:id', check, getAllOrderOfTask)
   .get('/cancelself/:id', check, cancelSelfOrder)
-  .get('/finish/:id', check, finishOrder)
+  //.get('/finish/:id', check, finishOrder)
   .get('/get/:id', check, getOrderbyID)
   //.get('/enroll',         check,  signupTask)
   //.get('/status/finish/:id',    check,  isSelfOp, setTaskFinish)
@@ -28,13 +28,19 @@ orderRouter
   //.get('/status/start/:id',     check,  isSelfOp, setTaskStart)
   .get('/status/pending/:id', check, setOrderPending)
   .post('/accomplish', check, orderAccomplish)
+  .post('/comment', check, commentOrder)
 
 
 // Task schema
 const orderSchema = Joi.object().keys({
   tid: Joi.string().trim().required(),
   status: Joi.string().trim()
-});
+})
+
+const orderCommentSchema = Joi.object().keys({
+  tid: Joi.string().trim().required(),
+  comment: Joi.string().trim().required()
+})
 
 /**
  * @example curl -XPOST "http://localhost:8081/order/create" -d '{uid:"xxx",tid:"xxx",}' -H 'Content-Type: application/json'
@@ -43,132 +49,55 @@ const orderSchema = Joi.object().keys({
 async function createOrder(ctx, next) {
   let passdata = await Joi.validate(ctx.request.body, orderSchema)
   let task = await taskDB.findOne({ tid: passdata.tid }).then((doc) => { return doc })
-  let order = await orderDB.find({tid:passdata.tid},{uid:ctx.state.user[0].uid}).then((doc)=>{
-    if (doc.length === 0) return true; else return false
+  let orderExist = await orderDB.find({ tid: passdata.tid, uid: ctx.state.user[0].uid }).then((doc) => {
+    if (doc.length === 0) return true; else return false;
   })
   if (task.status === "已结束" || task.status === "进行中") {
     ctx.body = { status: 'failure: task status error' }
   }
-  else if(order === false){
+  else if (orderExist === false) {
     ctx.status = 400
-    ctx.body = {status: 'failure:already exist order of same user'}
+    ctx.body = { status: 'failure:already exist order of same user' }
   }
   else if (ctx.state.user[0].uid === task.uid) {
-    ctx.body = { status: "same uid in create order" }
+    ctx.body = { status: "creator can not create order" }
   }
   else {
-    if (task.currentParticipator < task.participantNum) {
-      let temp = await taskDB.findOneAndUpdate({ tid: passdata.tid }, { $set: { currentParticipator: task.currentParticipator + 1 } }).then((doc) => { return doc })
-      // let passdata=ctx.request.body
-      passdata.createTime = getNow()
-      let makeStatus = await testReq(passdata.tid, passdata.createTime)
-      if (makeStatus !== -1) {
-        passdata.oid = uuid()
-        passdata.uid = ctx.state.user[0].uid
-        passdata.status = 'success'
-        passdata.price = makeStatus
-
-        let owner = await userDB.findOne({ uid: ctx.state.user[0].uid }).then((doc) => { return doc })
-
-        await orderDB.insert(passdata)
-        await createMsg(task.uid, ctx.state.user[0].uid, task.type, "您的任务" + task.title + "有新的参与者" + owner.nickname)
-        await createMsg(ctx.state.user[0].uid, task.uid, task.type, "您已成功登记为" + task.title + "任务的参与人员。")
-
-        ctx.body = { status: 'success' }
-        ctx.status = 200
-        await next()
-      }
-      else {
-        ctx.body = { status: 'fail' }
-        ctx.status = 400
-        await next()
-      }
-    }
-
-    else {
-      let temp = await taskDB.findOneAndUpdate({ tid: passdata.tid }, { $set: { candidate: task.candidate + 1 } }).then((doc) => { return doc })
-      // let passdata=ctx.request.body
-      passdata.createTime = getNow()
+    passdata.createTime = getNow()
+    let makeStatus = await testReq(passdata.tid, passdata.createTime)         //test time legal,true return salary
+    if (makeStatus !== -1) {
+      let owner = await userDB.findOne({ uid: ctx.state.user[0].uid }).then((doc) => { return doc })
       passdata.oid = uuid()
       passdata.uid = ctx.state.user[0].uid
-      passdata.status = 'pending'
-      passdata.price = temp.salary
-      let owner = await userDB.findOne({ uid: ctx.state.user[0].uid }).then((doc) => { return doc })
-
-      await orderDB.insert(passdata)
-      await createMsg(task.uid, ctx.state.user[0].uid, task.type, "您的任务" + task.title + "有新的报名者" + owner.nickname + "，请移步至“任务中心”查看任务报名详情。")
-      await createMsg(ctx.state.user[0].uid, task.uid, task.type, "您已成功报名" + task.title + "任务，现在登记您为报名者。")
-
-      ctx.body = { status: 'pending' }
-      ctx.status = 200
-      await next()
-    }
-  }
-}
-
-
-/**
- * @example curl -XPOST "http://localhost:8081/order/enroll" -d '{uid:"xxx",tid:"xxx",}' -H 'Content-Type: application/json'
- * oid tid status uid createTime message price
- */
-async function signupTask(ctx, next) {
-  let passdata = await Joi.validate(ctx.request.body, orderSchema)
-  let repeat =
-    await orderDB.findOne({ uid: ctx.state.user[0].uid, tid: passdata.tid })
-      .then((doc) => { if (doc.length === 0) return false; else return true; })
-  if (repeat) {
-    ctx.body = { status: 'failure' }
-  }
-  else {
-    let task = await taskDB.findOne({ tid: passData.tid }).then((doc) => { return doc })
-    if (task.status === "已结束" || task.status === "进行中") {
-      ctx.body = { status: 'failure' }
-      await next()
+      passdata.price = makeStatus
+      if (task.currentParticipator < task.participantNum) {
+        await taskDB.findOneAndUpdate({ tid: passdata.tid }, { $set: { currentParticipator: task.currentParticipator + 1 } })
+        passdata.status = '进行中'
+        await createMsg(task.uid, ctx.state.user[0].uid, task.type, "您的任务" + task.title + "有新的参与者" + owner.nickname)
+        await createMsg(ctx.state.user[0].uid, task.uid, task.type, "您已成功登记为" + task.title + "任务的参与人员。")
+        ctx.body = { status: '进行中' }
+        ctx.status = 200
+      }
+      // waiting for choose
+      else {
+        await taskDB.findOneAndUpdate({ tid: passdata.tid }, { $set: { candidate: task.candidate + 1 } })
+        passdata.status = '候补中'
+        await createMsg(task.uid, ctx.state.user[0].uid, task.type, "您的任务" + task.title + "有新的报名者" + owner.nickname + "，请移步至“任务中心”查看任务报名详情。")
+        await createMsg(ctx.state.user[0].uid, task.uid, task.type, "您已成功报名" + task.title + "任务，现在登记您为报名者。")
+        ctx.body = { status: '候补中' }
+        ctx.status = 200
+      }
     }
     else {
-      // let passdata=ctx.request.body
-      passdata.createTime = getNow()
-      let makeStatus = await testReq(passdata.tid, passdata.createTime)
-      if (makeStatus !== -1) {
-        passdata.oid = uuid()
-        passdata.uid = ctx.state.user[0].uid
-        passdata.status = 'pending'
-        passdata.price = makeStatus
-
-        await orderDB.insert(passdata)
-        await createMsg(ctx.request.body.uid, ctx.state.user[0].uid, task.type, "有新的报名者")
-
-        ctx.body = { status: 'pending' }
-        ctx.status = 200
-        await next()
-      }
-      else {
-        ctx.body = { status: 'fail' }
-        ctx.status = 400
-        await next()
-      }
+      ctx.body = { status: 'fail time check' }
+      ctx.status = 400
     }
-  }
-}
-
-async function finishOrder(ctx, next) {
-  res = await orderDB.findOneAndUpdate({ tid: ctx.params.id }, { $set: { status: 'finish' } })
-    .then((doc) => { return true })
-  let orderObj = await orderDB.findOne({ tid: ctx.params.id })
-    .then((doc) => { return doc })
-  let taskObj = await taskDB.findOne({ tid: orderObj.tid }).then((doc) => { return doc })
-  let user = await userDB.findOne({ uid: ctx.state.user[0].uid }).then((doc) => { return doc })
-  if (res) {
-    await createMsg(taskObj.uid, orderObj.uid, taskObj.type, "参与者" + user.nickname + "完成了您发布的" + taskObj.title + "任务")
-    ctx.body = { status: 'success' }
-    ctx.status = 200
-  }
-  else {
-    ctx.body = { status: 'failed' }
-    ctx.status = 400
+    await orderDB.insert(passdata)
   }
   await next()
 }
+
+
 
 async function getOrderbyID(ctx, next) {
   res = await orderDB.findOne({ oid: ctx.params.id }).then((doc) => { return doc })
@@ -204,11 +133,11 @@ async function getAllOrderOfTask(ctx, next) {
 * Todo : Money operations.
 */
 async function cancelSelfOrder(ctx, next) {
-  orderRes = await orderDB.findOne({ oid: ctx.params.id, uid: ctx.state.user[0].uid }).then((doc) => { return doc })
-  if (orderRes.status === 'pending') {
+  let orderRes = await orderDB.findOne({ oid: ctx.params.id, uid: ctx.state.user[0].uid }).then((doc) => { return doc })
+  if (orderRes.status === '进行中') {
     taskRes = await taskDB.findOne({ tid: orderRes.tid }).then((doc) => { return doc })
     now = getNow()
-    await orderDB.findOneAndUpdate({ oid: orderRes.oid }, { $set: { status: 'expired' } })
+    await orderDB.findOneAndUpdate({ oid: orderRes.oid }, { $set: { status: '已关闭' } })
     if (isEarly(now, taskRes.beginTime)) {
       createMsg(taskRes.uid, ctx.state.user[0].uid, taskRes.type, '有人退出了project')
     }
@@ -216,6 +145,12 @@ async function cancelSelfOrder(ctx, next) {
       createMsg(taskRes.uid, ctx.state.user[0].uid, taskRes.type, '有人退出了project,并被扣分')
       creaditChange(ctx.state.user[0].uid, 1)  //decrease credit
     }
+    ctx.status = 200;
+    ctx.body = { status: 'success' }
+  }
+  else if (orderRes.status === '候补中') {
+    taskRes = await taskDB.findOne({ tid: orderRes.tid }).then((doc) => { return doc })
+    await orderDB.findOneAndUpdate({ oid: orderRes.oid }, { $set: { status: '已关闭' } })
     ctx.status = 200;
     ctx.body = { status: 'success' }
   }
@@ -283,17 +218,6 @@ async function setOnGoing(ctx, next) {
   }
 }
 
-/**
- * @example curl -XGET "http://localhost:8081/task/start/:id"
- */
-async function setTaskStart(ctx, next) {
-  res = await orderDB.findOneAndUpdate({ tid: ctx.params.id }, { $set: { status: "未开始" } }).then((doc) => { return doc })
-  res.status = "未开始"
-  ctx.body = res.status
-  ctx.status = 201
-  console.log(res)
-  await next()
-}
 
 /**
  * @example curl -XPOST "http://localhost:8081/order/accomplish" -d '{oid:"xxx",finishNumber:"xxx",}' -H 'Content-Type: application/json'
@@ -310,6 +234,29 @@ async function orderAccomplish(ctx, next) {
   }
   else {
     ctx.body = { status: "fail" }
+    ctx.status = 400
+  }
+  await next()
+}
+
+async function commentOrder(ctx, next) {
+  let passdata = await Joi.validate(ctx.request.body, orderCommentSchema)
+  let order = await orderDB.findOne({ oid: passdata.oid }).then((doc) => { return doc })
+  let task = await taskDB.findOne({ tid: order.tid }).then((doc) => { return doc })
+  if (order.uid === ctx.state.user[0].uid) {      //comment doer comment
+    
+    order.selfcomment = passdata.comment
+    await orderDB.findOneAndUpdate({ oid: order.oid }, order)
+    ctx.body = { status: 'success' }
+    ctx.status = 200
+  }
+  else if (order.uid === task.uid) {
+    order.hostercomment = passdata.comment
+    await orderDB.findOneAndUpdate({ oid: order.oid }, order)
+    ctx.body = { status: 'success' }
+    ctx.status = 200
+  } else {
+    ctx.body = { status: 'fail' }
     ctx.status = 400
   }
   await next()
