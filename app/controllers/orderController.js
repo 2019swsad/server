@@ -218,7 +218,7 @@ async function setOnGoing(ctx, next) {
 async function orderAccomplish(ctx, next) {
   let order = orderDB.findOne({ oid: ctx.request.body.oid }).then((doc) => { return doc })
   let task = taskDB.findOne({ tid: order.tid }).then((doc) => { return doc })
-  if (ctx.request.body.finishNumber === task.finishNumber) {
+  if (ctx.request.body.finishNumber === task.finishNumber&&order.status=='进行中') {
     await transferFunc(order.tid, order.uid, order.price)
     res = orderDB.findOneAndUpdate({ oid: ctx.request.body.oid }, { $set: { status: "finish" } }).then((doc) => { return doc })
     ctx.body = { status: "success" }
@@ -238,7 +238,7 @@ async function commentOrder(ctx, next) {
   let task = await taskDB.findOne({ tid: order.tid }).then((doc) => { return doc })
   if (order.uid === ctx.state.user[0].uid) {      //comment doer comment
     order.status = '已评价'
-    await userDB.findOneAndUpdate({ uid: task.uid }, { $set: { credit: passdata.credit } })
+    // await userDB.findOneAndUpdate({ uid: task.uid }, { $set: { credit: passdata.credit } })
     order.selfcomment = passdata.comment
     await orderDB.findOneAndUpdate({ oid: order.oid }, order)
     ctx.body = { status: 'success' }
@@ -246,7 +246,7 @@ async function commentOrder(ctx, next) {
   }
   else if (ctx.state.user[0].uid === task.uid) {
     order.status = '已评价'
-    await userDB.findOneAndUpdate({ uid: order.uid }, { $set: { credit: passdata.credit } })
+    // await userDB.findOneAndUpdate({ uid: order.uid }, { $set: { credit: passdata.credit } })
     order.hostercomment = passdata.comment
     await orderDB.findOneAndUpdate({ oid: order.oid }, order)
     ctx.body = { status: 'success' }
