@@ -9,12 +9,13 @@ const http = require('http'),
     bodyParser = require('koa-bodyparser'),
     passport = require('koa-passport'),
     CSRF = require('koa-csrf'),
+    koaBody = require('koa-body'),
     { default: enforceHttps }=require('koa-sslify');
 
 const router  = require('./routes');
 
 app = new Koa();
-
+app.use(koaBody({ multipart: true }));
 app.keys=['hihihi']
 let options={
     key:fs.readFileSync('./crt/server.key'),

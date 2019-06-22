@@ -382,12 +382,6 @@ Return
 {status:'fail'} code 400
 ```
 
-#### Cancel one order
-GET http://www.volley99.com/order/cancel/:id  
-Return
-204
-
-
 #### Get order by id
 GET http://www.volley99.com/order/get/:id  
 Return
@@ -424,7 +418,7 @@ POST https://www.volley99.com/order/accomplish
 
 #### Cancel order of oneself
 取消某人自己的订单
-GET https://www.volley99.com/order/cancel/:id
+GET https://www.volley99.com/order/cancelself/:id
 
 ```
 #return
