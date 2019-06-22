@@ -193,7 +193,7 @@ async function getAllOrderOfTask(ctx, next) {
 }
 
 /**
-* @example curl -XGET "http://localhost:8081/task/cancel/:id"
+* @example curl -XGET "http://localhost:8081/order/cancel/:id"
 * Todo : Money operations.
 */
 async function cancelSelfOrder(ctx, next) {
@@ -297,12 +297,12 @@ async function orderAccomplish(ctx, next) {
   if (ctx.request.body.finishNumber === task.finishNumber) {
     await transferFunc(order.tid, order.uid, order.price)
     res = orderDB.findOneAndUpdate({ oid: ctx.request.body.oid }, { $set: { status: "finish" } }).then((doc) => { return doc })
-    ctx.body = { status: "finish" }
+    ctx.body = { status: "success" }
     ctx.status = 200
     createMsg(task.uid, order.uid, task.type, '您的' + task.title + '有一人完成任务了')
   }
   else {
-    ctx.body = { status: "failure" }
+    ctx.body = { status: "fail" }
     ctx.status = 400
   }
   await next()

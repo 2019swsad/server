@@ -402,9 +402,32 @@ Set to pending:
 ```sh
 curl -XGET "https://www.volley99.com/order/status/pending/:id"
 ```
+#### Accomplish one order
+完成任务并且拿钱
+POST https://www.volley99.com/order/accomplish
+```json
+{oid:'xxx',finishNumber:'xxx'}
+#return
+{status:'success'},code 200
+# or
+{status:'fail'} code 400
+```
+
+#### Cancel order of oneself
+取消某人自己的订单
+GET https://www.volley99.com/order/cancel/:id
+
+```
+#return
+{status:'success'},code 200
+# or
+{status:'fail'} code 400
+```
 
 
-### Massage part(All need auth)
+
+
+### Message part(All need auth)
 
 ** 评论的类型为"comment",报名的话type "enrollment" **
 
