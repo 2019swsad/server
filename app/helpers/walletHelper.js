@@ -28,14 +28,14 @@ async function transfer(sender, receiver, amountstr) {
                 return num-amount
             return -1
         })
-    console.log('sdr'+senderres);
+    console.log('sender res'+senderres);
     
     recres = await walletDB.findOne({uid:receiver})
         .then((doc)=>{
             num=parseInt(doc.balance)
             return num+amount
         })
-    console.log('rec'+recres);
+    console.log('receiver res'+recres);
     if(senderres>=0){
         console.log('write amount info')
         res=await walletDB.findOneAndUpdate({uid:sender},{$set:{balance:senderres}})
@@ -94,11 +94,14 @@ async function doTransactions(info) {
  * @returns boolean
  */
 async function transferFunc(senderid,recid,amount) {
-    res=doTransactions({sender:senderid,receiver:recid,amount:amount})
-    if(res.length===0)
-        return false
-    else
-        return true
+    res=await doTransactions({sender:senderid,receiver:recid,amount:amount})
+    console.log('---do trans---')
+    console.log(res)
+    return res
+    // if(res.length===0)
+    //     return false
+    // else
+    //     return true
 }
 
 /**

@@ -123,6 +123,8 @@ async function createTask (ctx, next) {
 
     //TODO: need to handle failure
     chargeStatus=await transferFunc(ctx.state.user[0].uid,passData.tid,passData.totalCost)
+    console.log('-------Create task----------')
+    
     console.log(chargeStatus)
     if(chargeStatus){
       ctx.body=await taskDB.insert(passData).then((doc)=>{return doc.tid})
