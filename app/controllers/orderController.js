@@ -220,7 +220,7 @@ async function cancelSelfOrder(ctx, next) {
     ctx.body = { status: 'success' }
   }
   else {
-    ctx.status = 40;
+    ctx.status = 400;
     ctx.body = { status: 'fail' }
   }
   await next();

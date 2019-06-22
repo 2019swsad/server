@@ -298,7 +298,15 @@ curl -XGET "https://www.volley99.com/task/start/:id"
 ```
 
 ### Order part(All need auth)
-
+status
+```
+进行中
+候补中
+已完成
+已关闭
+已失效
+已评价
+```
 #### create
 POST http://www.volley99.com/order/create  
 ```json
