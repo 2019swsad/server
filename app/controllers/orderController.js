@@ -260,7 +260,7 @@ async function commentOrder(ctx, next) {
 }
 
 async function listWaiting(ctx,next) {
-  res=await orderDB.find({tid:ctx.params.id,status='候补中'}).then((doc)=>{return doc})
+  res=await orderDB.find({tid:ctx.params.id,status:'候补中'}).then((doc)=>{return doc})
   ctx.body=res
   ctx.status=200
   await next()
