@@ -269,7 +269,7 @@ async function setOnGoing(ctx, next) {
     res = await orderDB.findOneAndUpdate({ tid: ctx.params.id }, { $set: { status: "success" } }).then((doc) => { return doc })
     await createMsg(res.uid, taskObj.uid, taskObj.type, "您报名的" + taskObj.title + "任务的候补资格已被转正，请抓紧时机去完成任务吧！")
     res.status = "success"
-    ctx.body = res.status
+    ctx.body = { status: 'success' }
     ctx.status = 201
     console.log(res)
     await next()
