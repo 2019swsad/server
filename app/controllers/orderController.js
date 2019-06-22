@@ -16,17 +16,12 @@ const userDB = db.get('Person')
 
 const orderRouter = new Router({ prefix: '/order' })
 orderRouter
-  .post('/create', check, createOrder)
-  .get('/all', check, getAllOrder)
   .get('/bytask/:id', check, getAllOrderOfTask)
-  .get('/cancelself/:id', check, cancelSelfOrder)
-  //.get('/finish/:id', check, finishOrder)
+  .get('/all', check, getAllOrder)
+  .post('/create', check, createOrder)
+  .get('/close/:id', check, cancelSelfOrder)
   .get('/get/:id', check, getOrderbyID)
-  //.get('/enroll',         check,  signupTask)
-  //.get('/status/finish/:id',    check,  isSelfOp, setTaskFinish)
-  .get('/status/ongoing/:id', check, setOnGoing)
-  //.get('/status/start/:id',     check,  isSelfOp, setTaskStart)
-  .get('/status/pending/:id', check, setOrderPending)
+  .get('/turnbegin/:id', check, setOnGoing)
   .post('/accomplish', check, orderAccomplish)
   .post('/comment', check, commentOrder)
 
@@ -38,8 +33,9 @@ const orderSchema = Joi.object().keys({
 })
 
 const orderCommentSchema = Joi.object().keys({
-  tid: Joi.string().trim().required(),
-  comment: Joi.string().trim().required()
+  oid: Joi.string().trim().required(),
+  comment: Joi.string().trim().required(),
+  credit: Joi.number().required()
 })
 
 /**
@@ -196,15 +192,12 @@ async function setOnGoing(ctx, next) {
   let taskObj = await taskDB.findOne({ tid: orderObj.tid }).then((doc) => { return doc })
   if (taskObj.status === "已结束") {
     ctx.body = { status: 'Task finished' }
-    await next()
   }
   else if (taskObj.currentParticipator >= taskObj.participantNum) {
     ctx.body = { status: 'Max participator' }
-    await next()
   }
   else if (orderObj.status !== 'pending') {
     ctx.body = { status: 'order status is not pending' }
-    await next()
   }
   else {
     let task = await taskDB.findOneAndUpdate({ tid: orderObj.tid }, { $set: { currentParticipator: taskObj.currentParticipator + 1 } }, { $set: { candidate: taskObj.candidate - 1 } }).then((doc) => { return doc })
@@ -214,8 +207,8 @@ async function setOnGoing(ctx, next) {
     ctx.body = { status: 'success' }
     ctx.status = 201
     console.log(res)
-    await next()
   }
+  await next()
 }
 
 
@@ -244,13 +237,16 @@ async function commentOrder(ctx, next) {
   let order = await orderDB.findOne({ oid: passdata.oid }).then((doc) => { return doc })
   let task = await taskDB.findOne({ tid: order.tid }).then((doc) => { return doc })
   if (order.uid === ctx.state.user[0].uid) {      //comment doer comment
-    
+    order.status = '已评价'
+    await userDB.findOneAndUpdate({ uid: task.uid }, { $set: { credit: passdata.credit } })
     order.selfcomment = passdata.comment
     await orderDB.findOneAndUpdate({ oid: order.oid }, order)
     ctx.body = { status: 'success' }
     ctx.status = 200
   }
-  else if (order.uid === task.uid) {
+  else if (ctx.state.user[0].uid === task.uid) {
+    order.status = '已评价'
+    await userDB.findOneAndUpdate({ uid: order.uid }, { $set: { credit: passdata.credit } })
     order.hostercomment = passdata.comment
     await orderDB.findOneAndUpdate({ oid: order.oid }, order)
     ctx.body = { status: 'success' }

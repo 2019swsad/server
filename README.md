@@ -324,22 +324,6 @@ Return
 {status:'fail'} code 400
 ```
 
-#### Enroll 报名
-POST http://www.volley99.com/order/enroll
-```json
-{
-  tid:'xxx',
-  //message:'xxx',
-  status:'pending'
-}
-#成功报名并且已经开启,和成功报名但需要等待确认/启动
-```
-Return
-```
-{status:'success'},code 200
-#or
-{status:'fail'} code 400
-```
 
 #### Get all order of oneself
 GET http://www.volley99.com/order/all  
@@ -371,25 +355,6 @@ Return
 }]
 ```
 
-#### Finish order
-GET http://www.volley99.com/order/finish/:id  
-Return
-```
-{status:'success'},code 200
-#or
-{status:'fail'} code 400
-```
-
-#### Finish order with finish number
-POST https://www.volley99.com/order/accomplish  
-post body:{oid:..., finishNumber:...}
-Return
-```
-{status:'success'},code 200
-#or
-{status:'fail'} code 400
-```
-
 #### Get order by id
 GET http://www.volley99.com/order/get/:id  
 Return
@@ -399,20 +364,6 @@ order info,code 200
 {status:'fail'} code 400
 ```
 
-#### Change order status
-
-Parameter: id: order id
-Return: order status
-
-Set to success:
-```sh
-curl -XGET "https://www.volley99.com/order/status/ongoing/:id"
-```
-
-Set to pending:
-```sh
-curl -XGET "https://www.volley99.com/order/status/pending/:id"
-```
 #### Accomplish one order
 完成任务并且拿钱
 POST https://www.volley99.com/order/accomplish
@@ -426,7 +377,7 @@ POST https://www.volley99.com/order/accomplish
 
 #### Cancel order of oneself
 取消某人自己的订单
-GET https://www.volley99.com/order/cancelself/:id
+GET https://www.volley99.com/order/close/:id
 
 ```
 #return
@@ -435,7 +386,25 @@ GET https://www.volley99.com/order/cancelself/:id
 {status:'fail'} code 400
 ```
 
+#### Comment one order by self or by hoster
+评论某一订单
+POST https://www.volley99.com/order/comment
+```
+{
+  oid:'xx',
+  comment:'xx',
+  credit:0
+}
+#return
+{status:'success'},code 200
+# or
+{status:'fail'} code 400
+```
 
+#### From backup to formal member
+备胎转正
+GET https://www.volley99.com/order/turnbegin/:id  
+various of ```{status:'xxx'}```
 
 
 ### Message part(All need auth)
