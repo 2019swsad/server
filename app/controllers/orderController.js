@@ -43,8 +43,15 @@ const orderSchema = Joi.object().keys({
 async function createOrder(ctx, next) {
   let passdata = await Joi.validate(ctx.request.body, orderSchema)
   let task = await taskDB.findOne({ tid: passdata.tid }).then((doc) => { return doc })
-  if (task.status === "已结束") {
-    ctx.body = { status: 'failure' }
+  let order = await orderDB.find({tid:passdata.tid},{uid:ctx.state.user[0].uid}).then((doc)=>{
+    if (doc.length === 0) return true; else return false
+  })
+  if (task.status === "已结束" || task.status === "进行中") {
+    ctx.body = { status: 'failure: task status error' }
+  }
+  else if(order === false){
+    ctx.status = 400
+    ctx.body = {status: 'failure:already exist order of same user'}
   }
   else if (ctx.state.user[0].uid === task.uid) {
     ctx.body = { status: "same uid in create order" }
