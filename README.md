@@ -21,10 +21,19 @@ $ node ./index.js
 Auth will check when access some personal info
 When fail,it will return ```{status:'session fail'}```
 
+### File
+#### Upload
+POST https://www.volley99.com/file/
+return 200
+#### Download
+GET https://www.volley99.com/file/:id
+return 200 with image 
+or 400
+
 ### Render
 #### get mainpage
 ```sh
-$ curl -XGET 'https://www.volley99.com/
+$ curl -XGET 'https://www.volley99.com/'
 ```
 
 #### get testpage
@@ -457,6 +466,8 @@ POST http://www.volley99.com/msg/enroll
 {uid:"...",
 msg:"test"}
 ```
+
+
 
 Test Module
 =====
