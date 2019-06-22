@@ -218,7 +218,7 @@ async function setOnGoing(ctx, next) {
 async function orderAccomplish(ctx, next) {
   let order = orderDB.findOne({ oid: ctx.request.body.oid }).then((doc) => { return doc })
   let task = taskDB.findOne({ tid: order.tid }).then((doc) => { return doc })
-  if (ctx.request.body.finishNumber === task.finishNumber&&order.status=='进行中') {
+  if (ctx.request.body.finishNumber === task.finishNumber && order.status == '进行中') {
     await transferFunc(order.tid, order.uid, order.price)
     res = orderDB.findOneAndUpdate({ oid: ctx.request.body.oid }, { $set: { status: "finish" } }).then((doc) => { return doc })
     ctx.body = { status: "success" }

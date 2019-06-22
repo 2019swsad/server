@@ -18,7 +18,11 @@ async function handleUpload(ctx, next) {
     await next()
 }
 async function handleFetch(ctx, next) {
-    await send(ctx, './upload/' + ctx.params.id + '.jpg')
+    if (fs.existsSync('./upload/' + ctx.params.id + '.jpg')) {
+        await send(ctx, './upload/' + ctx.params.id + '.jpg')
+    } else {
+        await send(ctx, './upload/normal.jpg')
+    }
     await next()
 }
 module.exports = fileRouter
