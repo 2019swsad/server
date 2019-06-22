@@ -5,7 +5,7 @@ const Joi = require('joi'),
   db = require('../helpers/db'),
   { check, isSelfOp } = require('../helpers/auth'),
   { getNow, isEarly } = require('../helpers/date'),
-  { _, createMsg } = require('../helpers/msgHelper'),
+  { createMsg } = require('../helpers/msgHelper'),
   { testReq } = require('../helpers/taskHelper'),
   { creaditChange } = require('../helpers/userHelper')
 
@@ -142,8 +142,6 @@ async function signupTask(ctx, next) {
       }
     }
   }
-
-
 }
 
 async function finishOrder(ctx, next) {
@@ -163,7 +161,6 @@ async function finishOrder(ctx, next) {
     ctx.status = 400
   }
   await next()
-
 }
 
 async function getOrderbyID(ctx, next) {
@@ -206,11 +203,10 @@ async function cancelSelfOrder(ctx, next) {
     now = getNow()
     await orderDB.findOneAndUpdate({ oid: orderRes.oid }, { $set: { status: 'expired' } })
     if (isEarly(now, taskRes.beginTime)) {
-      //inform
-
+      createMsg(taskRes.uid, ctx.state.user[0].uid, taskRes.type, '有人退出了project')
     }
     else if (isEarly(taskRes.expireTime, now)) {
-      //inform
+      createMsg(taskRes.uid, ctx.state.user[0].uid, taskRes.type, '有人退出了project,并被扣分')
       creaditChange(ctx.state.user[0].uid, 1)  //decrease credit
     }
     ctx.status = 200;
@@ -299,12 +295,17 @@ async function orderAccomplish(ctx, next) {
   let order = orderDB.findOne({ oid: ctx.request.body.oid }).then((doc) => { return doc })
   let task = taskDB.findOne({ tid: order.tid }).then((doc) => { return doc })
   if (ctx.request.body.finishNumber === task.finishNumber) {
+    await transferFunc(order.tid, order.uid, order.price)
     res = orderDB.findOneAndUpdate({ oid: ctx.request.body.oid }, { $set: { status: "finish" } }).then((doc) => { return doc })
-    ctx.status = { status: "finish" }
+    ctx.body = { status: "finish" }
+    ctx.status = 200
+    createMsg(task.uid, order.uid, task.type, '您的' + task.title + '有一人完成任务了')
   }
   else {
-    ctx.status = { status: "failure" }
+    ctx.body = { status: "failure" }
+    ctx.status = 400
   }
+  await next()
 }
 
 module.exports = orderRouter
