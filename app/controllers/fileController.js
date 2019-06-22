@@ -10,10 +10,13 @@ fileRouter
     .get('/:id', handleFetch)
 
 async function handleUpload(ctx, next) {
-    file = ctx.request.files.file
-    reader = fs.createReadStream(file.path)
-    stream = fs.createWriteStream(path.join('./upload', ctx.state.user[0].uid))
-    reader.pipe(stream)
+    console.log(ctx.request)
+    await fs.writeFile('./upload/'+ctx.state.user[0].uid+'.jpg',ctx.request.file,(err)=>{
+        if(err) {
+            return console.log(err)
+        }
+        console.log('saved')
+    })
     ctx.status=200
     await next()
 }
