@@ -1,39 +1,39 @@
 //Auth
 function check(ctx, next) {
     if (ctx.isAuthenticated()) {
-      return next()
+        return next()
     } else {
         console.log('failed check')
-        ctx.body={status:'session fail'}
+        ctx.body = { status: 'session fail' }
         // return next()
     }
 }
 
 //Check whether is it oneself
-function isSelfOp(ctx,next) {
+function isSelfOp(ctx, next) {
     console.log(ctx.method);
-    if(ctx.method=='GET'){
-        if(ctx.state.user[0].uid===ctx.params.id){
+    if (ctx.method == 'GET') {
+        if (ctx.state.user[0].uid === ctx.params.id) {
             return next()
         }
-        else{
+        else {
             console.log('failed self at get')
             ctx.redirect('/')
         }
     }
-    else{
-        if(ctx.request.body.uid===ctx.state.user[0].uid){
+    else {
+        if (ctx.request.body.uid === ctx.state.user[0].uid) {
             return next()
         }
-        else{
+        else {
             console.log('failed self at post')
             ctx.redirect('/')
         }
     }
-    
+
 }
 
-module.exports={
+module.exports = {
     check,
     isSelfOp
 }

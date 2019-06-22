@@ -1,29 +1,29 @@
-const {transferFunc}=require('../helpers/walletHelper'),
+const { transferFunc } = require('../helpers/walletHelper'),
     // {testReq}=require('../helpers/taskHelper'),
-    db=require('../helpers/db'),
-    {getNow}=require('../helpers/date')
+    db = require('../helpers/db'),
+    { getNow } = require('../helpers/date')
 
 const orderDB = db.get('Order')
 //todo
-async function noticeNotFinish(tid){
-    await orderDB.find({tid:tid},{status:'taskFin'},{multi:true})
+async function noticeNotFinish(tid) {
+    await orderDB.find({ tid: tid }, { status: 'taskFin' }, { multi: true })
 
 }
 
 //todo
-async function payByTask(tid,type,amount,uid='') {
-    uidList=await orderDB.find({tid:tid,status:type}).then((doc)=>{return doc})
+async function payByTask(tid, type, amount, uid = '') {
+    uidList = await orderDB.find({ tid: tid, status: type }).then((doc) => { return doc })
     for (let index = 0; index < uidList.length; index++) {
         const element = uidList[index];
-        await transferFunc(tid,element.uid,amount)
+        await transferFunc(tid, element.uid, amount)
     }
 }
 
-async function countOrder(tid,uid='') {
-    if(uid!=='')
-        return await orderDB.count({tid:tid,uid:uid})
+async function countOrder(tid, uid = '') {
+    if (uid !== '')
+        return await orderDB.count({ tid: tid, uid: uid })
     else
-        return await orderDB.count({tid:tid})
+        return await orderDB.count({ tid: tid })
 }
 
 // async function createOrderByTask(tid,uid){
@@ -45,6 +45,7 @@ async function countOrder(tid,uid='') {
 //   }
 // }
 
-module.exports={countOrder,payByTask,noticeNotFinish
+module.exports = {
+    countOrder, payByTask, noticeNotFinish
     // ,createOrderByTask
 }
