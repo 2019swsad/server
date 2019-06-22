@@ -406,6 +406,10 @@ POST https://www.volley99.com/order/comment
 GET https://www.volley99.com/order/turnbegin/:id  
 various of ```{status:'xxx'}```
 
+#### Get waiting list
+GET https://www.volley99.com/order/waitinglist/:id
+
+return list of order 
 
 ### Message part(All need auth)
 
@@ -437,6 +441,8 @@ POST http://www.volley99.com/msg/enroll
 {uid:"...",
 msg:"test"}
 ```
+
+
 
 
 

@@ -24,6 +24,7 @@ orderRouter
   .get('/turnbegin/:id', check, setOnGoing)
   .post('/accomplish', check, orderAccomplish)
   .post('/comment', check, commentOrder)
+  .get('/waitinglist/:id',check,listWaiting)
 
 
 // Task schema
@@ -255,6 +256,13 @@ async function commentOrder(ctx, next) {
     ctx.body = { status: 'fail' }
     ctx.status = 400
   }
+  await next()
+}
+
+async function listWaiting(ctx,next) {
+  res=await orderDB.find({tid:ctx.params.id,status='候补中'}).then((doc)=>{return doc})
+  ctx.body=res
+  ctx.status=200
   await next()
 }
 
