@@ -133,13 +133,18 @@ $ curl -XGET "https://www.volley99.com/users/logout"
 #fail redirect to /
 ```
 
-#### Edit user by id (Need Auth)
-```sh
-$ curl -XPOST "https://www.volley99.com/users/" -d '{"uid":"92fb1730-2ec7-4db9-8fcb-7b35d0bd0fe3","password":"123123"}' -H 'Content-Type: application/json'
+#### Edit user 
+POST https://www.volley99.com/users/update
+
+Update what you want
+```
+{
+  username:'xxx'
+}
+```
 
 #return
 True #or
-False
 ```
 
 #### Delete user by id  (Need Auth)
