@@ -24,7 +24,7 @@ userRouter
     .get('/', check, list)
     .get('/self', check, getSelf)
     .get('/checkname/:name', nameCanU)
-    .get('/info/:id',           /*check,*/  getInfo)
+    .get('/info/:id', check, getInfo)
     .get('/logout', logoutUser)
     .get('/delete/:id', check, isSelfOp, removeUser)
     .post('/reg', registerUser)
@@ -168,7 +168,7 @@ async function logoutUser(ctx, next) {
 async function updateUser(ctx, next) {
     // let body = await Joi.validate(ctx.request.body, userSchema, {allowUnknown: true});
 
-    ctx.body = updateUserFunc(ctx.request.body)
+    ctx.body = await updateUserFunc(ctx.request.body)
     ctx.status = 201
     await next();
 }
