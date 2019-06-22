@@ -117,12 +117,12 @@ async function registerUser (ctx, next) {
     if(res){
         ctx.body=await personDB.insert(passData).then((doc)=>{return true})
         await createWallet(passData.uid,false)
+        ctx.status = 201;
     }
     else{
         ctx.body=false
+        ctx.status = 400
     }
-    ctx.status = 201;
-    //ctx.redirect('/')
     await next();
 }
 

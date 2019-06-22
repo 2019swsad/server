@@ -26,6 +26,7 @@ orderRouter
     .get('/status/ongoing/:id',    check,  setOnGoing)
     //.get('/status/start/:id',      check,  isSelfOp, setTaskStart)
     .get('/status/pending/:id',    check,  setOrderPending)
+    .post('/accomplish',    check,  orderAccomplish)
 
 
 // Task schema
@@ -126,10 +127,10 @@ async function signupTask(ctx,next) {
             passdata.uid=ctx.state.user[0].uid
             passdata.status='pending'
             passdata.price=makeStatus
-  
+
             await orderDB.insert(passdata)
             await createMsg(ctx.request.body.uid,ctx.state.user[0].uid,task.type,"有新的报名者")
-  
+
             ctx.body={status:'pending'}
             ctx.status=200
             await next()
@@ -141,7 +142,7 @@ async function signupTask(ctx,next) {
         }
       }
     }
-    
+
 
 }
 
@@ -271,6 +272,21 @@ async function setTaskStart(ctx, next){
   ctx.status = 201
   console.log(res)
   await next()
+}
+
+/**
+ * @example curl -XPOST "http://localhost:8081/order/accomplish" -d '{oid:"xxx",finishNumber:"xxx",}' -H 'Content-Type: application/json'
+ */
+async function orderAccomplish(ctx, next){
+  let order = orderDB.findOne({oid:ctx.request.body.oid}).then((doc)=>{return doc})
+  let task = taskDB.findOne({tid:order.tid}).then((doc)=>{return doc})
+  if(ctx.request.body.finishNumber === task.finishNumber) {
+    res = orderDB.findOneAndUpdate({oid:ctx.request.body.oid},{$set:{status:"finish"}}).then((doc)=>{return doc})
+    ctx.status = {status:"finish"}
+  }
+  else {
+    ctx.status = {status:"failure"}
+  }
 }
 
 module.exports=orderRouter

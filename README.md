@@ -263,7 +263,7 @@ curl -XPOST "https://www.volley99.com/task/participate" -d '{"tid":"...","uid":"
 #### Select participator
 
 ```sh
-curl -XGET "https://www.volley99.com/task/participator/:tid" 
+curl -XGET "https://www.volley99.com/task/participator/:tid"
 
 return [{order}]
 ```
@@ -356,6 +356,16 @@ Return
 
 #### Finish order
 GET http://www.volley99.com/order/finish/:id  
+Return
+```
+{status:'success'},code 200
+#or
+{status:'fail'} code 400
+```
+
+#### Finish order with finish number
+POST https://www.volley99.com/order/accomplish  
+post body:{oid:..., finishNumber:...}
 Return
 ```
 {status:'success'},code 200
