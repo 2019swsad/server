@@ -7,7 +7,15 @@ const Joi = require('joi'),
   { getNow, isEarly } = require('../helpers/date'),
   { createMsg } = require('../helpers/msgHelper'),
   { testReq } = require('../helpers/taskHelper'),
-  { creaditChange } = require('../helpers/userHelper')
+  { creaditChange } = require('../helpers/userHelper'),
+  {
+      removeWallet,
+      transferFunc,
+      transfer,
+      doTransactions,
+      createWallet,
+      queryBalance
+  } = require('../helpers/walletHelper')
 
 
 const orderDB = db.get('Order')
