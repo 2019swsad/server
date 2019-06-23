@@ -240,7 +240,7 @@ async function orderAccomplish(ctx, next) {
   let task = await taskDB.findOne({ tid: order.tid }).then((doc) => { return doc })
   if (ctx.request.body.finishNumber.toString() == task.finishNumber && order.status === '进行中') {
     await transferFunc(order.tid, order.uid, order.price)
-    res = orderDB.findOneAndUpdate({ oid: ctx.request.body.oid }, { $set: { status: "finish" } }).then((doc) => { return doc })
+    res = orderDB.findOneAndUpdate({ oid: ctx.request.body.oid }, { $set: { status: "已完成" } }).then((doc) => { return doc })
     ctx.body = { status: "success" }
     ctx.status = 200
     createMsg(task.uid, order.uid, task.type, '您的' + task.title + '有一人完成任务了')
