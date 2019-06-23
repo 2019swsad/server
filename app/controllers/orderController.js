@@ -39,6 +39,17 @@ const orderCommentSchema = Joi.object().keys({
   credit: Joi.number().required()
 })
 
+async function testNumberReq(tid, time) {
+    taskObj = await taskDB.findOne({ tid: tid }).then((doc) => { return doc })
+    if (taskObj !== null) {
+        if (
+            isEarly(time, taskObj.expireTime)) {
+            return taskObj.salary
+        }
+    }
+    return -1
+}
+
 /**
  * @example curl -XPOST "http://localhost:8081/order/create" -d '{uid:"xxx",tid:"xxx",}' -H 'Content-Type: application/json'
  * oid tid status uid createTime message price
@@ -61,7 +72,7 @@ async function createOrder(ctx, next) {
   }
   else {
     passdata.createTime = getNow()
-    let makeStatus = await testReq(passdata.tid, passdata.createTime)         //test time legal,true return salary
+    let makeStatus = await testNumberReq(passdata.tid, passdata.createTime)         //test time legal,true return salary
     if (makeStatus !== -1) {
       let owner = await userDB.findOne({ uid: ctx.state.user[0].uid }).then((doc) => { return doc })
       passdata.oid = uuid()
