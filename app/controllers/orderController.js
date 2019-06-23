@@ -238,7 +238,7 @@ async function orderAccomplish(ctx, next) {
     createMsg(task.uid, order.uid, task.type, '您的' + task.title + '有一人完成任务了')
   }
   else {
-    ctx.body = { status: "fail" }
+    ctx.body = { status: "fail ?" }
     ctx.status = 400
   }
   await next()
