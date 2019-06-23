@@ -238,6 +238,8 @@ async function orderAccomplish(ctx, next) {
     createMsg(task.uid, order.uid, task.type, '您的' + task.title + '有一人完成任务了')
   }
   else {
+    console.log(task.finishNumber)
+    console.log(ctx.request.body.finishNumber.toString() == task.finishNumber)
     ctx.body = { status: "fail" }
     ctx.status = 400
   }
