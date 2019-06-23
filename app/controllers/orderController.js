@@ -228,8 +228,8 @@ async function setOnGoing(ctx, next) {
  * @example curl -XPOST "http://localhost:8081/order/accomplish" -d '{oid:"xxx",finishNumber:"xxx",}' -H 'Content-Type: application/json'
  */
 async function orderAccomplish(ctx, next) {
-  let order = orderDB.findOne({ oid: ctx.request.body.oid }).then((doc) => { return doc })
-  let task = taskDB.findOne({ tid: order.tid }).then((doc) => { return doc })
+  let order = await orderDB.findOne({ oid: ctx.request.body.oid }).then((doc) => { return doc })
+  let task = await taskDB.findOne({ tid: order.tid }).then((doc) => { return doc })
   if (ctx.request.body.finishNumber.toString() == task.finishNumber && order.status === '进行中') {
     await transferFunc(order.tid, order.uid, order.price)
     res = orderDB.findOneAndUpdate({ oid: ctx.request.body.oid }, { $set: { status: "finish" } }).then((doc) => { return doc })
@@ -239,9 +239,6 @@ async function orderAccomplish(ctx, next) {
   }
   else {
     console.log(order)
-    console.log(ctx.request.body.oid)
-    console.log(task.finishNumber)
-    console.log(ctx.request.body.finishNumber.toString() == task.finishNumber)
     ctx.body = { status: "fail" }
     ctx.status = 400
   }
