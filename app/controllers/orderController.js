@@ -179,14 +179,14 @@ async function setOrderPending(ctx, next) {
     ctx.body = { status: 'failure' }
     await next()
   }
-  else if (res.status === 'pending') {
+  else if (res.status === '候补中') {
     ctx.body = { status: 'failure' }
     await next()
   }
   else {
     let task = await taskDB.findOneAndUpdate({ tid: orderObj.tid }, { $set: { currentParticipator: taskObj.currentParticipator - 1 } }, { $set: { candidate: taskObj.candidate + 1 } }).then((doc) => { return doc })
 
-    res = await orderDB.findOneAndUpdate({ tid: ctx.params.id }, { $set: { status: "pending" } }).then((doc) => { return doc })
+    res = await orderDB.findOneAndUpdate({ tid: ctx.params.id }, { $set: { status: "候补中" } }).then((doc) => { return doc })
     await createMsg(res.uid, taskObj.uid, taskObj.type, "您报名的" + taskObj.title + "任务已将您转为候补，请等待转正后再完成任务。")
     res.status = "pending"
     ctx.body = res.status
@@ -208,7 +208,7 @@ async function setOnGoing(ctx, next) {
   else if (taskObj.currentParticipator >= taskObj.participantNum) {
     ctx.body = { status: 'Max participator' }
   }
-  else if (orderObj.status !== 'pending') {
+  else if (orderObj.status !== '候补中') {
     ctx.body = { status: 'order status is not pending' }
   }
   else {
@@ -230,7 +230,7 @@ async function setOnGoing(ctx, next) {
 async function orderAccomplish(ctx, next) {
   let order = orderDB.findOne({ oid: ctx.request.body.oid }).then((doc) => { return doc })
   let task = taskDB.findOne({ tid: order.tid }).then((doc) => { return doc })
-  if (ctx.request.body.finishNumber === task.finishNumber && order.status == '进行中') {
+  if (ctx.request.body.finishNumber === task.finishNumber && order.status === '进行中') {
     await transferFunc(order.tid, order.uid, order.price)
     res = orderDB.findOneAndUpdate({ oid: ctx.request.body.oid }, { $set: { status: "finish" } }).then((doc) => { return doc })
     ctx.body = { status: "success" }
