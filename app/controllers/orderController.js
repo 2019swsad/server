@@ -33,6 +33,7 @@ orderRouter
   .post('/accomplish', check, orderAccomplish)
   .post('/comment', check, commentOrder)
   .get('/waitinglist/:id',check,listWaiting)
+  .get('/test',getAll)
 
 
 // Task schema
@@ -143,6 +144,12 @@ async function getAllOrderOfTask(ctx, next) {
   ctx.body = await orderDB.find({ tid: ctx.params.id }).then((docs) => { return docs })
   await next();
 }
+
+async function getAll(ctx, next) {
+  ctx.body = await orderDB.find({}).then((docs) => { return docs })
+  await next();
+}
+
 
 /**
 * @example curl -XGET "http://localhost:8081/order/cancel/:id"

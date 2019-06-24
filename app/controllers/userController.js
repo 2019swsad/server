@@ -12,7 +12,7 @@ const userRegSchema = Joi.object().keys({
     username: Joi.string().alphanum().min(4).max(30).trim().required(),
     password: Joi.string().regex(/^[a-zA-Z0-9]{3,30}$/).required(),
     email: Joi.string().email({ minDomainSegments: 2, }).required(),
-    phone: Joi.string().min(11).max(11).trim().required(),
+    phone: Joi.string().regex(/^[0-9]{11}$/).required(),
     nickname: Joi.string().min(3).max(20).trim().required()
 });
 

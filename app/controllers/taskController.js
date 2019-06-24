@@ -60,7 +60,7 @@ taskRouter
 
 
 async function getParticipator(ctx, next) {
-  res = await orderDB.find({ tid: ctx.params.id }).then((docs) => { return docs })
+  res = await orderDB.find({ tid: ctx.params.id,status:{$in:['进行中','已完成','已评价'] }}).then((docs) => { return docs })
   //ctx.body = await userDB.find({uid:res}).then((docs)=>{return docs})
   ctx.body = res
   console.log(ctx.body)
