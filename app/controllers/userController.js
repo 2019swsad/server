@@ -9,11 +9,11 @@ const Joi = require('joi'),
 
 // Simple user schema, more info: https://github.com/hapijs/joi
 const userRegSchema = Joi.object().keys({
-    username: Joi.string().alphanum().min(4).max(30).trim().required(),
+    username: Joi.string().alphanum().min(3).max(30).trim().required(),
     password: Joi.string().regex(/^[a-zA-Z0-9]{3,30}$/).required(),
     email: Joi.string().email({ minDomainSegments: 2, }).required(),
     phone: Joi.string().regex(/^[0-9]{11}$/).required(),
-    nickname: Joi.string().min(3).max(20).trim().required()
+    nickname: Joi.string().min(2).max(20).trim().required()
 });
 
 //DB init
