@@ -26,6 +26,10 @@ async function countOrder(tid, uid = '') {
         return await orderDB.count({ tid: tid })
 }
 
+async function setOrderFinish(oid){
+  await orderDB.findOneAndUpdate({oid:oid},{$set:{status:"已失效"}})
+}
+
 // async function createOrderByTask(tid,uid){
 //   passData.tid=tid
 //   passData.uid=uid
@@ -46,6 +50,6 @@ async function countOrder(tid, uid = '') {
 // }
 
 module.exports = {
-    countOrder, payByTask, noticeNotFinish
+    countOrder, payByTask, noticeNotFinish, setOrderFinish
     // ,createOrderByTask
 }

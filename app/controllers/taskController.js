@@ -5,7 +5,7 @@ const Joi = require('joi'),
   db = require('../helpers/db'),
   { check, isSelfOp } = require('../helpers/auth'),
   { getNow, isEarly } = require('../helpers/date'),
-  { countOrder, payByTask, noticeNotFinish, createOrderByTask } = require('../helpers/orderHelper'),
+  {countOrder, payByTask, noticeNotFinish, setOrderFinish} = require('../helpers/orderHelper'),
   { updateUserFunc } = require('./userController'),
   { createWallet, transferFunc } = require('../helpers/walletHelper'),
   { queryPerson } = require('../helpers/userHelper'),
@@ -75,6 +75,10 @@ async function setTaskFinish(ctx, next) {
   res = await taskDB.findOneAndUpdate({ tid: ctx.params.id }, { $set: { status: "已结束" } }).then((doc) => { return doc })
   res.status = "已结束"
   ctx.body = res.status
+  let orders = await orderDB.find({tid:res.tid}).then((doc)=>{return doc})
+  for(let j of orders){
+    await orderDB.findOneAndUpdate({oid:j.oid,status:{$in:['进行中','候补中'] }},{$set:{status:"已失效"}}).then((doc)=>{return doc})
+  }
   ctx.status = 201
   console.log(res)
   await next()
@@ -87,6 +91,10 @@ async function setOnGoing(ctx, next) {
   res = await taskDB.findOneAndUpdate({ tid: ctx.params.id }, { $set: { status: "进行中" } }).then((doc) => { return doc })
   res.status = "进行中"
   ctx.body = res.status
+  let orders = await orderDB.find({tid:res.tid}).then((doc)=>{return doc})
+  for(let j of orders){
+    await orderDB.findOneAndUpdate({oid:j.oid,status:"候补中"},{$set:{status:"已失效"}}).then((doc)=>{return doc})
+  }
   ctx.status = 201
   console.log(res)
   await next()
