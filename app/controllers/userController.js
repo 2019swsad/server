@@ -5,7 +5,8 @@ const Joi = require('joi'),
     db = require('../helpers/db'),
     { check, isSelfOp } = require('../helpers/auth'),
     { queryPerson } = require('../helpers/userHelper'),
-    { queryBalance, createWallet } = require('../helpers/walletHelper')
+    { queryBalance, createWallet } = require('../helpers/walletHelper'),
+    date = require("silly-datetime")
 
 // Simple user schema, more info: https://github.com/hapijs/joi
 const userRegSchema = Joi.object().keys({
@@ -31,6 +32,7 @@ userRouter
     .post('/update', check, isSelfOp, updateUser)
     .post('/login', loginUser)
     .post('/rating', rateUser)
+    .get('/sign',check,signUser)
 
 
 
@@ -113,6 +115,8 @@ async function registerUser(ctx, next) {
     passData.uid = uuid()
     passData.credit = 100
     passData.number = 0
+    passData.signTime = date.format(new Date(), 'YYYY-MM-DD')
+    passData.signNumber = 0
     console.log(passData)
     if (res) {
         ctx.body = await personDB.insert(passData).then((doc) => { return true })
@@ -124,6 +128,31 @@ async function registerUser(ctx, next) {
         ctx.status = 400
     }
     await next();
+}
+
+async function signUser(ctx, next){
+  let res = personDB.findOne({uid:ctx.state.user[0].uid}).then((doc)=>{return doc})
+
+  let today = date.format(new Date(), 'YYYY-MM-DD').toString()
+  let x = today.charAt(9)
+  let y = today.charAt(8)
+  let now = y*10 + x*1
+  let lastday = res.signTime
+  let xx = today.charAt(9)
+  let yy = today.charAt(8)
+  let last = yy*10 + xx*1
+
+
+  if(now - last === 1){
+    let user = personDB.findOne({uid:ctx.state.user[0].uid},{$set:{signTime:date.format(new Date(), 'YYYY-MM-DD'),signNumber:res.signNumber+1}}).then((doc)=>{return doc})
+    ctx.status = 200
+    ctx.body = {signNumber:user.signNumber}
+  }
+  else {
+    ctx.status = 200
+    let user = personDB.findOne({uid:ctx.state.user[0].uid},{$set:{signTime:date.format(new Date(), 'YYYY-MM-DD'),signNumber:1}}).then((doc)=>{return doc})
+    ctx.body = {signNumber:-1}
+  }
 }
 
 

@@ -27,7 +27,7 @@ POST https://www.volley99.com/file/
 return 200
 #### Download
 GET https://www.volley99.com/file/:id
-return 200 with image 
+return 200 with image
 or 400
 
 ### Render
@@ -133,7 +133,7 @@ $ curl -XGET "https://www.volley99.com/users/logout"
 #fail redirect to /
 ```
 
-#### Edit user 
+#### Edit user
 POST https://www.volley99.com/users/update
 
 Update what you want
@@ -155,6 +155,14 @@ $ curl -XGET "https://www.volley99.com/users/676271cb-ca17-4fcb-98de-174a21c6b1f
 #return
 True #or
 False
+```
+
+#### Sign up
+```sh
+$ curl -XGET "https://www.volley99.com/users/sign"
+
+#return 200
+#return -1 or sign up number
 ```
 
 ### Wallet Part
@@ -414,7 +422,7 @@ various of ```{status:'xxx'}```
 #### Get waiting list
 GET https://www.volley99.com/order/waitinglist/:id
 
-return list of order 
+return list of order
 
 ### Message part(All need auth)
 
