@@ -115,7 +115,7 @@ async function registerUser(ctx, next) {
     passData.uid = uuid()
     passData.credit = 100
     passData.number = 0
-    passData.signTime = date.format(new Date(), 'YYYY-MM-DD')
+    passData.signTime = '1970-01-01'
     passData.signNumber = 0
     console.log(passData)
     if (res) {
@@ -131,27 +131,41 @@ async function registerUser(ctx, next) {
 }
 
 async function signUser(ctx, next){
-  let res = personDB.findOne({uid:ctx.state.user[0].uid}).then((doc)=>{return doc})
+  let res = await personDB.findOne({uid:ctx.state.user[0].uid}).then((doc)=>{return doc})
 
   let today = date.format(new Date(), 'YYYY-MM-DD').toString()
   let x = today.charAt(9)
   let y = today.charAt(8)
   let now = y*10 + x*1
   let lastday = res.signTime
-  let xx = today.charAt(9)
-  let yy = today.charAt(8)
+  //console.log(lastday)
+  lastday = lastday.toString()
+  //console.log(lastday)
+  let xx = lastday.charAt(9)
+  let yy = lastday.charAt(8)
   let last = yy*10 + xx*1
-
-
   if(now - last === 1){
-    let user = personDB.findOne({uid:ctx.state.user[0].uid},{$set:{signTime:date.format(new Date(), 'YYYY-MM-DD'),signNumber:res.signNumber+1}}).then((doc)=>{return doc})
+    console.log('past:'+last)
+    console.log('now'+now)
+    let user = await personDB.findOneAndUpdate({uid:ctx.state.user[0].uid},{$set:{signTime:today,signNumber:res.signNumber+1}}).then((doc)=>{return doc})
+    console.log('sign:'+res.uid)
     ctx.status = 200
     ctx.body = {signNumber:user.signNumber}
   }
-  else {
+  else if(now - last === 0) {
+    console.log('fail sign past:'+last)
+    console.log(now)
+    let min = now - last
+    console.log(min)
     ctx.status = 200
-    let user = personDB.findOne({uid:ctx.state.user[0].uid},{$set:{signTime:date.format(new Date(), 'YYYY-MM-DD'),signNumber:1}}).then((doc)=>{return doc})
     ctx.body = {signNumber:-1}
+  }
+  else {
+    console.log('past:'+last)
+    console.log('now'+now)
+    let user = await personDB.findOneAndUpdate({uid:ctx.state.user[0].uid},{$set:{signTime:date.format(new Date(), 'YYYY-MM-DD'),signNumber:1}}).then((doc)=>{return doc})
+    ctx.status = 200
+    ctx.body = {signNumber:user.signNumber}
   }
 }
 
