@@ -19,6 +19,7 @@ const userRegSchema = Joi.object().keys({
 
 //DB init
 const personDB = db.get('Person')
+const orderDB = db.get('Order')
 
 const userRouter = new Router({ prefix: '/users' });
 userRouter
@@ -245,6 +246,7 @@ async function updateUserFunc(user) {
  */
 async function rateUser(ctx, next) {
     let tempOrder = await orderDB.findOne({oid:ctx.request.body.oid}).then((docs)=>{return docs})
+    console.log(tempOrder)
     if(tempOrder.comment === "已评价"){
       ctx.body = {comment:"已评价"}
       ctx.status = 400
@@ -252,6 +254,8 @@ async function rateUser(ctx, next) {
     else{
       let temp = await personDB.findOne(
           { uid: ctx.request.body.uid }).then((docs) => { return docs });
+
+      console.log(temp+"temp")
 
       let order = await orderDB.findOneAndUpdate(
         {oid:ctx.request.body.oid},
