@@ -88,6 +88,7 @@ async function createOrder(ctx, next) {
       passdata.oid = uuid()
       passdata.uid = ctx.state.user[0].uid
       passdata.price = makeStatus
+      passdata.comment = "未评价"
       if (task.currentParticipator < task.participantNum) {
         await taskDB.findOneAndUpdate({ tid: passdata.tid }, { $set: { currentParticipator: task.currentParticipator + 1 } })
         passdata.status = '进行中'

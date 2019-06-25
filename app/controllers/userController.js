@@ -241,16 +241,28 @@ async function updateUserFunc(user) {
 
 /**
  * @example
- * curl -XPOST "http://localhost:8081/users/rating" -d '{"uid":"...","rate":"80"}' -H 'Content-Type: application/json'
+ * curl -XPOST "http://localhost:8081/users/rating" -d '{"uid":"...","rate":"80",oid:"..."}' -H 'Content-Type: application/json'
  */
 async function rateUser(ctx, next) {
-    let temp = await personDB.findOne(
-        { uid: ctx.request.body.uid }).then((docs) => { return docs });
+    let tempOrder = await orderDB.findOne({oid:ctx.request.body.oid}).then((docs)=>{return docs})
+    if(tempOrder.comment === "已评价"){
+      ctx.body = {comment:"已评价"}
+      ctx.status = 400
+    }
+    else{
+      let temp = await personDB.findOne(
+          { uid: ctx.request.body.uid }).then((docs) => { return docs });
 
-    ctx.body = await personDB.findOneAndUpdate(
-        { uid: ctx.request.body.uid },
-        { $set: { number: temp.number += 1 } }, { $set: { credit: (temp.credit * (temp.number + 1) + ctx.params.rate) / (temp.number + 2) } }).then((docs) => { return docs });
-    ctx.status = 201
+      let order = await orderDB.findOneAndUpdate(
+        {oid:ctx.request.body.oid},
+        {$set:{comment:"已评价"}}
+      ).then((doc)=>{return doc})
+
+      ctx.body = await personDB.findOneAndUpdate(
+          { uid: ctx.request.body.uid },
+          { $set: { number: temp.number += 1 } }, { $set: { credit: (temp.credit * (temp.number + 1) + ctx.params.rate) / (temp.number + 2) } }).then((docs) => { return docs });
+      ctx.status = 201
+    }
     await next()
 }
 
