@@ -146,8 +146,11 @@ async function signUser(ctx, next){
     ctx.status = 200
     ctx.body = {signNumber:user.signNumber}
   }
-  else if(now - last ===0) {
+  else if(now - last === 0) {
+    console.log('past:'+past)
     console.log(now)
+    let min = now - last
+    console.log(min)
     ctx.status = 200
     ctx.body = {signNumber:-1}
   }
