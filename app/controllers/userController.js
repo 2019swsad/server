@@ -145,6 +145,8 @@ async function signUser(ctx, next){
   let yy = lastday.charAt(8)
   let last = yy*10 + xx*1
   if(now - last === 1){
+    console.log('past:'+last)
+    console.log('now'+now)
     let user = await personDB.findOne({uid:ctx.state.user[0].uid},{$set:{signTime:today,signNumber:res.signNumber+1}}).then((doc)=>{return doc})
     console.log('sign:'+res.uid)
     ctx.status = 200
@@ -159,6 +161,8 @@ async function signUser(ctx, next){
     ctx.body = {signNumber:-1}
   }
   else {
+    console.log('past:'+last)
+    console.log('now'+now)
     let user = await personDB.findOne({uid:ctx.state.user[0].uid},{$set:{signTime:date.format(new Date(), 'YYYY-MM-DD'),signNumber:1}}).then((doc)=>{return doc})
     ctx.status = 200
     ctx.body = {signNumber:user.signNumber}
