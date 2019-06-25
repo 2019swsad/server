@@ -115,7 +115,7 @@ async function registerUser(ctx, next) {
     passData.uid = uuid()
     passData.credit = 100
     passData.number = 0
-    passData.signTime = '1970-01-32'
+    passData.signTime = '1970-01-01'
     passData.signNumber = 0
     console.log(passData)
     if (res) {
@@ -137,7 +137,8 @@ async function signUser(ctx, next){
   let x = today.charAt(9)
   let y = today.charAt(8)
   let now = y*10 + x*1
-  let lastday = res.signTime.toString()
+  let lastday = res.signTime
+  lastday = lastday.toString()
   let xx = lastday.charAt(9)
   let yy = lastday.charAt(8)
   let last = yy*10 + xx*1
