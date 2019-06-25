@@ -147,7 +147,7 @@ async function signUser(ctx, next){
     ctx.body = {signNumber:user.signNumber}
   }
   else if(now - last === 0) {
-    console.log('past:'+past)
+    console.log('past:'+last)
     console.log(now)
     let min = now - last
     console.log(min)
