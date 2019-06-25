@@ -147,6 +147,7 @@ async function signUser(ctx, next){
     ctx.body = {signNumber:user.signNumber}
   }
   else if(now - last ===0) {
+    console.log(now)
     ctx.status = 200
     ctx.body = {signNumber:-1}
   }
