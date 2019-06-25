@@ -282,10 +282,8 @@ curl -XGET "https://www.volley99.com/task/number/:id"
 curl -XPOST "https://www.volley99.com/task/participate" -d '{"tid":"...","uid":"..."}' -H 'Content-Type: application/json'
 ```
 
-#### Select participator
-
-```sh
-curl -XGET "https://www.volley99.com/task/participator/:tid"
+#### Get participator
+GET https://www.volley99.com/task/participator/:tid
 
 return [{order}]
 ```
