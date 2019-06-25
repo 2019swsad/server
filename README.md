@@ -424,6 +424,9 @@ GET https://www.volley99.com/order/waitinglist/:id
 
 return list of order
 
+#### Set order pending
+GET https://www.volley99.com/order/turnpending/:id
+
 ### Message part(All need auth)
 
 ** 评论的类型为"comment",报名的话type "enrollment" **

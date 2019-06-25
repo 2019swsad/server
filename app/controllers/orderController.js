@@ -34,6 +34,7 @@ orderRouter
   .post('/comment', check, commentOrder)
   .get('/waitinglist/:id',check,listWaiting)
   .get('/test',getAll)
+  .get('/turnpending/:id',check ,setOrderPending)
 
 
 // Task schema
@@ -184,6 +185,7 @@ async function cancelSelfOrder(ctx, next) {
   await next();
 }
 
+
 /**
  * @example curl -XGET "http://localhost:8081/task/pending/:id"
  */
@@ -199,11 +201,11 @@ async function setOrderPending(ctx, next) {
     await next()
   }
   else {
-    let task = await taskDB.findOneAndUpdate({ tid: orderObj.tid }, { $set: { currentParticipator: taskObj.currentParticipator - 1 } }, { $set: { candidate: taskObj.candidate + 1 } }).then((doc) => { return doc })
+    let task = await taskDB.findOneAndUpdate({ tid: orderObj.tid }, { $set: { currentParticipator: taskObj.currentParticipator - 1，candidate: taskObj.candidate + 1  } }).then((doc) => { return doc })
 
     res = await orderDB.findOneAndUpdate({ tid: ctx.params.id }, { $set: { status: "候补中" } }).then((doc) => { return doc })
     await createMsg(res.uid, taskObj.uid, taskObj.type, "您报名的" + taskObj.title + "任务已将您转为候补，请等待转正后再完成任务。")
-    res.status = "pending"
+    res.status = "候补中"
     ctx.body = res.status
     ctx.status = 201
     console.log(res)
