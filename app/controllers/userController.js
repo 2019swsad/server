@@ -131,21 +131,22 @@ async function registerUser(ctx, next) {
 }
 
 async function signUser(ctx, next){
-  let res = personDB.findOne({uid:ctx.state.user[0].uid}).then((doc)=>{return doc})
+  let res = await personDB.findOne({uid:ctx.state.user[0].uid}).then((doc)=>{return doc})
 
   let today = date.format(new Date(), 'YYYY-MM-DD').toString()
   let x = today.charAt(9)
   let y = today.charAt(8)
   let now = y*10 + x*1
   let lastday = res.signTime
-  console.log(lastday)
+  //console.log(lastday)
   lastday = lastday.toString()
-  console.log(lastday)
+  //console.log(lastday)
   let xx = lastday.charAt(9)
   let yy = lastday.charAt(8)
   let last = yy*10 + xx*1
   if(now - last === 1){
-    let user = personDB.findOne({uid:ctx.state.user[0].uid},{$set:{signTime:today,signNumber:res.signNumber+1}}).then((doc)=>{return doc})
+    let user = await personDB.findOne({uid:ctx.state.user[0].uid},{$set:{signTime:today,signNumber:res.signNumber+1}}).then((doc)=>{return doc})
+    console.log('sign:'+res.uid)
     ctx.status = 200
     ctx.body = {signNumber:user.signNumber}
   }
@@ -158,7 +159,7 @@ async function signUser(ctx, next){
     ctx.body = {signNumber:-1}
   }
   else {
-    let user = personDB.findOne({uid:ctx.state.user[0].uid},{$set:{signTime:date.format(new Date(), 'YYYY-MM-DD'),signNumber:1}}).then((doc)=>{return doc})
+    let user = await personDB.findOne({uid:ctx.state.user[0].uid},{$set:{signTime:date.format(new Date(), 'YYYY-MM-DD'),signNumber:1}}).then((doc)=>{return doc})
     ctx.status = 200
     ctx.body = {signNumber:user.signNumber}
   }
