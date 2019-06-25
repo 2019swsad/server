@@ -2,7 +2,7 @@
 node_modules/*
 package-lock.json
 __tests__
-
+.vscode/
 server.key
 server.pem
 
