@@ -15,10 +15,10 @@ async function handleUpload(ctx, next) {
     console.log(file);
     let aftername=file.type.replace(/\w+\//, '.');
     const reader = fs.createReadStream(file.path)
-    const stream = fs.createWriteStream(path.join('./upload/', ctx.state.user[0].uid + aftername))
+    const stream = fs.createWriteStream(path.join('./upload/', ctx.state.user[0].uid))
     reader.pipe(stream)
     //compress
-    sleep(50)
+    
     pathToImg = './upload/' + ctx.state.user[0].uid + aftername
     compress_img(pathToImg, './imgtest/', { compress_force: false, statistic: true, autoupdate: true }, false,
         { jpg: { engine: 'mozjpeg', command: ['-quality', '60'] } },
@@ -42,8 +42,8 @@ function sleep(ms){
 }
 async function handleFetch(ctx, next) {
     ctx.cacheControl('max-age=3600')
-    if (fs.existsSync('./upload/' + ctx.params.id + '.jpg')) {
-        await send(ctx, './upload/' + ctx.params.id + '.jpg')
+    if (fs.existsSync('./upload/' + ctx.params.id)) {
+        await send(ctx, './upload/' + ctx.params.id)
     } else {
         await send(ctx, './upload/normal.jpg')
     }
