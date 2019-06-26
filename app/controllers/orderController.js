@@ -203,8 +203,7 @@ async function setOrderPending(ctx, next) {
   }
   else {
     let task = await taskDB.findOneAndUpdate({ tid: orderObj.tid }, { $set: { currentParticipator: taskObj.currentParticipator - 1, candidate: taskObj.candidate + 1  } }).then((doc) => { return doc })
-
-    res = await orderDB.findOneAndUpdate({ tid: ctx.params.id }, { $set: { status: "候补中" } }).then((doc) => { return doc })
+    res = await orderDB.findOneAndUpdate({ oid: ctx.params.id }, { $set: { status:"候补中"} }).then((doc) => { return doc })
     await createMsg(res.uid, taskObj.uid, taskObj.type, "您报名的" + taskObj.title + "任务已将您转为候补，请等待转正后再完成任务。")
     res.status = "候补中"
     ctx.body = res.status
@@ -231,7 +230,7 @@ async function setOnGoing(ctx, next) {
   }
   else {
     let task = await taskDB.findOneAndUpdate({ tid: orderObj.tid }, { $set: { currentParticipator: taskObj.currentParticipator + 1 } }, { $set: { candidate: taskObj.candidate - 1 } }).then((doc) => { return doc })
-    res = await orderDB.findOneAndUpdate({ tid: ctx.params.id }, { $set: { status: "success" } }).then((doc) => { return doc })
+    res = await orderDB.findOneAndUpdate({ tid: ctx.params.id }, { $set: { status: "进行中" } }).then((doc) => { return doc })
     await createMsg(res.uid, taskObj.uid, taskObj.type, "您报名的" + taskObj.title + "任务的候补资格已被转正，请抓紧时机去完成任务吧！")
     res.status = "success"
     ctx.body = { status: 'success' }
