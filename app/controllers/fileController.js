@@ -12,14 +12,14 @@ fileRouter
 
 async function handleUpload(ctx, next) {
     const file = ctx.request.files.file
-    console.log(file)
-    
+    console.log(file);
+    let aftername=file.type.replace(/\w+\//, '.');
     const reader = fs.createReadStream(file.path)
-    const stream = fs.createWriteStream(path.join('./upload/', ctx.state.user[0].uid + '.jpg'))
+    const stream = fs.createWriteStream(path.join('./upload/', ctx.state.user[0].uid + aftername))
     reader.pipe(stream)
 
     //compress
-    pathToImg = './upload/' + ctx.state.user[0].uid + '.jpg'
+    pathToImg = './upload/' + ctx.state.user[0].uid + aftername
     compress_img(pathToImg, './imgtest/', { compress_force: false, statistic: true, autoupdate: true }, false,
         { jpg: { engine: 'mozjpeg', command: ['-quality', '60'] } },
         { png: { engine: 'pngquant', command: ['--quality=20-50'] } },

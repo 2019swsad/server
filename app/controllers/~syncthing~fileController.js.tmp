@@ -27,7 +27,7 @@ async function handleUpload(ctx, next) {
         { gif: { engine: 'gifsicle', command: ['--colors', '64', '--use-col=web'] } },
         (err, completed, statistic) => {
             console.log('-------------');
-            console.log(error);
+            console.log(err);
             console.log(completed);
             console.log(statistic);
             console.log('-------------');
