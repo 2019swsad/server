@@ -15,6 +15,7 @@ const http = require('http'),
 const router  = require('./routes');
 
 app = new Koa();
+require('koa-ctx-cache-control')(app)
 app.use(koaBody({ multipart: true }));
 app.keys=['hihihi']
 let options={
