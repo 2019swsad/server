@@ -197,7 +197,7 @@ async function setOrderPending(ctx, next) {
     ctx.body = { status: 'failure' }
     await next()
   }
-  else if (res.status === '候补中') {
+  else if (orderObj.status === '候补中') {
     ctx.body = { status: 'failure' }
     await next()
   }
