@@ -15,6 +15,7 @@
     "compress-images": "^1.5.8",
     "config": ">=3.1.0",
     "debug": ">=4.1.1",
+    "easyimage": "^3.1.1",
     "ejs": "^2.6.1",
     "is-generator-function": "^1.0.7",
     "joi": ">=14.3.1",

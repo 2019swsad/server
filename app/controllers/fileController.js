@@ -3,7 +3,8 @@ const fs = require('fs'),
     send = require('koa-send'),
     Router = require('koa-router'),
     { check } = require('../helpers/auth'),
-    compress_img = require('compress-images')
+    compress_img = require('compress-images'),
+    {convert}=require('easyimage')
 
 const fileRouter = new Router({ prefix: '/file' })
 fileRouter
@@ -15,12 +16,16 @@ async function handleUpload(ctx, next) {
     console.log(file);
     let aftername=file.type.replace(/\w+\//, '.');
     const reader = fs.createReadStream(file.path)
-    const stream = fs.createWriteStream(path.join('./upload/', ctx.state.user[0].uid))
+    const stream = fs.createWriteStream(path.join('./upload/', ctx.state.user[0].uid + aftername))
     reader.pipe(stream)
     //compress
     
+    
+    ctx.status = 200
+    
+    await next()
     pathToImg = './upload/' + ctx.state.user[0].uid + aftername
-    compress_img(pathToImg, './imgtest/', { compress_force: false, statistic: true, autoupdate: true }, false,
+    compress_img(pathToImg, './imgtest/', { compress_force: true, statistic: true, autoupdate: true }, false,
         { jpg: { engine: 'mozjpeg', command: ['-quality', '60'] } },
         { png: { engine: 'pngquant', command: ['--quality=20-50'] } },
         { svg: { engine: 'svgo', command: '--multipass' } },
@@ -32,8 +37,6 @@ async function handleUpload(ctx, next) {
             console.log(statistic);
             console.log('-------------');
         })
-    ctx.status = 200
-    await next()
 }
 function sleep(ms){
     return new Promise(resolve=>{
@@ -42,8 +45,8 @@ function sleep(ms){
 }
 async function handleFetch(ctx, next) {
     ctx.cacheControl('max-age=3600')
-    if (fs.existsSync('./upload/' + ctx.params.id)) {
-        await send(ctx, './upload/' + ctx.params.id)
+    if (fs.existsSync('./upload/' + ctx.params.id + '.png')) {
+        await send(ctx, './upload/' + ctx.params.id + '.png')
     } else {
         await send(ctx, './upload/normal.jpg')
     }
