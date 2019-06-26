@@ -36,7 +36,6 @@ async function handleUpload(ctx, next) {
     await next()
 }
 async function handleFetch(ctx, next) {
-    ctx.cacheControl('max-age=3600')
     if (fs.existsSync('./upload/' + ctx.params.id + '.jpg')) {
         await send(ctx, './upload/' + ctx.params.id + '.jpg')
     } else {
