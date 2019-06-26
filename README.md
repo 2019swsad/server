@@ -13,91 +13,91 @@ $ cnpm i #recommend
 **Start app:**
 ```sh
 $ node ./index.js
+#or
+nodemon
 ```
 
 # API
 
-### Session
+## Session
 Auth will check when access some personal info
 When fail,it will return ```{status:'session fail'}```
 
-### File
-#### Upload
-POST https://www.volley99.com/file/
+## File
+### Upload
+POST https://www.volley99.com/file/  
 return 200
-#### Download
-GET https://www.volley99.com/file/:id
-return 200 with image
-or 400
+### Download
+GET https://www.volley99.com/file/:id  
+return 200 with image  
+or return default img
 
-### Render
-#### get mainpage
-```sh
-$ curl -XGET 'https://www.volley99.com/'
-```
+## Render (deprecated)
+### get mainpage
+GET https://www.volley99.com/
 
-#### get testpage
-```sh
-$ curl -XGET 'https://www.volley99.com/test
-```
 
-### User Part
+### get testpage
+GET https://www.volley99.com/test  
 
-#### get user self (Need Auth and self)
-```sh
-$ curl -XGET "https://www.volley99.com/users/self/"
+## User Part
 
-#return
+### get user self (Need Auth and self)
+GET "https://www.volley99.com/users/self/
+
+return
+```JSON
 {"_id":"5ce554fba2229c3a88b1fc15",
 "username":"test1",
 "password":"15ds5ad",
 "email":"asd@mail.com",
 "phone":"13800138000",
-"uid":"676271cb-ca17-4fcb-98de-174a21c6b1f7"}
-#or redirect to /
+"uid":"676271cb-ca17-4fcb-98de-174a21c6b1f7"
 ```
 
-#### Rate someone
 
-$ curl -XPOST "https://www.volley99.com/users/rating"
+### Rate someone
+POST https://www.volley99.com/users/rating
 
 body:
+```JSON
 {
   "uid":...
   "rate":...
   "oid":...
 }
+```
 
 
-#### get user info by uid (future Need Auth)
-```sh
-$ curl -XGET "https://www.volley99.com/users/info/:id"
+### get user info by uid (future Need Auth)
+GET https://www.volley99.com/users/info/:id
 
-#return
+return
+```
 {
   uid
   username
   credit
   phone
-  url}
-#or redirect to /
+  url
+}
 ```
 
-#### Check name is avaliable
-```sh
-$ curl -XGET "https://www.volley99.com/users/checkname/:name"
+### Check name is avaliable
+GET https://www.volley99.com/users/checkname/:name
 
-#return
+return
+```
 True #or
 False
 ```
 
 
-#### get all users (deprecated)
-```sh
-$ curl -XGET "https://www.volley99.com/users"
+### get all users (deprecated)
+GET https://www.volley99.com/users
 
-#return like
+return like
+```
 [{
   "_id":"5ce554fba2229c3a88b1fc15",
   "username":"test1",
@@ -108,33 +108,38 @@ $ curl -XGET "https://www.volley99.com/users"
 }]
 ```
 
-#### Add new user / Register
-```sh
-$ curl -XPOST "https://www.volley99.com/users/reg" -d '{"username":"test","password":"123","phone":"13800138000","email":"example@mail.com"}' -H 'Content-Type: application/json'
+### Add new user / Register
+POST https://www.volley99.com/users/reg 
+```JSON
+{
+  username:"test",
+  password:"123",
+  phone:"13800138000",
+  email:"example@mail.com"
+  nickname:'ass'}
+```
 
-#return states 201
-#return
-True #or
+return  
+True or  
 False
+
+### Login
+POST https://www.volley99.com/users/login
+```JSON
+{"username":"test","password":"123"}
 ```
 
-#### Login
-```sh
-$ curl -XPOST "https://www.volley99.com/users/login" -d '{"username":"test","password":"123"}' -H 'Content-Type: application/json' -c cookies.txt
+success return ```{"status": "success"}```  
+fail return ```{"status": "error"}```with 200
 
-#success return {"status": "success"}
-#fail return {"status": "error"}
-```
 
-#### Logout
-```sh
-$ curl -XGET "https://www.volley99.com/users/logout"
+### Logout
+GET https://www.volley99.com/users/logout
 
-#success redirect to /test
-#fail redirect to /
-```
+No respone
 
-#### Edit user
+
+### Edit user
 POST https://www.volley99.com/users/update
 
 Update what you want
@@ -144,66 +149,59 @@ Update what you want
 }
 ```
 
-#return
-True #or
-```
-
-#### Delete user by id  (Need Auth)
-```sh
-$ curl -XGET "https://www.volley99.com/users/676271cb-ca17-4fcb-98de-174a21c6b1f7"
-
-#return 204
-#return
+return
 True #or
 False
-```
 
-#### Sign up
-```sh
-$ curl -XGET "https://www.volley99.com/users/sign"
+### Delete user by id  (Need Auth)
+GET https://www.volley99.com/users/delete/:id
 
-#return 200
-#return -1 or sign up number
-```
+return  
+True with 204 #or  
+False  
 
-### Wallet Part
+### Sign up
+签到
+GET https://www.volley99.com/users/sign
+
+return -1 or sign up number
+
+## Wallet Part
 All need to Auth
-#### Create wallet
-```sh
-$ curl -XGET "https://www.volley99.com/wallet/create"
-```
+### Create wallet
+GET "https://www.volley99.com/wallet/create"
 
-#### get balance
-```sh
-$ curl -XGET "https://www.volley99.com/wallet/balance"
-# return int
-```
+### get balance
+GET "https://www.volley99.com/wallet/balance"
 
-#### charge to self wallet
-```sh
-$ curl -XGET "https://www.volley99.com/wallet/deposit/:amount"
-#return boolean
-```
+return int
 
-#### list transaction
-```sh
-$ curl -XGET "https://www.volley99.com/wallet/transaction"
-#return list of transaction
-```
 
-#### make transaction
-```sh
-$ curl -XPOST "https://www.volley99.com/wallet/transaction" -d '{
+### charge to self wallet
+GET "https://www.volley99.com/wallet/deposit/:amount"
+
+return boolean
+
+
+### list transaction
+GET "https://www.volley99.com/wallet/transaction"  
+return list of transaction
+
+
+### make transaction
+POST "https://www.volley99.com/wallet/transaction" 
+```JSON
+{
   sender:"(uuid)",
   receiver:"(uuid)",
   amount:(int)
-  }' -H 'Content-Type: application/json'
-#return boolean
+}
 ```
+return boolean
 
 ### Task Part
 
-#### Create task
+### Create task
 Need to Auth
 POST https://www.volley99.com/task/create
 ```
@@ -220,24 +218,23 @@ POST https://www.volley99.com/task/create
 }
 ```
 
-#### Get All Task
+### Get All Task
+GET "https://www.volley99.com/task/all"
+Return task list
 
-```sh
-$ curl -XGET "https://www.volley99.com/task/all"
-```
-
-#### Get one task
-```sh
-$curl -XGET "https://www.volley99.com/task/get/id"
+### Get one task
+GET "https://www.volley99.com/task/get/:id"
 
 return info
 #or
 {status:'error'}
-```
 
-#### Query Task By element
-```sh
-curl -XPOST "https://www.volley99.com/task/query"  -d '{"title":"test task"}' -H 'Content-Type: application/json'
+
+### Query Task By element
+POST "https://www.volley99.com/task/query
+```bash
+{"title":"test task"}
+
 # Allow element
 #title
 #type
@@ -251,7 +248,7 @@ curl -XPOST "https://www.volley99.com/task/query"  -d '{"title":"test task"}' -H
 ```
 
 
-#### Get created task
+### Get created task
 GET https://www.volley99.com/task/getCreate/  
 Return
 ```
@@ -260,7 +257,7 @@ Return
 }]
 ```
 
-#### Get order task
+### Get order task
 GET https://www.volley99.com/task/getJjoin/  
 Return
 ```
@@ -269,47 +266,40 @@ Return
 }]
 ```
 
-#### Get finish number
+### Get finish number
 
 Parameter:getTaskbyID
 
-```sh
-curl -XGET "https://www.volley99.com/task/number/:id"
+GET "https://www.volley99.com/task/number/:id"
+
+
+### Select participator
+POST "https://www.volley99.com/task/participate"
+```
+{"tid":"...","uid":"..."}'
 ```
 
-#### Select participator
-
-```sh
-curl -XPOST "https://www.volley99.com/task/participate" -d '{"tid":"...","uid":"..."}' -H 'Content-Type: application/json'
-```
-
-#### Get participator
+### Get participator
 GET https://www.volley99.com/task/participator/:tid
 
 return [{order}]
-```
 
-#### Change task status
+### Change task status
 
 Parameter: id: task id
 Return: task status
 
 Set to 已结束:
-```sh
-curl -XGET "https://www.volley99.com/task/finish/:id"
-```
+GET "https://www.volley99.com/task/finish/:id"
+
 
 Set to 进行中:
-```sh
-curl -XGET "https://www.volley99.com/task/ongoing/:id"
-```
+GET "https://www.volley99.com/task/ongoing/:id"
 
 Set to 未开始:
-```sh
-curl -XGET "https://www.volley99.com/task/start/:id"
-```
+GET "https://www.volley99.com/task/start/:id"
 
-### Order part(All need auth)
+## Order part(All need auth)
 status
 ```
 进行中
@@ -319,7 +309,7 @@ status
 已失效
 已评价
 ```
-#### create
+### create
 POST http://www.volley99.com/order/create  
 ```json
 {
@@ -337,7 +327,7 @@ Return
 ```
 
 
-#### Get all order of oneself
+### Get all order of oneself
 GET http://www.volley99.com/order/all  
 Return
 ```json
@@ -352,7 +342,7 @@ Return
 }]
 ```
 
-#### Get all order of a task
+### Get all order of a task
 GET http://www.volley99.com/order/bytask/:id  
 Return
 ```json
@@ -367,7 +357,7 @@ Return
 }]
 ```
 
-#### Get order by id
+### Get order by id
 GET http://www.volley99.com/order/get/:id  
 Return
 ```
@@ -376,7 +366,7 @@ order info,code 200
 {status:'fail'} code 400
 ```
 
-#### Accomplish one order
+### Accomplish one order
 完成任务并且拿钱
 POST https://www.volley99.com/order/accomplish
 ```json
@@ -387,7 +377,7 @@ POST https://www.volley99.com/order/accomplish
 {status:'fail'} code 400
 ```
 
-#### Cancel order of oneself
+### Cancel order of oneself
 取消某人自己的订单
 GET https://www.volley99.com/order/close/:id
 
@@ -398,7 +388,7 @@ GET https://www.volley99.com/order/close/:id
 {status:'fail'} code 400
 ```
 
-#### Comment one order by self or by hoster
+### Comment one order by self or by hoster
 评论某一订单
 POST https://www.volley99.com/order/comment
 ```
@@ -413,27 +403,27 @@ POST https://www.volley99.com/order/comment
 {status:'fail'} code 400
 ```
 
-#### From backup to formal member
+### From backup to formal member
 备胎转正
 GET https://www.volley99.com/order/turnbegin/:id  
 various of ```{status:'xxx'}```
 
-#### Get waiting list
+### Get waiting list
 GET https://www.volley99.com/order/waitinglist/:id
 
 return list of order
 
-#### Set order pending
+### Set order pending
 GET https://www.volley99.com/order/turnpending/:id
 
-### Message part(All need auth)
+## Message part(All need auth)
 
 ** 评论的类型为"comment",报名的话type "enrollment" **
 
-#### Get a receiver's msg list
+### Get a receiver's msg list
 Get http://www.volley99.com/msg/list
 
-#### Create a comment
+### Create a comment
 POST http://www.volley99.com/msg/comment
 ```
 {uid:"...",
@@ -442,7 +432,7 @@ msg:"test"}
 
 uid is recerver's id
 
-#### Create a Massage
+### Create a Massage
 
 POST http://www.volley99.com/msg/create
 
@@ -450,7 +440,7 @@ POST http://www.volley99.com/msg/create
  {uid:"...",type:"comment",msg:"test"}
 ```
 
-#### Create an enrollment
+### Create an enrollment
 POST http://www.volley99.com/msg/enroll
 ```
 {uid:"...",

@@ -167,6 +167,7 @@ async function signUser(ctx, next){
     ctx.status = 200
     ctx.body = {signNumber:user.signNumber}
   }
+  await next()
 }
 
 
@@ -200,7 +201,6 @@ async function loginUser(ctx, next) {
  */
 async function logoutUser(ctx, next) {
     ctx.logout()
-    ctx.redirect('/')
     await next()
 }
 
