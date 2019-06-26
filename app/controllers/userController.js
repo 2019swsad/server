@@ -140,7 +140,6 @@ async function signUser(ctx, next){
   let now = y*10 + x*1
   let lastday = res.signTime
   //console.log(lastday)
-  lastday = lastday.toString()
   //console.log(lastday)
   let xx = lastday.charAt(9)
   let yy = lastday.charAt(8)
