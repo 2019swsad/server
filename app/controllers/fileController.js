@@ -43,13 +43,16 @@ function sleep(ms) {
         setTimeout(resolve, ms)
     })
 }
+function setNoCacheHeaders(ctx) {
+    ctx.set('Cache-Control', 'public,max-age=31536000')
+}
 async function handleFetch(ctx, next) {
-    ctx.cacheControl('max-age=3600')
     if (fs.existsSync('./upload/' + ctx.params.id + '.png')) {
         await send(ctx, './upload/' + ctx.params.id + '.png')
     } else {
         await send(ctx, './upload/normal.jpg')
     }
     await next()
+    setNoCacheHeaders(ctx)
 }
 module.exports = fileRouter
