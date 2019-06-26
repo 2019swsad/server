@@ -9,12 +9,12 @@ const Joi = require('joi'),
   { testReq } = require('../helpers/taskHelper'),
   { creaditChange } = require('../helpers/userHelper'),
   {
-      removeWallet,
-      transferFunc,
-      transfer,
-      doTransactions,
-      createWallet,
-      queryBalance
+    removeWallet,
+    transferFunc,
+    transfer,
+    doTransactions,
+    createWallet,
+    queryBalance
   } = require('../helpers/walletHelper')
 
 
@@ -32,9 +32,9 @@ orderRouter
   .get('/turnbegin/:id', check, setOnGoing)
   .post('/accomplish', check, orderAccomplish)
   .post('/comment', check, commentOrder)
-  .get('/waitinglist/:id',check,listWaiting)
-  .get('/test',getAll)
-  .get('/turnpending/:id',check ,setOrderPending)
+  .get('/waitinglist/:id', check, listWaiting)
+  .get('/test', getAll)
+  .get('/turnpending/:id', check, setOrderPending)
 
 
 // Task schema
@@ -50,14 +50,14 @@ const orderCommentSchema = Joi.object().keys({
 })
 
 async function testNumberReq(tid, time) {
-    taskObj = await taskDB.findOne({ tid: tid }).then((doc) => { return doc })
-    if (taskObj !== null) {
-        if (
-            isEarly(time, taskObj.expireTime)) {
-            return taskObj.salary
-        }
+  taskObj = await taskDB.findOne({ tid: tid }).then((doc) => { return doc })
+  if (taskObj !== null) {
+    if (
+      isEarly(time, taskObj.expireTime)) {
+      return taskObj.salary
     }
-    return -1
+  }
+  return -1
 }
 
 /**
@@ -163,7 +163,11 @@ async function cancelSelfOrder(ctx, next) {
     taskRes = await taskDB.findOne({ tid: orderRes.tid }).then((doc) => { return doc })
     now = getNow()
     await orderDB.findOneAndUpdate({ oid: orderRes.oid }, { $set: { status: '已关闭' } })
-    await taskDB.findOneAndUpdate({ tid: orderRes.tid} , {$set: { currentParticipator: taskRes.currentParticipator - 1}}).then((doc)=>{return doc})
+    await taskDB.findOneAndUpdate(
+       { tid: orderRes.tid },
+       { $set: {
+       currentParticipator: taskRes.currentParticipator - 1
+       } })
     if (isEarly(now, taskRes.beginTime)) {
       createMsg(taskRes.uid, ctx.state.user[0].uid, taskRes.type, '有人退出了project')
     }
@@ -205,8 +209,8 @@ async function setOrderPending(ctx, next) {
     await next()
   }
   else {
-    let task = await taskDB.findOneAndUpdate({ tid: orderObj.tid }, { $set: { currentParticipator: taskObj.currentParticipator - 1, candidate: taskObj.candidate + 1  } }).then((doc) => { return doc })
-    res = await orderDB.findOneAndUpdate({ oid: ctx.params.id }, { $set: { status:"候补中"} }).then((doc) => { return doc })
+    let task = await taskDB.findOneAndUpdate({ tid: orderObj.tid }, { $set: { currentParticipator: taskObj.currentParticipator - 1, candidate: taskObj.candidate + 1 } }).then((doc) => { return doc })
+    res = await orderDB.findOneAndUpdate({ oid: ctx.params.id }, { $set: { status: "候补中" } }).then((doc) => { return doc })
     await createMsg(res.uid, taskObj.uid, taskObj.type, "您报名的" + taskObj.title + "任务已将您转为候补，请等待转正后再完成任务。")
     res.status = "候补中"
     ctx.body = res.status
@@ -291,10 +295,10 @@ async function commentOrder(ctx, next) {
   await next()
 }
 
-async function listWaiting(ctx,next) {
-  res=await orderDB.find({tid:ctx.params.id,status:'候补中'}).then((doc)=>{return doc})
-  ctx.body=res
-  ctx.status=200
+async function listWaiting(ctx, next) {
+  res = await orderDB.find({ tid: ctx.params.id, status: '候补中' }).then((doc) => { return doc })
+  ctx.body = res
+  ctx.status = 200
   await next()
 }
 
