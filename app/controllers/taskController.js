@@ -45,7 +45,7 @@ const orderDB = db.get('Order')
 const taskRouter = new Router({ prefix: '/task' })
 taskRouter
   .post('/create', check, createTask)
-  .post('/participate', check, selectParticipator)
+  .post('/participate', check,isSelfOp, selectParticipator)
   .post('/query', check, queryTaskByOneElement)
   .post('/change', check, changeStatus)
   .get('/get/:id', check, getTaskbyID)
