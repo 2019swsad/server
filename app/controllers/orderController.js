@@ -30,7 +30,7 @@ orderRouter
   .get('/close/:id', check, cancelSelfOrder)
   .get('/get/:id', check, getOrderbyID)
   .get('/turnbegin/:id', check, setOnGoing)
-  .post('/accomplish', check,isSelfOp, orderAccomplish)
+  .post('/accomplish', check, orderAccomplish)
   .post('/comment', check, commentOrder)
   .get('/waitinglist/:id', check, listWaiting)
   .get('/test', getAll)
