@@ -36,13 +36,6 @@ app.use(bodyParser())
 app.use(passport.initialize())
 app.use(passport.session())
 app.use(router());
-// app.use(function(ctx, next) {
-//     if (ctx.isAuthenticated()) {
-//       return next()
-//     } else {
-//       ctx.redirect('/')
-//     }
-//   })
 
 const httpserver = http.createServer(
     app.callback()).listen(config.httpserver.port, function () {
