@@ -32,7 +32,7 @@ userRouter
     .post('/reg', registerUser)
     .post('/update', check, isSelfOp, updateUser)
     .post('/login', loginUser)
-    .post('/rating', rateUser)
+    .post('/rating', check,rateUser)
     .get('/sign',check,signUser)
 
 
@@ -256,14 +256,14 @@ async function rateUser(ctx, next) {
 
       console.log(temp+"temp")
 
-      let order = await orderDB.findOneAndUpdate(
+      await orderDB.findOneAndUpdate(
         {oid:ctx.request.body.oid},
         {$set:{comment:"已评价"}}
       ).then((doc)=>{return doc})
 
       ctx.body = await personDB.findOneAndUpdate(
           { uid: ctx.request.body.uid },
-          { $set: { number: temp.number += 1, credit: (temp.credit * (temp.number + 1) + ctx.params.rate) / (temp.number + 2) } }).then((docs) => { return docs });
+          { $set: { number: temp.number += 1, credit: (temp.credit * (temp.number + 1) + ctx.request.body.rate) / (temp.number + 2) } }).then((docs) => { return docs })
       ctx.status = 201
     }
     await next()
