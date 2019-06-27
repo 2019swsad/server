@@ -25,7 +25,7 @@ const userDB = db.get('Person')
 const orderRouter = new Router({ prefix: '/order' })
 orderRouter
   .get('/bytask/:id', check, getAllOrderOfTask)
-  // .get('/all', check, getAllOrder)
+  .get('/all', check, getAllOrder)
   .post('/create', check, createOrder)
   .get('/close/:id', check, cancelSelfOrder)
   .get('/get/:id', check, getOrderbyID)
