@@ -1,30 +1,23 @@
 const http = require('http'),
-    https=require('https'),
-    fs=require('fs')
+    fs = require('fs'),
     Koa = require('koa'),
     config = require('config'),
     err = require('./helpers/error'),
-    views=require('koa-views'),
+    views = require('koa-views'),
     session = require('koa-session'),
     bodyParser = require('koa-bodyparser'),
     passport = require('koa-passport'),
-    CSRF = require('koa-csrf'),
-    koaBody = require('koa-body'),
-    { default: enforceHttps }=require('koa-sslify');
+    CSRF = require('koa-csrf');
 
-const router  = require('./routes');
+const router = require('./routes');
 
 app = new Koa();
-require('koa-ctx-cache-control')(app)
+require('koa-ctx-cache-control')(app);
 app.use(koaBody({ multipart: true }));
-app.keys=['hihihi']
-let options={
-    key:fs.readFileSync('./crt/server.key'),
-    cert:fs.readFileSync('./crt/server.pem')
-}
+app.keys = ['hihihi']
+
 app.use(err);
-app.use(enforceHttps({port:443}))
-app.use(views('app/views/',{extension:'ejs'}))
+app.use(views('app/views/', { extension: 'ejs' }))
 app.use(session({}, app));
 app.use(bodyParser())
 // app.use(new CSRF({
@@ -36,20 +29,20 @@ app.use(bodyParser())
 app.use(passport.initialize())
 app.use(passport.session())
 app.use(router());
+// app.use(function(ctx, next) {
+//     if (ctx.isAuthenticated()) {
+//       return next()
+//     } else {
+//       ctx.redirect('/')
+//     }
+//   })
 
-const httpserver = http.createServer(
-    app.callback()).listen(config.httpserver.port, function () {
-        console.log(
-            '%s listening at port %d', 
-            config.app.name, config.httpserver.port);
-});
-
-const server = https.createServer(options,
+const server = http.createServer(
     app.callback()).listen(config.server.port, function () {
         console.log(
-            '%s listening at port %d', 
+            '%s listening at port %d',
             config.app.name, config.server.port);
-});
+    });
 
 module.exports = {
     closeServer() {
