@@ -163,11 +163,11 @@ async function cancelSelfOrder(ctx, next) {
     taskRes = await taskDB.findOne({ tid: orderRes.tid }).then((doc) => { return doc })
     now = getNow()
     await orderDB.findOneAndUpdate({ oid: orderRes.oid }, { $set: { status: '已关闭' } })
-    // await taskDB.findOneAndUpdate(
-    //   { tid: orderRes.tid }, 
-    //   { $set: { 
-    //     currentParticipator: taskRes.currentParticipator - 1
-    //    } })
+    await taskDB.findOneAndUpdate(
+       { tid: orderRes.tid },
+       { $set: {
+       currentParticipator: taskRes.currentParticipator - 1
+       } })
     if (isEarly(now, taskRes.beginTime)) {
       createMsg(taskRes.uid, ctx.state.user[0].uid, taskRes.type, '有人退出了project')
     }
@@ -180,7 +180,9 @@ async function cancelSelfOrder(ctx, next) {
   }
   else if (orderRes.status === '候补中') {
     taskRes = await taskDB.findOne({ tid: orderRes.tid }).then((doc) => { return doc })
-    await orderDB.findOneAndUpdate({ oid: orderRes.oid }, { $set: { status: '已关闭' } })
+    await orderDB.findOneAndUpdate({ oid: orderRes.oid }, { $set: { status: '已关闭' } }).then((doc)=>{return doc})
+    await taskDB.findOneAndUpdate({ tid: orderRes.tid} , {$set: { candidate: taskRes.candidate - 1}}).then((doc)=>{return doc})
+
     ctx.status = 200;
     ctx.body = { status: 'success' }
   }
@@ -234,7 +236,7 @@ async function setOnGoing(ctx, next) {
     ctx.body = { status: 'order status is not pending' }
   }
   else {
-    let task = await taskDB.findOneAndUpdate({ tid: orderObj.tid }, { $set: { currentParticipator: taskObj.currentParticipator + 1 } }, { $set: { candidate: taskObj.candidate - 1 } }).then((doc) => { return doc })
+    let task = await taskDB.findOneAndUpdate({ tid: orderObj.tid }, { $set: { currentParticipator: taskObj.currentParticipator + 1 , candidate: taskObj.candidate - 1 } }).then((doc) => { return doc })
     res = await orderDB.findOneAndUpdate({ oid: ctx.params.id }, { $set: { status: "进行中" } }).then((doc) => { return doc })
     await createMsg(res.uid, taskObj.uid, taskObj.type, "您报名的" + taskObj.title + "任务的候补资格已被转正，请抓紧时机去完成任务吧！")
     res.status = "success"
