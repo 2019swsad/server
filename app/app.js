@@ -7,6 +7,7 @@ const http = require('http'),
     session = require('koa-session'),
     bodyParser = require('koa-bodyparser'),
     passport = require('koa-passport'),
+    koaBody = require('koa-body'),
     CSRF = require('koa-csrf');
 
 const router = require('./routes');
