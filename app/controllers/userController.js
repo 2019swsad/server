@@ -65,7 +65,7 @@ passport.use(new LocalStrategy(async function (username, password, done) {
  */
 async function getSelf(ctx, next) {
     ctx.body = await personDB
-        .findOne({ uid: ctx.state.user[0].uid })
+        .findOne({ uid: ctx.state.user[0].uid },'-password')
         .then((doc) => { return doc })
     ctx.body.balance = await queryBalance(ctx.state.user[0].uid)
     await next()
