@@ -37,7 +37,7 @@ app.use(router());
 //       ctx.redirect('/')
 //     }
 //   })
-
+console.log(JSON.stringify(process.env))
 const server = http.createServer(
     app.callback()).listen(config.server.port, function () {
         console.log(
